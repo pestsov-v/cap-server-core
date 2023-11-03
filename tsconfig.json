@@ -12,6 +12,10 @@
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@Packages": ["src/core/packages/packages.ts"],
+      "@Packages/Types": ["types/core/packages/packages..ts"]
+    }
   }
 }
