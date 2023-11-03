@@ -6,8 +6,8 @@ export interface IAbstractConnector {
 
   once(event: NAbstractConnector.Event, listener: NAbstractConnector.Listener): void;
   on(event: NAbstractConnector.Event, listener: NAbstractConnector.Listener): void;
+  emit<T>(event: NAbstractConnector.Event, data?: NAbstractConnector.Data<T>): void;
   off(event: NAbstractConnector.Event, listener: NAbstractConnector.Listener): void;
-  emit(event: NAbstractConnector.Event, listener: NAbstractConnector.Listener): void;
 }
 
 export namespace NAbstractConnector {
