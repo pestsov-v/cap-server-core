@@ -153,4 +153,33 @@ export class DiscoveryService extends AbstractService implements IDiscoveryServi
   private _nconfNotInitialize(): Error {
     return new Error('Nconf provider is not initialize');
   }
+
+  public async getCertificateBuffer(path: string): Promise<Buffer> {
+    try {
+      return this._getEnvBuffer(path);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  public async getCertificateString(path: string): Promise<string> {
+    try {
+      const buffer = await this._getEnvBuffer(path);
+      return buffer.toString('utf-8');
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  private async _getEnvBuffer(path: string): Promise<Buffer> {
+    const variable = this._get<string>(path);
+    if (!variable) {
+      throw new Error(`Could not found certificate in path "${path}"`);
+    }
+    try {
+      return await fsp.readFile(variable);
+    } catch (e) {
+      throw e;
+    }
+  }
 }
