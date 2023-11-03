@@ -9,7 +9,7 @@ const { dotenv } = Packages.dotenv;
 import { AbstractService } from './abstract.service';
 
 import { Nconf } from '@Packages/Types';
-import { IDiscoveryService } from '@Core/Types';
+import { IDiscoveryService, NDiscoveryService } from '@Core/Types';
 
 @injectable()
 export class DiscoveryService extends AbstractService implements IDiscoveryService {
@@ -53,9 +53,7 @@ export class DiscoveryService extends AbstractService implements IDiscoveryServi
   }
 
   private async _setInternalConfig(): Promise<void> {
-    if (!this._nconf) {
-      throw new Error('Nconf provider is not initialize');
-    }
+    if (!this._nconf) throw this._nconfNotInitialize();
 
     const configsPath = process.cwd() + '/configs';
 
@@ -78,21 +76,81 @@ export class DiscoveryService extends AbstractService implements IDiscoveryServi
     this._nconf.defaults(defaults);
   }
 
-  public async destroy(): Promise<void> {}
+  public async destroy(): Promise<void> {
+    if (!this._nconf) return;
+
+    this._nconf.reset();
+    this._nconf = undefined;
+    this._schema = undefined;
+  }
+
+  public getMandatory<T>(name: string): T {
+    const variable = this._get<T>(name);
+    if (typeof variable === 'undefined' || variable === '') {
+      throw new Error(`Variable "${name}" not found`);
+    }
+
+    return variable;
+  }
 
   public getString(name: string, def: string): string {
-    return '';
+    const variable = this._get<unknown>(name, def);
+    if (typeof variable !== 'string') {
+      try {
+        return String(variable);
+      } catch (_) {
+        return def;
+      }
+    }
+    return variable;
   }
+
   public getNumber(name: string, def: number): number {
-    return 0;
+    const variable = this._get<unknown>(name, def);
+
+    if (typeof variable !== 'number') {
+      try {
+        return Number(variable);
+      } catch (_) {
+        return def;
+      }
+    }
+    return variable;
   }
+
   public getBoolean(name: string, def: boolean): boolean {
-    return true;
+    const variable = this._get<unknown>(name, def);
+    if (variable !== false && variable !== true) {
+      return def;
+    }
+    return variable;
   }
+
   public getArray<T>(name: string, def: Array<T>): Array<T> {
-    return [];
+    const variable = this._get<Array<T>>(name, def);
+
+    if (typeof variable !== 'object') {
+      try {
+        return Array(variable);
+      } catch {
+        return def;
+      }
+    }
+    return variable;
   }
-  public getMandatory<T>(name: string): T {
-    return 0 as T;
+
+  private _get<T extends NDiscoveryService.EnvType = NDiscoveryService.EnvType>(
+    name: string,
+    defaultValue?: T
+  ): T {
+    if (!this._isStarted) throw this.notStartedError();
+    if (!this._nconf) throw this._nconfNotInitialize();
+
+    const value = this._nconf.get(name);
+    return typeof value === 'undefined' ? defaultValue : value;
+  }
+
+  private _nconfNotInitialize(): Error {
+    return new Error('Nconf provider is not initialize');
   }
 }
