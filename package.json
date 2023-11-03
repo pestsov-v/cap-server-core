@@ -1,0 +1,9 @@
+{
+  "name": "@capybara/server-core",
+  "version": "0.0.1",
+  "description": "Compute server for capybara schemas",
+  "main": "index.js",
+  "scripts": {},
+  "author": "Vladyslav pestsov <vladyslav.pestsov@gmail.com>",
+  "license": "ISC"
+}
