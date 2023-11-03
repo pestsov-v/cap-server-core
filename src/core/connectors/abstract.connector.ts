@@ -23,7 +23,7 @@ export abstract class AbstractConnector implements IAbstractConnector {
     this._emitter.off(event, listener);
   }
 
-  public emit(event: NAbstractConnector.Event, listener: NAbstractConnector.Listener): void {
-    this._emitter.emit(event, listener);
+  public emit<T>(event: NAbstractConnector.Event, data?: NAbstractConnector.Data<T>): void {
+    this._emitter.emit(event, data);
   }
 }

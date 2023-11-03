@@ -12,7 +12,7 @@ export abstract class AbstractService implements IAbstractService {
   protected abstract init(): Promise<boolean>;
   protected abstract destroy(): Promise<void>;
 
-  protected _isStarted: boolean | undefined;
+  protected _isStarted: boolean = false;
   protected readonly _emitter: Events.EventEmitter = new EventEmitter();
 
   public get isStarted(): boolean {

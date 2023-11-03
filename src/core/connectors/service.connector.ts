@@ -1,16 +1,23 @@
 import { Packages } from '@Packages';
-const { injectable } = Packages.inversify;
-
+const { injectable, inject } = Packages.inversify;
+import { CoreSymbols } from '@CoreSymbols';
 import { AbstractConnector } from './abstract.connector';
 
-import { IServiceConnector } from '@Core/Types';
+import { IDiscoveryService, IServiceConnector } from '@Core/Types';
 
 @injectable()
 export class ServiceConnector extends AbstractConnector implements IServiceConnector {
-  constructor() {
+  constructor(
+    @inject(CoreSymbols.DiscoveryService)
+    private _discoveryService: IDiscoveryService
+  ) {
     super();
   }
 
-  public async start(): Promise<void> {}
-  public async stop(): Promise<void> {}
+  public async start(): Promise<void> {
+    await this._discoveryService.start();
+  }
+  public async stop(): Promise<void> {
+    await this._discoveryService.stop();
+  }
 }

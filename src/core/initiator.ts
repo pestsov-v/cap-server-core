@@ -1,14 +1,20 @@
 import { Packages } from '@Packages';
-const { injectable } = Packages.inversify;
+const { injectable, inject } = Packages.inversify;
 
-import { IInitiator } from '@Core/Types';
+import { IInitiator, IServiceConnector } from '@Core/Types';
+import { CoreSymbols } from '@CoreSymbols';
 
 @injectable()
 export class Initiator implements IInitiator {
-  constructor() {}
+  constructor(
+    @inject(CoreSymbols.ServiceConnector)
+    private _serviceConnector: IServiceConnector
+  ) {}
 
   public async start(): Promise<void> {
-    console.log('initiator start');
+    await this._serviceConnector.start();
   }
-  public async stop(): Promise<void> {}
+  public async stop(): Promise<void> {
+    await this._serviceConnector.stop();
+  }
 }

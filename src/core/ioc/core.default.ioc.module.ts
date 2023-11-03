@@ -5,7 +5,8 @@ import { Initiator } from '../initiator';
 import { ServiceConnector } from '../connectors';
 
 import { Inversify } from '@Packages/Types';
-import { IInitiator, IServiceConnector } from '@Core/Types';
+import { IAbstractService, IInitiator, IServiceConnector } from '@Core/Types';
+import { DiscoveryService } from '../services/discovery.service';
 
 export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) => {
   // Initiator
@@ -13,4 +14,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
 
   // Connectors
   bind<IServiceConnector>(CoreSymbols.ServiceConnector).to(ServiceConnector).inSingletonScope();
+
+  // Services
+  bind<IAbstractService>(CoreSymbols.DiscoveryService).to(DiscoveryService).inSingletonScope();
 });
