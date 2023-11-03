@@ -1,4 +1,5 @@
-import inversify, { ContainerModule } from 'inversify';
+import inversify from 'inversify';
+import events from 'events';
 
 export namespace Inversify {
   export namespace interfaces {
@@ -6,4 +7,8 @@ export namespace Inversify {
     export type Container = inversify.interfaces.Container;
     export type ContainerModule = inversify.ContainerModule;
   }
+}
+
+export namespace Events {
+  export type EventEmitter = events.EventEmitter;
 }
