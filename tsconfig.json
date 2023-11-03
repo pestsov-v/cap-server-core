@@ -12,6 +12,13 @@
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+
+      "@CoreSymbols": ["src/core/ioc/core.ioc.symbols.ts"],
+      "@Core/Types": ["types/core/index.d.ts"],
+      "@Packages": ["src/core/packages/packages.ts"],
+      "@Packages/Types": ["types/core/packages/packages.d.ts"]
+    }
   }
 }
