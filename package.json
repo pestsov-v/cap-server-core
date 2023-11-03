@@ -7,6 +7,9 @@
   "author": "Vladyslav pestsov <vladyslav.pestsov@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
     "ts-node": "^10.9.1"
   }
 }
