@@ -8,6 +8,13 @@ export interface IDiscoveryService extends IAbstractService {
   getArray<T>(name: string, def: Array<T>): Array<T>;
   getCertificateBuffer(path: string): Promise<Buffer>;
   getCertificateString(path: string): Promise<string>;
+
+  getSchemaMandatory<T>(name: string): T;
+  getSchemaString(name: string, def: string): string;
+  getSchemaNumber(name: string, def: number): number;
+  getSchemaBoolean(name: string, def: boolean): boolean;
+  getSchemaArray<T>(name: string, def: Array<T>): Array<T>;
+  getSchemaBuffer(path: string): Promise<Buffer>;
 }
 
 export namespace NDiscoveryService {

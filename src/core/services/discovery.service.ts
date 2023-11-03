@@ -182,4 +182,28 @@ export class DiscoveryService extends AbstractService implements IDiscoveryServi
       throw e;
     }
   }
+
+  public getSchemaMandatory<T>(name: string): T {
+    return this.getMandatory<T>(`schema:${name}`);
+  }
+
+  public getSchemaString(name: string, def: string): string {
+    return this.getString(`schema:${name}`, def);
+  }
+
+  public getSchemaNumber(name: string, def: number): number {
+    return this.getNumber(`schema:${name}`, def);
+  }
+
+  public getSchemaBoolean(name: string, def: boolean): boolean {
+    return this.getBoolean(`schema:${name}`, def);
+  }
+
+  public getSchemaArray<T>(name: string, def: Array<T>): Array<T> {
+    return this.getArray<T>(`schema:${name}`, def);
+  }
+
+  public async getSchemaBuffer(path: string): Promise<Buffer> {
+    return this._getEnvBuffer(`schema:${path}`);
+  }
 }
