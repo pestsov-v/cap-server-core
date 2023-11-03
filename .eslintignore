@@ -1,0 +1,7 @@
+dist/
+node_modules/
+.eslintignore
+.gitignore
+package.json
+package-lock.json
+README.md
