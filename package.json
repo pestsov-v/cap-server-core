@@ -5,5 +5,8 @@
   "main": "index.js",
   "scripts": {},
   "author": "Vladyslav pestsov <vladyslav.pestsov@gmail.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "ts-node": "^10.9.1"
+  }
 }
