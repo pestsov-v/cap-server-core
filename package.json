@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "Compute server for capybara schemas",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "start:dev": "ts-node -r tsconfig-paths/register --files ./src/core/main.ts"
+  },
   "author": "Vladyslav pestsov <vladyslav.pestsov@gmail.com>",
   "license": "ISC",
   "dependencies": {
