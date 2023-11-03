@@ -10,13 +10,14 @@
   "license": "ISC",
   "dependencies": {
     "inversify": "^6.0.2",
+    "nconf": "^0.12.1",
     "reflect-metadata": "^0.1.13",
     "typescript": "^5.2.2"
   },
   "devDependencies": {
+    "@types/nconf": "^0.10.5",
     "@typescript-eslint/eslint-plugin": "^5.52.0",
     "@typescript-eslint/parser": "^5.52.0",
-    "tsconfig-paths": "^4.2.0",
     "eslint": "^8.34.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.6.0",
@@ -28,6 +29,7 @@
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-unused-imports": "^2.0.0",
     "prettier": "^2.8.7",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0"
   }
 }
