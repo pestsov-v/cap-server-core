@@ -58,4 +58,8 @@ export abstract class AbstractService implements IAbstractService {
       throw e;
     }
   }
+
+  protected notStartedError(): Error {
+    return new Error(`Service "${this._SERVICE_NAME}" not started`);
+  }
 }

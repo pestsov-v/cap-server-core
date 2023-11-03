@@ -1,5 +1,6 @@
 import inversify from 'inversify';
 import events from 'events';
+import nconf from 'nconf';
 
 export namespace Inversify {
   export namespace interfaces {
@@ -11,4 +12,8 @@ export namespace Inversify {
 
 export namespace Events {
   export type EventEmitter = events.EventEmitter;
+}
+
+export namespace Nconf {
+  export type Provider = nconf.Provider;
 }
