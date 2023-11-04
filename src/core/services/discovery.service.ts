@@ -25,7 +25,7 @@ export class DiscoveryService extends AbstractService implements IDiscoveryServi
 
     try {
       await this._setConfigurations();
-      this.emit(`service:${this._SERVICE_NAME}:start`);
+      this._emitter.emit(`service:${this._SERVICE_NAME}:start`);
       return true;
     } catch (e) {
       throw e;
