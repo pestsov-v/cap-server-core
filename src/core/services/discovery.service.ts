@@ -9,7 +9,12 @@ const { dotenv } = Packages.dotenv;
 import { AbstractService } from './abstract.service';
 
 import { Nconf } from '@Packages/Types';
-import { IDiscoveryService, NAbstractService, NDiscoveryService } from '@Core/Types';
+import {
+  IDiscoveryService,
+  NAbstractService,
+  NDiscoveryService,
+  NLoggerService,
+} from '@Core/Types';
 
 @injectable()
 export class DiscoveryService extends AbstractService implements IDiscoveryService {

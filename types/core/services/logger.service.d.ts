@@ -4,7 +4,7 @@ export interface ILoggerService extends IAbstractService {
   error(msg: string, options?: NLoggerService.CoreErrorOptions): void;
   warn(msg: string, options?: NLoggerService.CoreWarnOptions): void;
   system(msg: string, options?: NLoggerService.CoreSystemOptions): void;
-  api(msg: string, options?: NLoggerService.CoreApiOptions): void;
+  api(options: NLoggerService.CoreApiOptions): void;
   database(msg: string, options?: NLoggerService.CoreDatabaseOptions): void;
   storage(msg: string, options?: NLoggerService.CoreStorageOptions): void;
   info(msg: string, options?: NLoggerService.CoreInfoOptions): void;
@@ -20,7 +20,7 @@ export interface ILoggerService extends IAbstractService {
 }
 
 export namespace NLoggerService {
-  export type Loggers = 'CoreLogger' | 'SchemaLogger';
+  export type LoggersKind = 'CoreLogger' | 'SchemaLogger';
 
   export type Config = {
     loggers: {
@@ -41,31 +41,45 @@ export namespace NLoggerService {
     };
   };
 
-  export const enum Loggers {
-    core = 'CoreLogger',
-    schema = 'SchemaLogger',
-  }
+  export type Loggers = {
+    core: 'CoreLogger';
+    schema: 'SchemaLogger';
+  };
 
-  export const enum CoreLoggerLevels {
-    error = 0,
-    warn = 1,
-    system = 2,
-    api = 3,
-    database = 4,
-    storage = 5,
-    info = 6,
-    schema = 7,
-    verbose = 8,
-  }
+  export type CoreLoggerLevels = {
+    error: 0;
+    warn: 1;
+    system: 2;
+    api: 3;
+    database: 4;
+    storage: 5;
+    info: 6;
+    schema: 7;
+    verbose: 8;
+  };
 
-  export const enum SchemaLoggerLevels {
-    error = 0,
-    exception = 1,
-    warn = 2,
-    api = 3,
-    info = 4,
-    debug = 5,
-  }
+  export type SchemaLoggerLevels = {
+    error: 0;
+    exception: 1;
+    warn: 2;
+    api: 3;
+    info: 4;
+    debug: 5;
+  };
+
+  export type LoggerColors = {
+    error: 'bold red';
+    exception: 'red';
+    warn: 'yellow';
+    system: 'cyan';
+    api: 'bold green';
+    database: 'magenta';
+    storage: 'yellow';
+    info: 'blue';
+    schema: 'yellow';
+    verbose: 'gray';
+    debug: 'bold green';
+  };
 
   export type ServiceTag = 'Connection' | 'Execution';
 
@@ -101,6 +115,10 @@ export namespace NLoggerService {
     ip: string;
     statusCode: string;
     responseType?: string;
+    application: string;
+    collection: string;
+    version: string;
+    action: string;
   }
   export interface CoreDatabaseOptions extends ScopeOptions, CoreBaseOptions {
     scope: 'Core';
