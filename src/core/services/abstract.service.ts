@@ -4,10 +4,10 @@ const { EventEmitter } = Packages.events;
 const { format } = Packages.dateFns;
 const { colors } = Packages.colors;
 import { Guards } from '@Guards';
+import { Helpers } from '../utility/helpers';
 
 import { Events } from '@Packages/Types';
 import { IAbstractService, IDiscoveryService, ILoggerService, NAbstractService } from '@Core/Types';
-import { Helpers } from '../utility/helpers';
 
 @injectable()
 export abstract class AbstractService implements IAbstractService {
@@ -50,16 +50,23 @@ export abstract class AbstractService implements IAbstractService {
         if (this._loggerService) {
           this._loggerService.system(msg, { namespace: this._SERVICE_NAME, scope: 'Core' });
         } else {
-          const namespace = Helpers.addBrackets(Helpers.centralized(20, this._SERVICE_NAME));
-          const level = Helpers.addLevel('system', 'bgMagenta', 'green');
-          const log = format(new Date(), 'yyyy-MM-dd HH:mm:ss') + ' ' + level + namespace + msg;
-          console.log(colors.cyan(log));
+          this.sendConsoleLog(msg);
         }
         this.emit(`services:${this._SERVICE_NAME}:start`);
       } else {
         this._isStarted = false;
       }
     } catch (e) {
+      if (this._loggerService) {
+        this._loggerService.error(e, {
+          namespace: this._SERVICE_NAME,
+          tag: 'Init',
+          scope: 'Core',
+          errorType: 'FATAL',
+        });
+      } else {
+        console.error(e);
+      }
       throw e;
     }
   }
@@ -67,12 +74,39 @@ export abstract class AbstractService implements IAbstractService {
   public async stop(): Promise<void> {
     try {
       await this.destroy();
+      const msg = this._SERVICE_NAME + ' service has stopped.';
+      if (this._loggerService) {
+        this._loggerService.system(msg, { namespace: this._SERVICE_NAME, scope: 'Core' });
+      } else {
+        this.sendConsoleLog(msg);
+      }
+      this._isStarted = false;
+
+      this.emit(`services:${this._SERVICE_NAME}:stop`);
+      this._emitter.removeAllListeners();
     } catch (e) {
+      if (this._loggerService) {
+        this._loggerService.error(e, {
+          namespace: this._SERVICE_NAME,
+          tag: 'Destroy',
+          scope: 'Core',
+          errorType: 'FATAL',
+        });
+      } else {
+        console.error(e);
+      }
       throw e;
     }
   }
 
   protected notStartedError(): Error {
     return new Error(`Service "${this._SERVICE_NAME}" not started`);
+  }
+
+  private sendConsoleLog(msg: string): void {
+    const namespace = Helpers.addBrackets(Helpers.centralized(20, this._SERVICE_NAME));
+    const level = Helpers.addLevel('system', 'bgMagenta', 'green');
+    const log = format(new Date(), 'yyyy-MM-dd HH:mm:ss') + ' ' + level + namespace + msg;
+    console.log(colors.cyan(log));
   }
 }

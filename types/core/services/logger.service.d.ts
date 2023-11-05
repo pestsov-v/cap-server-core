@@ -1,7 +1,7 @@
 import { IAbstractService } from '@Core/Types';
 
 export interface ILoggerService extends IAbstractService {
-  error(msg: string, options?: NLoggerService.CoreErrorOptions): void;
+  error(msg: any, options?: NLoggerService.CoreErrorOptions): void;
   warn(msg: string, options?: NLoggerService.CoreWarnOptions): void;
   system(msg: string, options?: NLoggerService.CoreSystemOptions): void;
   api(options: NLoggerService.CoreApiOptions): void;
@@ -81,7 +81,7 @@ export namespace NLoggerService {
     debug: 'bold green';
   };
 
-  export type ServiceTag = 'Connection' | 'Execution';
+  export type ServiceTag = 'Connection' | 'Execution' | 'Init' | 'Destroy';
 
   export type ErrorType = 'FATAL' | 'FAIL' | 'EXCEPTION' | 'CUSTOM';
 
