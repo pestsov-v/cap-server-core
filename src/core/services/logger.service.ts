@@ -13,6 +13,7 @@ import { level } from 'winston';
 @injectable()
 export class LoggerService extends AbstractService implements ILoggerService {
   protected readonly _SERVICE_NAME = LoggerService.name;
+  protected readonly _loggerService = this;
   private _config: NLoggerService.Config | undefined;
   private _container: Winston.Container | undefined;
   private _loggers: Partial<Record<keyof NLoggerService.Loggers, Winston.Logger>> = {};
@@ -59,7 +60,7 @@ export class LoggerService extends AbstractService implements ILoggerService {
 
   constructor(
     @inject(CoreSymbols.DiscoveryService)
-    private _discoveryService: IDiscoveryService
+    protected _discoveryService: IDiscoveryService
   ) {
     super();
     winston.addColors(this._LOGGER_COLORS);
@@ -208,28 +209,35 @@ export class LoggerService extends AbstractService implements ILoggerService {
             if (info.traceId) str += 'TraceId: ' + info.traceId + '\n';
             if (info.sessionId) str += 'SessionId: ' + info.sessionId;
           };
-          let str = info.timestamp;
+          let str = info.timestamp + ' ';
           const namespace = Helpers.addBrackets(Helpers.centralized(20, info.namespace));
-          str += namespace;
           const coreLevels = info.level as keyof NLoggerService.CoreLoggerLevels;
           switch (coreLevels) {
             case 'error':
+              str += Helpers.addLevel(info.level, 'black', 'red');
+              str += namespace;
               str += info.msg.stack;
               str += '\n';
               if (info.errorType) str += 'Type: ' + info.errorType + '\n';
               baseOptions();
               break;
             case 'warn':
+              str += Helpers.addLevel(info.level, 'bgGreen', 'yellow');
+              str += namespace;
               str += info.msg;
               str += '\n';
               baseOptions();
               break;
             case 'schema':
+              str += Helpers.addLevel(info.level, 'bgBlack', 'yellow');
+              str += namespace;
               str += info.msg;
               str += '\n';
               baseOptions();
               break;
             case 'system':
+              str += Helpers.addLevel(info.level, 'bgMagenta', 'green');
+              str += namespace;
               str += info.msg;
               str += '\n';
               break;
