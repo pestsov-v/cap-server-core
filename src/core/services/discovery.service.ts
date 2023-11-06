@@ -9,7 +9,12 @@ const { dotenv } = Packages.dotenv;
 import { AbstractService } from './abstract.service';
 
 import { Nconf } from '@Packages/Types';
-import { IDiscoveryService, NDiscoveryService } from '@Core/Types';
+import {
+  IDiscoveryService,
+  NAbstractService,
+  NDiscoveryService,
+  NLoggerService,
+} from '@Core/Types';
 
 @injectable()
 export class DiscoveryService extends AbstractService implements IDiscoveryService {
@@ -17,6 +22,8 @@ export class DiscoveryService extends AbstractService implements IDiscoveryServi
   private _nconf: Nconf.Provider | undefined;
   private _schema: string | undefined;
   private _mode: string = 'dev';
+  protected readonly _discoveryService = this;
+  protected readonly _loggerService = undefined;
 
   protected async init(): Promise<boolean> {
     this._nconf = nconf;
@@ -24,12 +31,23 @@ export class DiscoveryService extends AbstractService implements IDiscoveryServi
     this._mode = process.env.MODE ?? this._mode;
 
     try {
-      await this._setExternalConfig();
-      await this._setInternalConfig();
+      await this._setConfigurations();
+      this._emitter.emit(`service:${this._SERVICE_NAME}:start`);
       return true;
     } catch (e) {
       throw e;
     }
+  }
+
+  public async reloadConfigurations(): Promise<void> {
+    if (!this._nconf) this._nconf = nconf;
+    this._nconf.reset();
+    await this._setConfigurations();
+    this._emitter.emit(`service:${this._SERVICE_NAME}:reload`);
+  }
+
+  public on(event: NDiscoveryService.Event, listener: NAbstractService.Listener): void {
+    this._emitter.on(event, listener);
   }
 
   private async _setExternalConfig(): Promise<void> {
@@ -50,6 +68,11 @@ export class DiscoveryService extends AbstractService implements IDiscoveryServi
     } catch (e) {
       throw e;
     }
+  }
+
+  private async _setConfigurations(): Promise<void> {
+    await this._setExternalConfig();
+    await this._setInternalConfig();
   }
 
   private async _setInternalConfig(): Promise<void> {

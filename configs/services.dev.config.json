@@ -1,3 +1,21 @@
 {
-  "defaultEnableServices": ["loggerService"]
+  "defaultEnableServices": ["DiscoveryService", "LoggerService"],
+  "logger": {
+    "loggers": {
+      "core": true,
+      "schema": true
+    },
+    "transports": {
+      "console": {
+        "core": {
+          "enable": true,
+          "level": "schema"
+        },
+        "schema": {
+          "enable": true,
+          "level": "debug"
+        }
+      }
+    }
+  }
 }

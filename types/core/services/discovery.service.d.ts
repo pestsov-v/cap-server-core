@@ -1,6 +1,9 @@
-import { IAbstractService } from '@Core/Types';
+import { IAbstractService, NAbstractService } from '@Core/Types';
 
 export interface IDiscoveryService extends IAbstractService {
+  on(event: NDiscoveryService.Event, listener: NAbstractService.Listener): void;
+  reloadConfigurations(): Promise<void>;
+
   getMandatory<T>(name: string): T;
   getString(name: string, def: string): string;
   getNumber(name: string, def: number): number;
@@ -18,6 +21,8 @@ export interface IDiscoveryService extends IAbstractService {
 }
 
 export namespace NDiscoveryService {
+  export type Event = 'service:DiscoveryService:start' | 'service:DiscoveryService:reload';
+
   export type EnvType<T = unknown> =
     | string
     | number
