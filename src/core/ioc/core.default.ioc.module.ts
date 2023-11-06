@@ -3,10 +3,16 @@ const { ContainerModule } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
 import { Initiator } from '../initiator';
 import { ServiceConnector } from '../connectors';
+import { DiscoveryService, LoggerService, SchemaService } from '../services';
 
 import { Inversify } from '@Packages/Types';
-import { IAbstractService, IInitiator, ILoggerService, IServiceConnector } from '@Core/Types';
-import { DiscoveryService, LoggerService } from '../services';
+import {
+  IAbstractService,
+  IInitiator,
+  ILoggerService,
+  ISchemaService,
+  IServiceConnector,
+} from '@Core/Types';
 
 export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) => {
   // Initiator
@@ -18,4 +24,5 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   // Services
   bind<IAbstractService>(CoreSymbols.DiscoveryService).to(DiscoveryService).inSingletonScope();
   bind<ILoggerService>(CoreSymbols.LoggerService).to(LoggerService).inSingletonScope();
+  bind<ISchemaService>(CoreSymbols.SchemaService).to(SchemaService).inSingletonScope();
 });
