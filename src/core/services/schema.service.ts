@@ -1,5 +1,6 @@
 import { Packages } from '@Packages';
-const { injectable, inject } = Packages.inversify;
+const { injectable, inject, Container } = Packages.inversify;
+import { MetadataKeys } from '@common';
 
 import { AbstractService } from './abstract.service';
 import { IDiscoveryService, ILoggerService, ISchemaService } from '@Core/Types';
@@ -19,6 +20,13 @@ export class SchemaService extends AbstractService implements ISchemaService {
   }
 
   protected async init() {
+    Reflect.defineMetadata(MetadataKeys.SchemaContainer, new Container(), Reflect);
+
+    import('../../schemas');
+
+    setTimeout(() => {
+      console.log(Reflect.getMetadataKeys(Reflect));
+    });
     return true;
   }
   protected async destroy(): Promise<void> {
