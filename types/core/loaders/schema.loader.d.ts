@@ -39,6 +39,7 @@ export namespace NSchemaLoader {
     helpers?: Map<string, (...args: any[]) => any>;
   };
   export type Domains = Map<string, DomainStorage>;
+  export type Services = Map<string, Domains>;
 
   export type SerializeHelpers<T extends string> = {
     [key in T]: string;

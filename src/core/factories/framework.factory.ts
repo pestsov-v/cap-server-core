@@ -1,14 +1,14 @@
 import { Packages } from '@Packages';
 const { injectable, inject } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
+import { AbstractFactory } from './abstract.factory';
 
 import {
   IAbstractFactory,
   IAbstractFrameworkAdapter,
   IDiscoveryService,
-  ISchemaService,
+  NSchemaLoader,
 } from '@Core/Types';
-import { AbstractFactory } from './abstract.factory';
 
 @injectable()
 export class FrameworkFactory extends AbstractFactory implements IAbstractFactory {
@@ -25,7 +25,7 @@ export class FrameworkFactory extends AbstractFactory implements IAbstractFactor
     const adapter = this._discoveryService.getString('adapters:framework:kind', 'fastify');
     switch (adapter) {
       case 'fastify':
-        await this._fastifyAdapter.start(schema);
+        await this._fastifyAdapter.start(schema as NSchemaLoader.Services);
         break;
       case 'express':
         throw new Error('Adapter not implemented');

@@ -3,9 +3,10 @@ import { NContextService } from '../services';
 
 import { Express, Fastify } from '@Packages/Types';
 import { Voidable } from '@Utility/Types';
+import { NSchemaLoader } from '../loaders';
 
 export interface IAbstractFrameworkAdapter {
-  start(schema: any): Promise<void>;
+  start(schema: NSchemaLoader.Services): Promise<void>;
 }
 
 export namespace NAbstractFrameworkAdapter {
@@ -64,14 +65,14 @@ export namespace NAbstractFrameworkAdapter {
   export type FailSchemaParameter = 'application' | 'domain' | 'action' | 'action-version';
 
   interface BaseSchemaPayload {
-    status: 'OK' | 'FAIL';
+    ok: boolean;
   }
   interface SchemaPayloadFail extends BaseSchemaPayload {
-    status: 'FAIL';
+    ok: false;
     message: string;
   }
   interface SchemaPayloadOK extends BaseSchemaPayload {
-    status: 'OK';
+    ok: true;
     application: string;
     domain: string;
     action: string;

@@ -11,6 +11,7 @@ import {
   ISchemaLoader,
   ISchemaService,
   NAbstractService,
+  NSchemaLoader,
   NSchemaService,
   NSchemaWorker,
 } from '@Core/Types';
@@ -19,7 +20,7 @@ import {
 export class SchemaService extends AbstractService implements ISchemaService {
   protected readonly _SERVICE_NAME: NSchemaService.ServiceName = 'SchemaService';
   private _config: NSchemaService.Config | undefined;
-  private _SCHEMAS: any | undefined;
+  private _SCHEMAS: NSchemaLoader.Services | undefined;
 
   constructor(
     @inject(CoreSymbols.DiscoveryService)

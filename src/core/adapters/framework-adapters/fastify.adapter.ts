@@ -10,6 +10,7 @@ import {
   ILoggerService,
   IAbstractFrameworkAdapter,
   NAbstractFrameworkAdapter,
+  NSchemaLoader,
 } from '@Core/Types';
 
 @injectable()
@@ -20,7 +21,7 @@ export class FastifyAdapter
   protected readonly _ADAPTER_NAME = FastifyAdapter.name;
   protected _config: NAbstractFrameworkAdapter.Config | undefined;
   protected _instance: NAbstractFrameworkAdapter.Instance<'fastify'> | undefined;
-  private _schemas: any;
+  private _schemas: NSchemaLoader.Services | undefined;
 
   constructor(
     @inject(CoreSymbols.DiscoveryService)
@@ -45,7 +46,7 @@ export class FastifyAdapter
     };
   }
 
-  public async start(schemas: any): Promise<void> {
+  public async start(schemas: NSchemaLoader.Services): Promise<void> {
     this._schemas = schemas;
     this._setConfig();
 
@@ -77,8 +78,6 @@ export class FastifyAdapter
 
   protected _apiHandler = async (
     req: NAbstractFrameworkAdapter.Request<'fastify'>,
-    context: NAbstractFrameworkAdapter.Context
-  ): Promise<void> => {
-    console.log(this._schemas);
-  };
+    res: NAbstractFrameworkAdapter.Response<'fastify'>
+  ): Promise<void> => {};
 }

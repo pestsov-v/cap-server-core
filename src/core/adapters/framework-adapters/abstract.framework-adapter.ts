@@ -6,7 +6,6 @@ import {
   IContextService,
   IDiscoveryService,
   ILoggerService,
-  ISchemaService,
   IAbstractFrameworkAdapter,
   NAbstractFrameworkAdapter,
 } from '@Core/Types';
@@ -37,34 +36,32 @@ export abstract class AbstractFrameworkAdapter<K extends NAbstractFrameworkAdapt
   ): NAbstractFrameworkAdapter.SchemaPayload {
     if (!headers[SchemaHeaders.X_APPLICATION_NAME]) {
       return {
-        status: 'FAIL',
+        ok: false,
         message: '"X-Application-Name" header not found',
       };
     }
     if (!headers[SchemaHeaders.X_DOMAIN_NAME]) {
       return {
-        status: 'FAIL',
+        ok: false,
         message: '"X-Domain-Name" header not found',
       };
     }
     if (!headers[SchemaHeaders.X_ACTION_NAME]) {
       return {
-        status: 'FAIL',
+        ok: false,
         message: '"X-Action-Name" header not found',
       };
     }
 
     return {
-      status: 'OK',
+      ok: true,
       application: headers[SchemaHeaders.X_APPLICATION_NAME],
       domain: headers[SchemaHeaders.X_DOMAIN_NAME],
       action: headers[SchemaHeaders.X_ACTION_NAME],
     };
   }
 
-  protected _getNotFoundMessage(
-    parameter: NAbstractFrameworkAdapter.FailSchemaParameter
-  ): NAbstractFrameworkAdapter.SchemaPayloadFail {
+  protected _getNotFoundMessage(parameter: NAbstractFrameworkAdapter.FailSchemaParameter): string {
     let message: string;
     switch (parameter) {
       case 'application':
@@ -81,7 +78,7 @@ export abstract class AbstractFrameworkAdapter<K extends NAbstractFrameworkAdapt
         break;
     }
 
-    return { status: 'FAIL', message };
+    return message;
   }
 
   protected get throwConfigError(): void {
