@@ -1,5 +1,5 @@
 {
-  "defaultEnableServices": ["DiscoveryService", "LoggerService"],
+  "defaultEnableServices": ["DiscoveryService", "LoggerService", "SchemaService", "ContextService"],
   "logger": {
     "loggers": {
       "core": true,

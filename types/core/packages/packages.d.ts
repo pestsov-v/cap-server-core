@@ -4,6 +4,7 @@ import nconf from 'nconf';
 import winston from 'winston';
 import colors from 'colors';
 import child_process from 'child_process';
+import async_hooks from 'async_hooks';
 
 export namespace Inversify {
   export namespace interfaces {
@@ -35,4 +36,8 @@ export namespace Color {
 
 export namespace ChildProcess {
   export type Worker = child_process.Worker;
+}
+
+export namespace AsyncHooks {
+  export type AsyncLocalStorage<T> = async_hooks.AsyncLocalStorage<T>;
 }

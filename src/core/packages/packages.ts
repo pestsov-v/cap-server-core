@@ -2,15 +2,16 @@ import { EventEmitter } from 'events';
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
-import fse from 'fs-extra';
-import winston from 'winston';
-import colors from 'colors';
-import { format } from 'date-fns';
 import { fork } from 'child_process';
+import async_hooks from 'async_hooks';
 
 import { injectable, inject, ContainerModule, Container } from 'inversify';
+import { format } from 'date-fns';
 import nconf from 'nconf';
 import dotenv from 'dotenv';
+import winston from 'winston';
+import fse from 'fs-extra';
+import colors from 'colors';
 
 export class Packages {
   public static get inversify() {
@@ -26,8 +27,14 @@ export class Packages {
     return { EventEmitter };
   }
 
-  public static get childProcess() {
+  public static get child_process() {
     return { fork };
+  }
+
+  public static get async_hooks() {
+    return {
+      AsyncLocalStorage: async_hooks.AsyncLocalStorage,
+    };
   }
 
   public static get nconf() {

@@ -1,6 +1,6 @@
 import { Packages } from '@Packages';
 const { injectable, inject } = Packages.inversify;
-const { fork } = Packages.childProcess;
+const { fork } = Packages.child_process;
 import { CoreSymbols } from '@CoreSymbols';
 import { AbstractService } from '../abstract.service';
 
