@@ -2,6 +2,7 @@ import { Packages } from '@Packages';
 const { ContainerModule } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
 import { Initiator } from '../initiator';
+import { FunctionalityAgent } from '../agents';
 import { ServiceConnector } from '../connectors';
 import { SchemaLoader } from '../loaders/schema.loaders';
 import { DiscoveryService, LoggerService, SchemaService } from '../services';
@@ -9,6 +10,7 @@ import { DiscoveryService, LoggerService, SchemaService } from '../services';
 import { Inversify } from '@Packages/Types';
 import {
   IAbstractService,
+  IFunctionalityAgent,
   IInitiator,
   ILoggerService,
   ISchemaLoader,
@@ -30,4 +32,9 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
 
   // Loaders
   bind<ISchemaLoader>(CoreSymbols.SchemaLoader).to(SchemaLoader).inSingletonScope();
+
+  // Agents
+  bind<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent)
+    .to(FunctionalityAgent)
+    .inTransientScope();
 });

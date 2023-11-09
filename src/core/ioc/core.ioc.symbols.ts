@@ -12,4 +12,7 @@ export const CoreSymbols = {
 
   // Loader
   SchemaLoader: Symbol('SchemaLoader'),
+
+  // Agents
+  FunctionalityAgent: Symbol('FunctionalityAgent'),
 } as const;
