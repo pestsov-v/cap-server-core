@@ -14,6 +14,7 @@
     "strictNullChecks": true,
     "skipLibCheck": true,
     "paths": {
+      "@common": ["src/core/common/index.ts"],
       "@Guards": ["src/core/utility/guards.ts"],
       "@Utility/Types": ["types/core/utility/index.d.ts"],
       "@CoreSymbols": ["src/core/ioc/core.ioc.symbols.ts"],

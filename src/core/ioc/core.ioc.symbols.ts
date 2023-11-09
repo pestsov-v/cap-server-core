@@ -9,4 +9,7 @@ export const CoreSymbols = {
   DiscoveryService: Symbol('DiscoveryService'),
   LoggerService: Symbol('LoggerService'),
   SchemaService: Symbol('SchemaService'),
+
+  // Loader
+  SchemaLoader: Symbol('SchemaLoader'),
 } as const;
