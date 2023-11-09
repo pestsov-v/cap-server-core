@@ -239,7 +239,6 @@ export class LoggerService extends AbstractService implements ILoggerService {
               str += Helpers.addLevel(info.level, 'bgMagenta', 'green');
               str += namespace;
               str += info.msg;
-              str += '\n';
               break;
             case 'api':
               str += '{ ';
