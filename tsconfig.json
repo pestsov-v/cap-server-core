@@ -12,6 +12,7 @@
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
+    "noImplicitOverride": false,
     "skipLibCheck": true,
     "paths": {
       "@common": ["src/core/common/index.ts"],

@@ -12,20 +12,25 @@ import {
 } from '@Core/Types';
 
 @injectable()
-export abstract class AbstractFrameworkAdapter implements IAbstractFrameworkAdapter {
+export abstract class AbstractFrameworkAdapter<K extends NAbstractFrameworkAdapter.FrameworkKind>
+  implements IAbstractFrameworkAdapter
+{
   protected abstract readonly _ADAPTER_NAME: string;
-  protected abstract _framework: any;
-  protected abstract _config: any;
+  protected abstract _instance: NAbstractFrameworkAdapter.Instance<K> | undefined;
+  protected abstract _config: NAbstractFrameworkAdapter.Config | undefined;
+  protected _kind: K | undefined;
   protected abstract _setConfig(): void;
 
   protected abstract _discoveryService: IDiscoveryService;
   protected abstract _loggerService: ILoggerService;
-  protected abstract _schemaService: ISchemaService;
   protected abstract _contextService: IContextService;
 
-  public abstract start(): Promise<void>;
+  public abstract start(schemas: any): Promise<void>;
 
-  protected abstract _apiHandler(): Promise<void>;
+  protected abstract _apiHandler(
+    req: NAbstractFrameworkAdapter.Request<K>,
+    context: NAbstractFrameworkAdapter.Context
+  ): Promise<NAbstractFrameworkAdapter.Response<K>>;
 
   protected _resolveSchemaHeaders(
     headers: Record<string, string>

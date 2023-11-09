@@ -5,14 +5,15 @@ import { CoreSymbols } from '@CoreSymbols';
 import { AbstractService } from '../abstract.service';
 
 import {
+  IAbstractFactory,
   IDiscoveryService,
   ILoggerService,
   ISchemaLoader,
   ISchemaService,
+  NAbstractService,
   NSchemaService,
   NSchemaWorker,
 } from '@Core/Types';
-import { da } from 'date-fns/locale';
 
 @injectable()
 export class SchemaService extends AbstractService implements ISchemaService {
@@ -26,7 +27,9 @@ export class SchemaService extends AbstractService implements ISchemaService {
     @inject(CoreSymbols.LoggerService)
     protected readonly _loggerService: ILoggerService,
     @inject(CoreSymbols.SchemaLoader)
-    protected readonly _schemaLoader: ISchemaLoader
+    protected readonly _schemaLoader: ISchemaLoader,
+    @inject(CoreSymbols.FrameworkFactory)
+    private readonly _frameworkFactory: IAbstractFactory
   ) {
     super();
   }
@@ -41,17 +44,26 @@ export class SchemaService extends AbstractService implements ISchemaService {
       console.log(`Config for ${this._SERVICE_NAME} not initialize`);
       return false;
     }
+    try {
+      await this._runWorker();
 
-    await this._runWorker();
-    this._emitter.emit(`services:${this._SERVICE_NAME}:schemas-init`);
-
-    return true;
+      return true;
+    } catch (e) {
+      this._loggerService.error(e);
+      return false;
+    } finally {
+      this._emitter.emit(`services:${this._SERVICE_NAME}:schemas-init`);
+    }
   }
 
   private _setConfig(): void {
     this._config = {
       schemaPath: this._discoveryService.getMandatory<string>('services:schema:schema-path'),
     };
+  }
+
+  public on(event: NSchemaService.Events, listener: NAbstractService.Listener): void {
+    this._emitter.on(event, listener);
   }
 
   private async _runWorker(): Promise<void> {
@@ -66,11 +78,12 @@ export class SchemaService extends AbstractService implements ISchemaService {
     };
 
     worker.send(payload);
-    worker.on('message', (data: NSchemaWorker.WorkerResult) => {
+    worker.on('message', async (data: NSchemaWorker.WorkerResult) => {
       switch (data.status) {
         case 'OK':
           this._emitter.emit(`services:${this._SERVICE_NAME}:schemas-load`);
           this._SCHEMAS = data.schemas;
+          await this._frameworkFactory.run(this._SCHEMAS);
           break;
         case 'FAIL':
           this._emitter.emit(`services:${this._SERVICE_NAME}:schemas-error`);

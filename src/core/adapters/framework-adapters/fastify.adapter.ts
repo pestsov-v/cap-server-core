@@ -1,39 +1,84 @@
 import { Packages } from '@Packages';
-const { injectable } = Packages.inversify;
-
-import { AbstractFrameworkAdapter } from './abstract.framework-adapter';
-import { inject } from 'inversify';
+const { injectable, inject } = Packages.inversify;
+const { fastify } = Packages.fastify;
 import { CoreSymbols } from '@CoreSymbols';
+import { AbstractFrameworkAdapter } from './abstract.framework-adapter';
+
 import {
   IContextService,
   IDiscoveryService,
   ILoggerService,
-  ISchemaService,
   IAbstractFrameworkAdapter,
+  NAbstractFrameworkAdapter,
 } from '@Core/Types';
 
 @injectable()
-export class FastifyAdapter extends AbstractFrameworkAdapter implements IAbstractFrameworkAdapter {
+export class FastifyAdapter
+  extends AbstractFrameworkAdapter<'fastify'>
+  implements IAbstractFrameworkAdapter
+{
   protected readonly _ADAPTER_NAME = FastifyAdapter.name;
-  protected readonly _config: any;
-  protected readonly _framework: any;
+  protected _config: NAbstractFrameworkAdapter.Config | undefined;
+  protected _instance: NAbstractFrameworkAdapter.Instance<'fastify'> | undefined;
+  private _schemas: any;
 
   constructor(
     @inject(CoreSymbols.DiscoveryService)
     protected readonly _discoveryService: IDiscoveryService,
     @inject(CoreSymbols.LoggerService)
     protected readonly _loggerService: ILoggerService,
-    @inject(CoreSymbols.SchemaService)
-    protected readonly _schemaService: ISchemaService,
     @inject(CoreSymbols.ContextService)
     protected readonly _contextService: IContextService
   ) {
     super();
   }
 
-  protected _setConfig(): void {}
+  protected _setConfig(): void {
+    this._config = {
+      serverTag: this._discoveryService.getString('adapters:framework:serverTag', 'ANONYMOUS_01'),
+      protocol: this._discoveryService.getString('adapters:framework:protocol', 'http'),
+      host: this._discoveryService.getString('adapters:framework:host', 'localhost'),
+      port: this._discoveryService.getNumber('adapters:framework:port', 11000),
+      urls: {
+        api: this._discoveryService.getString('adapters:framework:urls:api', 'v1/call/api'),
+      },
+    };
+  }
 
-  public async start(): Promise<void> {}
+  public async start(schemas: any): Promise<void> {
+    this._schemas = schemas;
+    this._setConfig();
 
-  protected async _apiHandler(): Promise<void> {}
+    if (!this._config) {
+      throw new Error('Config not initialize');
+    }
+
+    this._instance = fastify({});
+    this._instance.all(this._config.urls.api, this._apiHandler);
+
+    const { protocol, host, port } = this._config;
+
+    try {
+      await this._instance.listen({ host, port }, () => {
+        if (this._config) {
+          this._loggerService.system(`Http server listening on ${protocol}://${host}:${port}`, {
+            scope: 'Core',
+            namespace: this._ADAPTER_NAME,
+            tag: 'Connection',
+          });
+        } else {
+          console.log(`Http server is started`);
+        }
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  protected _apiHandler = async (
+    req: NAbstractFrameworkAdapter.Request<'fastify'>,
+    context: NAbstractFrameworkAdapter.Context
+  ): Promise<void> => {
+    console.log(this._schemas);
+  };
 }

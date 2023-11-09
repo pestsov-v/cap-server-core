@@ -12,6 +12,8 @@ import dotenv from 'dotenv';
 import winston from 'winston';
 import fse from 'fs-extra';
 import colors from 'colors';
+import fastify from 'fastify';
+import express from 'express';
 
 export class Packages {
   public static get inversify() {
@@ -80,5 +82,13 @@ export class Packages {
     return {
       format: format,
     };
+  }
+
+  public static get fastify() {
+    return { fastify };
+  }
+
+  public static get express() {
+    return { express };
   }
 }
