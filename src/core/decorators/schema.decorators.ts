@@ -19,9 +19,25 @@ export function Collect(domain: string, documents: NSchemaDecorators.Documents) 
     Reflect.defineMetadata(domain, documents, Reflect);
 
     const loader = Reflect.getMetadata(MetadataKeys.SchemaLoader, Reflect) as ISchemaLoader;
-    const routes = Reflect.getMetadata(documents.router, Reflect) as NSchemaLoader.Routes<string>;
-    if (routes) {
-      routes.forEach((route) => loader.setRoute(domain, route));
+    if (documents.router) {
+      const routes = Reflect.getMetadata(documents.router, Reflect) as NSchemaLoader.Routes<string>;
+      if (routes) {
+        routes.forEach((route) => loader.setRoute(domain, route));
+      }
+    }
+
+    if (documents.controller) {
+      const controllers = Reflect.getMetadata(
+        documents.controller,
+        Reflect
+      ) as NSchemaLoader.Controllers<string>;
+
+      for (const controller in controllers) {
+        loader.setController<string>(domain, {
+          name: controller,
+          handler: controllers[controller],
+        });
+      }
     }
 
     return target;

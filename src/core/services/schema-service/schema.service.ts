@@ -12,11 +12,13 @@ import {
   NSchemaService,
   NSchemaWorker,
 } from '@Core/Types';
+import { da } from 'date-fns/locale';
 
 @injectable()
 export class SchemaService extends AbstractService implements ISchemaService {
   protected readonly _SERVICE_NAME: NSchemaService.ServiceName = 'SchemaService';
   private _config: NSchemaService.Config | undefined;
+  private _SCHEMAS: any | undefined;
 
   constructor(
     @inject(CoreSymbols.DiscoveryService)
@@ -68,9 +70,11 @@ export class SchemaService extends AbstractService implements ISchemaService {
       switch (data.status) {
         case 'OK':
           this._emitter.emit(`services:${this._SERVICE_NAME}:schemas-load`);
+          this._SCHEMAS = data.schemas;
           break;
         case 'FAIL':
           this._emitter.emit(`services:${this._SERVICE_NAME}:schemas-error`);
+          this._SCHEMAS = undefined;
           break;
         default:
           break;
@@ -79,6 +83,7 @@ export class SchemaService extends AbstractService implements ISchemaService {
   }
 
   protected async destroy(): Promise<void> {
+    this._SCHEMAS = undefined;
     this._config = undefined;
     this._emitter.removeAllListeners();
   }

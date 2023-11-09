@@ -1,7 +1,7 @@
 import { Packages } from '@Packages';
 const { injectable } = Packages.inversify;
 
-import { ISchemaLoader, NSchemaLoader } from '@Core/Types';
+import { ISchemaLoader, NAbstractFrameworkAdapter, NSchemaLoader } from '@Core/Types';
 
 @injectable()
 export class SchemaLoader implements ISchemaLoader {
@@ -44,14 +44,44 @@ export class SchemaLoader implements ISchemaLoader {
     sStorage.set(domain, dStorage);
   }
 
+  public setController<T extends string>(domain: string, details: NSchemaLoader.Controller<T>) {
+    if (!this._domains) throw this.throwDomainsError;
+
+    const storage = this._domains.get(domain);
+    if (!storage) {
+      this._setDomain(domain);
+      this.setController<T>(domain, details);
+      return;
+    }
+    if (!storage.controllers) {
+      storage.controllers = new Map<string, NAbstractFrameworkAdapter.Handler>();
+    }
+
+    storage.controllers.set(details.name, details.handler);
+  }
+
+  public setHelper(domain: string, details: NSchemaLoader.Helper): void {
+    if (!this._domains) throw this.throwDomainsError;
+
+    const storage = this._domains.get(domain);
+    if (!storage) {
+      this._setDomain(domain);
+      this.setHelper(domain, details);
+      return;
+    }
+    if (!storage.helpers) {
+      storage.helpers = new Map<string, (...args: any[]) => any>();
+    }
+
+    storage.helpers.set(details.name, details.handler);
+  }
+
   public setRoute<T extends string>(domain: string, details: NSchemaLoader.Route<T>): void {
     if (!this._domains) throw this.throwDomainsError;
 
     const storage = this._domains.get(domain);
     if (!storage) {
-      this._domains.set(domain, {
-        routes: new Map<string, NSchemaLoader.Route>(),
-      });
+      this._setDomain(domain);
       this.setRoute<T>(domain, details);
       return;
     }
@@ -67,5 +97,15 @@ export class SchemaLoader implements ISchemaLoader {
     } else {
       storage.routes.set(name, details);
     }
+  }
+
+  private _setDomain(domain: string): void {
+    if (!this._domains) throw this.throwDomainsError;
+
+    this._domains.set(domain, {
+      routes: new Map<string, NSchemaLoader.Route>(),
+      controllers: new Map<string, NAbstractFrameworkAdapter.Handler>(),
+      helpers: new Map<string, (...args: any[]) => any>(),
+    });
   }
 }

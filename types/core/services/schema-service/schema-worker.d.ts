@@ -11,6 +11,7 @@ export namespace NSchemaWorker {
 
   export interface WorkerResultOK extends BaseWorkerResult {
     status: 'OK';
+    schemas: any;
   }
   export interface WorkerResultFail extends BaseWorkerResult {
     status: 'FAIL';
