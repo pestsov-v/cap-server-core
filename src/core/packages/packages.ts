@@ -6,6 +6,7 @@ import fse from 'fs-extra';
 import winston from 'winston';
 import colors from 'colors';
 import { format } from 'date-fns';
+import { fork } from 'child_process';
 
 import { injectable, inject, ContainerModule, Container } from 'inversify';
 import nconf from 'nconf';
@@ -23,6 +24,10 @@ export class Packages {
 
   public static get events() {
     return { EventEmitter };
+  }
+
+  public static get childProcess() {
+    return { fork };
   }
 
   public static get nconf() {

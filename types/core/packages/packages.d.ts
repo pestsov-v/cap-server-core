@@ -3,6 +3,7 @@ import events from 'events';
 import nconf from 'nconf';
 import winston from 'winston';
 import colors from 'colors';
+import child_process from 'child_process';
 
 export namespace Inversify {
   export namespace interfaces {
@@ -30,4 +31,8 @@ export namespace Winston {
 
 export namespace Color {
   export type Color = colors.Color;
+}
+
+export namespace ChildProcess {
+  export type Worker = child_process.Worker;
 }
