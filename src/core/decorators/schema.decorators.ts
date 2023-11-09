@@ -10,6 +10,10 @@ import {
 export function Apply(service: string, domains: string[]) {
   return function <T extends { new (...args: any[]): {} }>(target: T) {
     Reflect.defineMetadata(service, domains, Reflect);
+
+    const loader = Reflect.getMetadata(MetadataKeys.SchemaLoader, Reflect) as ISchemaLoader;
+    domains.forEach((domain) => loader.applyDomainToService(service, domain));
+
     return target;
   };
 }

@@ -82,7 +82,8 @@ export class SchemaService extends AbstractService implements ISchemaService {
       switch (data.status) {
         case 'OK':
           this._emitter.emit(`services:${this._SERVICE_NAME}:schemas-load`);
-          this._SCHEMAS = data.schemas;
+          this._SCHEMAS = this._schemaLoader.deserializeServices(data.schemas);
+
           await this._frameworkFactory.run(this._SCHEMAS);
           break;
         case 'FAIL':

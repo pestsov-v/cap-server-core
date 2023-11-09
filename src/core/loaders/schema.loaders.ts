@@ -13,11 +13,96 @@ export class SchemaLoader implements ISchemaLoader {
     this._services = new Map<string, NSchemaLoader.Domains>();
   }
 
-  public get services() {
-    return this._domains;
+  public serialiseServices(): string {
+    if (!this._services) throw this.throwDomainsError();
+
+    const services: NSchemaLoader.SerializeServices = {};
+    for (const [sName, domains] of this._services) {
+      services[sName] = {};
+      for (const [dName, storage] of domains) {
+        if (storage.routes || storage.helpers || storage.controllers) {
+          services[sName][dName] = {};
+          if (storage.routes) {
+            services[sName][dName]['routes'] = {};
+            for (const [rName, route] of storage.routes) {
+              services[sName][dName]['routes'][rName] = route;
+            }
+          } else {
+            storage.routes = undefined;
+          }
+          if (storage.controllers) {
+            services[sName][dName]['controllers'] = {};
+            for (const [cName, controller] of storage.controllers) {
+              services[sName][dName]['controllers'][cName] = controller.toString();
+            }
+          } else {
+            storage.controllers = undefined;
+          }
+          if (storage.helpers) {
+            services[sName][dName]['helpers'] = {};
+            for (const [hName, helpers] of storage.helpers) {
+              services[sName][dName]['helpers'][hName] = helpers.toString();
+            }
+          } else {
+            storage.helpers = undefined;
+          }
+        }
+      }
+    }
+
+    return JSON.stringify(services);
   }
 
-  private get throwDomainsError() {
+  public deserializeServices(payload: string): Map<string, NSchemaLoader.Domains> {
+    const services: Map<string, NSchemaLoader.Domains> = new Map<string, NSchemaLoader.Domains>();
+    try {
+      const data = JSON.parse(payload) as NSchemaLoader.SerializeServices;
+      for (const sName in data) {
+        services.set(sName, new Map<string, NSchemaLoader.DomainStorage>());
+        const domains = new Map<string, NSchemaLoader.DomainStorage>();
+        for (const dName in data[sName]) {
+          const domain = data[sName][dName];
+          const routes = new Map<string, NSchemaLoader.Route>();
+          if (domain.routes) {
+            for (const rName in domain.routes) {
+              const route = domain.routes[rName];
+              routes.set(rName, route);
+            }
+          }
+
+          const controllers = new Map<string, NAbstractFrameworkAdapter.Handler>();
+          if (domain.controllers) {
+            for (const cName in domain.controllers) {
+              const controller = domain.controllers[cName];
+              controllers.set(cName, new Function(controller) as NAbstractFrameworkAdapter.Handler);
+            }
+          }
+
+          const helpers = new Map<string, (...args: any[]) => any>();
+          if (domain.helpers) {
+            for (const hName in domain.helpers) {
+              const helper = domain.helpers[hName];
+              controllers.set(hName, new Function(helper) as (...args: any[]) => any);
+            }
+          }
+
+          domains.set(dName, {
+            routes: routes,
+            controllers: controllers,
+            helpers: helpers,
+          });
+        }
+
+        services.set(sName, domains);
+      }
+
+      return services;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  private throwDomainsError() {
     return new Error('Domains not initialize');
   }
 
@@ -27,7 +112,7 @@ export class SchemaLoader implements ISchemaLoader {
   }
 
   public applyDomainToService(service: string, domain: string): void {
-    if (!this._services || !this._domains) throw this.throwDomainsError;
+    if (!this._services || !this._domains) throw this.throwDomainsError();
 
     const sStorage = this._services.get(service);
     if (!sStorage) {
@@ -45,7 +130,7 @@ export class SchemaLoader implements ISchemaLoader {
   }
 
   public setController<T extends string>(domain: string, details: NSchemaLoader.Controller<T>) {
-    if (!this._domains) throw this.throwDomainsError;
+    if (!this._domains) throw this.throwDomainsError();
 
     const storage = this._domains.get(domain);
     if (!storage) {
@@ -61,7 +146,7 @@ export class SchemaLoader implements ISchemaLoader {
   }
 
   public setHelper(domain: string, details: NSchemaLoader.Helper): void {
-    if (!this._domains) throw this.throwDomainsError;
+    if (!this._domains) throw this.throwDomainsError();
 
     const storage = this._domains.get(domain);
     if (!storage) {
@@ -77,7 +162,7 @@ export class SchemaLoader implements ISchemaLoader {
   }
 
   public setRoute<T extends string>(domain: string, details: NSchemaLoader.Route<T>): void {
-    if (!this._domains) throw this.throwDomainsError;
+    if (!this._domains) throw this.throwDomainsError();
 
     const storage = this._domains.get(domain);
     if (!storage) {
@@ -100,7 +185,7 @@ export class SchemaLoader implements ISchemaLoader {
   }
 
   private _setDomain(domain: string): void {
-    if (!this._domains) throw this.throwDomainsError;
+    if (!this._domains) throw this.throwDomainsError();
 
     this._domains.set(domain, {
       routes: new Map<string, NSchemaLoader.Route>(),

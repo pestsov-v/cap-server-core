@@ -28,7 +28,7 @@ if (process) {
     if (process && process.send) {
       const payloadOK: NSchemaWorker.WorkerResultOK = {
         status: 'OK',
-        schemas: Array.from(loader.services.entries()),
+        schemas: loader.serialiseServices(),
       };
       process.send(payloadOK);
     }
