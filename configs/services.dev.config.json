@@ -1,5 +1,5 @@
 {
-  "defaultEnableServices": ["DiscoveryService", "LoggerService"],
+  "defaultEnableServices": ["DiscoveryService", "LoggerService", "SchemaService", "ContextService"],
   "logger": {
     "loggers": {
       "core": true,
@@ -17,5 +17,8 @@
         }
       }
     }
+  },
+  "schema": {
+    "schema-path": "/home/pescov/Documents/GitHub/cap-server-core/src/schemas/index.ts"
   }
 }

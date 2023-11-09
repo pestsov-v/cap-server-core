@@ -8,4 +8,18 @@ export const CoreSymbols = {
   // Services
   DiscoveryService: Symbol('DiscoveryService'),
   LoggerService: Symbol('LoggerService'),
+  SchemaService: Symbol('SchemaService'),
+  ContextService: Symbol('ContextService'),
+
+  // Loader
+  SchemaLoader: Symbol('SchemaLoader'),
+
+  // Agents
+  FunctionalityAgent: Symbol('FunctionalityAgent'),
+
+  // Adapters
+  FastifyAdapter: Symbol('FastifyAdapter'),
+
+  // Factories
+  FrameworkFactory: Symbol('FrameworkFactory'),
 } as const;

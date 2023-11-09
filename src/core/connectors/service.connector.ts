@@ -3,15 +3,25 @@ const { injectable, inject } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
 import { AbstractConnector } from './abstract.connector';
 
-import { IDiscoveryService, ILoggerService, IServiceConnector } from '@Core/Types';
+import {
+  IContextService,
+  IDiscoveryService,
+  ILoggerService,
+  ISchemaService,
+  IServiceConnector,
+} from '@Core/Types';
 
 @injectable()
 export class ServiceConnector extends AbstractConnector implements IServiceConnector {
   constructor(
     @inject(CoreSymbols.DiscoveryService)
-    private _discoveryService: IDiscoveryService,
+    private readonly _discoveryService: IDiscoveryService,
     @inject(CoreSymbols.LoggerService)
-    private _loggerService: ILoggerService
+    private readonly _loggerService: ILoggerService,
+    @inject(CoreSymbols.SchemaService)
+    private readonly _schemaService: ISchemaService,
+    @inject(CoreSymbols.ContextService)
+    private readonly _contextService: IContextService
   ) {
     super();
   }
@@ -19,8 +29,12 @@ export class ServiceConnector extends AbstractConnector implements IServiceConne
   public async start(): Promise<void> {
     await this._discoveryService.start();
     await this._loggerService.start();
+    await this._schemaService.start();
+    await this._contextService.start();
   }
   public async stop(): Promise<void> {
+    await this._contextService.stop();
+    await this._schemaService.stop();
     await this._loggerService.stop();
     await this._discoveryService.stop();
   }

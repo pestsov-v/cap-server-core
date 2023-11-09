@@ -27,4 +27,8 @@ export class Helpers {
 
     return ' '.repeat(leftSpaces) + str + ' '.repeat(rightSpaces);
   }
+
+  public static deepLog(payload: unknown): string {
+    return JSON.stringify(payload, null, 2);
+  }
 }

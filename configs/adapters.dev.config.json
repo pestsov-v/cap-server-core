@@ -1,0 +1,12 @@
+{
+  "framework": {
+    "kind": "fastify",
+    "serverTag": "MASTER_01",
+    "protocol": "http",
+    "host": "localhost",
+    "port": 11011,
+    "urls": {
+      "api": "/v1/call/api/"
+    }
+  }
+}
