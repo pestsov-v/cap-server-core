@@ -16,4 +16,7 @@ export const CoreSymbols = {
 
   // Agents
   FunctionalityAgent: Symbol('FunctionalityAgent'),
+
+  // Adapters
+  FastifyAdapter: Symbol('FastifyAdapter'),
 } as const;

@@ -9,6 +9,7 @@ import { ContextService, DiscoveryService, LoggerService, SchemaService } from '
 
 import { Inversify } from '@Packages/Types';
 import {
+  IAbstractFrameworkAdapter,
   IAbstractService,
   IContextService,
   IFunctionalityAgent,
@@ -18,6 +19,7 @@ import {
   ISchemaService,
   IServiceConnector,
 } from '@Core/Types';
+import { FastifyAdapter } from '../adapters/framework-adapters';
 
 export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) => {
   // Initiator
@@ -39,4 +41,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent)
     .to(FunctionalityAgent)
     .inTransientScope();
+
+  // Adapters
+  bind<IAbstractFrameworkAdapter>(CoreSymbols.FastifyAdapter).to(FastifyAdapter).inSingletonScope();
 });
