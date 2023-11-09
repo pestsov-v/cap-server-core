@@ -22,11 +22,11 @@ export class SchemaService extends AbstractService implements ISchemaService {
 
   constructor(
     @inject(CoreSymbols.DiscoveryService)
-    protected _discoveryService: IDiscoveryService,
+    protected readonly _discoveryService: IDiscoveryService,
     @inject(CoreSymbols.LoggerService)
-    protected _loggerService: ILoggerService,
+    protected readonly _loggerService: ILoggerService,
     @inject(CoreSymbols.SchemaLoader)
-    protected _schemaLoader: ISchemaLoader
+    protected readonly _schemaLoader: ISchemaLoader
   ) {
     super();
   }

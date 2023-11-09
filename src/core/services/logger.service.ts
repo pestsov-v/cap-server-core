@@ -60,7 +60,7 @@ export class LoggerService extends AbstractService implements ILoggerService {
 
   constructor(
     @inject(CoreSymbols.DiscoveryService)
-    protected _discoveryService: IDiscoveryService
+    protected readonly _discoveryService: IDiscoveryService
   ) {
     super();
     winston.addColors(this._LOGGER_COLORS);

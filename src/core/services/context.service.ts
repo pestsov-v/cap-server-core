@@ -14,9 +14,9 @@ export class ContextService extends AbstractService implements IContextService {
 
   constructor(
     @inject(CoreSymbols.DiscoveryService)
-    protected _discoveryService: IDiscoveryService,
+    protected readonly _discoveryService: IDiscoveryService,
     @inject(CoreSymbols.LoggerService)
-    protected _loggerService: ILoggerService
+    protected readonly _loggerService: ILoggerService
   ) {
     super();
   }

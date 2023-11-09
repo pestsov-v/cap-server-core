@@ -15,13 +15,13 @@ import {
 export class ServiceConnector extends AbstractConnector implements IServiceConnector {
   constructor(
     @inject(CoreSymbols.DiscoveryService)
-    private _discoveryService: IDiscoveryService,
+    private readonly _discoveryService: IDiscoveryService,
     @inject(CoreSymbols.LoggerService)
-    private _loggerService: ILoggerService,
+    private readonly _loggerService: ILoggerService,
     @inject(CoreSymbols.SchemaService)
-    private _schemaService: ISchemaService,
+    private readonly _schemaService: ISchemaService,
     @inject(CoreSymbols.ContextService)
-    private _contextService: IContextService
+    private readonly _contextService: IContextService
   ) {
     super();
   }

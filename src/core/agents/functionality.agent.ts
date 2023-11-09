@@ -8,7 +8,7 @@ import { IDiscoveryService, IFunctionalityAgent, NFunctionalityAgent } from '@Co
 export class FunctionalityAgent implements IFunctionalityAgent {
   constructor(
     @inject(CoreSymbols.DiscoveryService)
-    private _discoveryService: IDiscoveryService
+    private readonly _discoveryService: IDiscoveryService
   ) {}
 
   public get discovery(): NFunctionalityAgent.Discovery {
