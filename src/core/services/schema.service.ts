@@ -1,14 +1,16 @@
 import { Packages } from '@Packages';
 const { injectable, inject } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
-import { container } from '../../ioc/core.ioc';
+import { container } from '../ioc/core.ioc';
 import { MetadataKeys } from '@common';
-import { AbstractService } from '../abstract.service';
+import { AbstractService } from './abstract.service';
 
 import {
   IAbstractFactory,
   IDiscoveryService,
   ILoggerService,
+  IMongodbConnector,
+  IMongodbProvider,
   ISchemaLoader,
   ISchemaService,
   NAbstractService,
@@ -28,7 +30,9 @@ export class SchemaService extends AbstractService implements ISchemaService {
     @inject(CoreSymbols.SchemaLoader)
     protected readonly _schemaLoader: ISchemaLoader,
     @inject(CoreSymbols.FrameworkFactory)
-    private readonly _frameworkFactory: IAbstractFactory
+    private readonly _frameworkFactory: IAbstractFactory,
+    @inject(CoreSymbols.MongodbConnector)
+    private readonly _mongodbConnector: IMongodbConnector
   ) {
     super();
   }
@@ -74,11 +78,15 @@ export class SchemaService extends AbstractService implements ISchemaService {
       await loader.init();
       Reflect.defineMetadata(MetadataKeys.SchemaLoader, loader, Reflect);
       await import(this._config.schemaPath);
+
       await this._frameworkFactory.run(loader.services);
+
+      this._mongodbConnector.on('connector:MongoDbConnector:init', () => {
+        // TODO: implement separate logic for different services
+        container.get<IMongodbProvider>(CoreSymbols.MongodbProvider).setModels(loader.mongoSchemas);
+      });
     } catch (e) {
       throw e;
-    } finally {
-      await loader.destroy();
     }
   }
 

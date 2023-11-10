@@ -1,7 +1,13 @@
 import { Packages } from '@Packages';
 const { injectable } = Packages.inversify;
 
-import { ISchemaLoader, NAbstractFrameworkAdapter, NSchemaLoader } from '@Core/Types';
+import {
+  ISchemaLoader,
+  NAbstractFrameworkAdapter,
+  NMongodbProvider,
+  NSchemaLoader,
+} from '@Core/Types';
+import { UnknownObject } from '@Utility/Types';
 
 @injectable()
 export class SchemaLoader implements ISchemaLoader {
@@ -19,8 +25,27 @@ export class SchemaLoader implements ISchemaLoader {
     return this._services;
   }
 
+  public get mongoSchemas(): NMongodbProvider.SchemaFn<UnknownObject>[] {
+    if (!this._services) throw this.throwServicesError();
+
+    const schemas: NMongodbProvider.SchemaFn<UnknownObject>[] = [];
+    this._services.forEach((service) => {
+      service.forEach((domain) => {
+        if (domain.mongoSchema) {
+          schemas.push(domain.mongoSchema);
+        }
+      });
+    });
+
+    return schemas;
+  }
+
   private throwDomainsError() {
-    return new Error('Domains not initialize');
+    return new Error('Domains map not initialize');
+  }
+
+  private throwServicesError() {
+    return new Error('Services map not initialize');
   }
 
   public async destroy(): Promise<void> {
@@ -98,6 +123,22 @@ export class SchemaLoader implements ISchemaLoader {
       throw new Error(`Route ${name} already exists`);
     } else {
       storage.routes.set(name, details);
+    }
+  }
+
+  public setMongoSchema<T>(domain: string, details: NMongodbProvider.SchemaFn<T>): void {
+    if (!this._domains) throw this.throwDomainsError();
+    const storage = this._domains.get(domain);
+    if (!storage) {
+      this._setDomain(domain);
+      this.setMongoSchema<T>(domain, details);
+      return;
+    }
+
+    if (!storage.mongoSchema) {
+      storage.mongoSchema = details;
+    } else {
+      throw new Error(`Mongo schema for domain ${domain} already exists`);
     }
   }
 

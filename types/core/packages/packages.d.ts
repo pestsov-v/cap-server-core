@@ -8,7 +8,7 @@ import colors from 'colors';
 import inversify from 'inversify';
 import fastify from 'fastify';
 import express from 'express';
-import mongoose from 'mongoose';
+import mongoose, { SchemaOptions } from 'mongoose';
 
 import { StringObject, UnknownObject } from '@Utility/Types';
 
@@ -77,4 +77,6 @@ export namespace Express {
 export namespace Mongoose {
   export type Mongoose = mongoose.Mongoose;
   export type ConnectionOptions = mongoose.ConnectOptions;
+  export type SchemaDefinition<T> = mongoose.SchemaDefinition<T>;
+  export type SchemaOptions = mongoose.SchemaOptions;
 }

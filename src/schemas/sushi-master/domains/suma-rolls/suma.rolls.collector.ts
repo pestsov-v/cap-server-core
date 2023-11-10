@@ -6,5 +6,6 @@ import { SumaRollsSymbols } from './suma.rolls.symbols';
   router: SumaRollsSymbols.Router,
   helper: SumaRollsSymbols.Helper,
   controller: SumaRollsSymbols.Controller,
+  mongoSchema: SumaRollsSymbols.MongoSchema,
 })
 export class SumaRolesCollector {}

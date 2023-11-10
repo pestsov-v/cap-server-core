@@ -3,4 +3,5 @@ export const SumaRollsSymbols = {
   Router: Symbol('SumaRollsRouter'),
   Controller: Symbol('SumaRollsController'),
   Helper: Symbol('SumaRollsHelper'),
+  MongoSchema: Symbol('SumaRollsMongoSchema'),
 } as const;

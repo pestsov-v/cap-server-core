@@ -1,5 +1,6 @@
 import { Packages } from '@Packages';
 const { injectable, inject } = Packages.inversify;
+const { v4 } = Packages.uuid;
 import { CoreSymbols } from '@CoreSymbols';
 
 import { IDiscoveryService, IFunctionalityAgent, NFunctionalityAgent } from '@Core/Types';
@@ -31,6 +32,12 @@ export class FunctionalityAgent implements IFunctionalityAgent {
       getBuffer: async (path: string): Promise<Buffer> => {
         return this._discoveryService.getSchemaBuffer(path);
       },
+    };
+  }
+
+  public get utils(): NFunctionalityAgent.Utils {
+    return {
+      uuid: v4(),
     };
   }
 }

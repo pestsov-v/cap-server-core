@@ -1,4 +1,5 @@
+export * from './suma.rolls.mongo-schema';
 export * from './suma.rolls.controller';
-export * from './summa.rolls.router';
+export * from './suma.rolls.router';
 
 export * from './suma.rolls.collector';

@@ -94,6 +94,9 @@ export class Packages {
   }
 
   public static get mongoose() {
-    return { mongoose };
+    return {
+      mongoose,
+      Schema: mongoose.Schema,
+    };
   }
 }

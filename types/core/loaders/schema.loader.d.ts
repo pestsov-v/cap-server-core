@@ -1,7 +1,10 @@
 import { NAbstractFrameworkAdapter } from '../adapters';
+import { NMongodbProvider } from '../providers';
+import { UnknownObject } from '@Utility/Types';
 
 export interface ISchemaLoader {
   readonly services: NSchemaLoader.Services;
+  readonly mongoSchemas: NMongodbProvider.SchemaFn<UnknownObject>[];
 
   init(): Promise<void>;
   destroy(): Promise<void>;
@@ -9,6 +12,7 @@ export interface ISchemaLoader {
   setRoute<T extends string>(domain: string, details: NSchemaLoader.Route<T>): void;
   setController<T extends string>(domain: string, details: NSchemaLoader.Controller<T>): void;
   setHelper(domain: string, details: NSchemaLoader.Helper): void;
+  setMongoSchema<T>(domain: string, details: NMongodbProvider.SchemaFn<T>): void;
 }
 
 export namespace NSchemaLoader {
@@ -37,28 +41,8 @@ export namespace NSchemaLoader {
     routes?: Map<string, NSchemaLoader.Route>;
     controllers?: Map<string, NAbstractFrameworkAdapter.Handler>;
     helpers?: Map<string, HelperHandler>;
+    mongoSchema?: NMongodbProvider.SchemaFn<unknown>;
   };
   export type Domains = Map<string, DomainStorage>;
   export type Services = Map<string, Domains>;
-
-  export type SerializeHelpers<T extends string> = {
-    [key in T]: string;
-  };
-  export type SerializeControllers<T extends string> = {
-    [key in T]: string;
-  };
-  export type SerializeRoutes<T extends string> = {
-    [key in T]: Route;
-  };
-  export type SerializeDomain<T extends string> = {
-    [key in T]: {
-      routes: SerializeRoutes<string>;
-      controllers: SerializeControllers<string>;
-      helpers: SerializeHelpers<string>;
-    };
-  };
-  export type SerializeServices<T extends string = string> = {
-    [key in T]: SerializeDomain;
-  };
-  export type SerializeSchema = Services;
 }
