@@ -34,54 +34,30 @@ export abstract class AbstractFrameworkAdapter<K extends NAbstractFrameworkAdapt
   protected _resolveSchemaHeaders(
     headers: Record<string, string>
   ): NAbstractFrameworkAdapter.SchemaPayload {
-    if (!headers[SchemaHeaders.X_APPLICATION_NAME]) {
+    if (!headers[SchemaHeaders.X_SERVICE_NAME]) {
       return {
         ok: false,
-        message: '"X-Application-Name" header not found',
+        message: '"x-service-name" header not found',
       };
     }
     if (!headers[SchemaHeaders.X_DOMAIN_NAME]) {
       return {
         ok: false,
-        message: '"X-Domain-Name" header not found',
+        message: '"x-domain-name" header not found',
       };
     }
     if (!headers[SchemaHeaders.X_ACTION_NAME]) {
       return {
         ok: false,
-        message: '"X-Action-Name" header not found',
+        message: '"x-action-name" header not found',
       };
     }
 
     return {
       ok: true,
-      application: headers[SchemaHeaders.X_APPLICATION_NAME],
+      service: headers[SchemaHeaders.X_SERVICE_NAME],
       domain: headers[SchemaHeaders.X_DOMAIN_NAME],
       action: headers[SchemaHeaders.X_ACTION_NAME],
     };
-  }
-
-  protected _getNotFoundMessage(parameter: NAbstractFrameworkAdapter.FailSchemaParameter): string {
-    let message: string;
-    switch (parameter) {
-      case 'application':
-        message = `Incorrect application name`;
-        break;
-      case 'domain':
-        message = `Incorrect domain name`;
-        break;
-      case 'action':
-        message = `Incorrect action name`;
-        break;
-      case 'action-version':
-        message = `Incorrect action version`;
-        break;
-    }
-
-    return message;
-  }
-
-  protected get throwConfigError(): void {
-    throw new Error('Config not initialize');
   }
 }

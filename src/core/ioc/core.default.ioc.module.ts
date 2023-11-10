@@ -17,11 +17,13 @@ import {
   IInitiator,
   ILoggerService,
   ISchemaLoader,
+  ISchemaProvider,
   ISchemaService,
   IServiceConnector,
 } from '@Core/Types';
 import { FastifyAdapter } from '../adapters/framework-adapters';
 import { FrameworkFactory } from '../factories/framework.factory';
+import { SchemaProvider } from '../providers';
 
 export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) => {
   // Initiator
@@ -35,6 +37,9 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<ILoggerService>(CoreSymbols.LoggerService).to(LoggerService).inSingletonScope();
   bind<ISchemaService>(CoreSymbols.SchemaService).to(SchemaService).inSingletonScope();
   bind<IContextService>(CoreSymbols.ContextService).to(ContextService).inSingletonScope();
+
+  // Providers
+  bind<ISchemaProvider>(CoreSymbols.SchemaProvider).to(SchemaProvider).inTransientScope();
 
   // Loaders
   bind<ISchemaLoader>(CoreSymbols.SchemaLoader).to(SchemaLoader).inSingletonScope();

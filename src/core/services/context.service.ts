@@ -27,9 +27,9 @@ export class ContextService extends AbstractService implements IContextService {
     return true;
   }
 
-  public get run(): AsyncHooks.AsyncLocalStorage<NContextService.Store>['run'] {
+  public get storage(): AsyncHooks.AsyncLocalStorage<NContextService.Store> {
     if (!this._storage) throw this._throwStorageError();
-    return this._storage.run;
+    return this._storage;
   }
 
   public get store(): NContextService.Store {

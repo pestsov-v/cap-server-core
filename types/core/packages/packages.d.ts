@@ -8,7 +8,8 @@ import colors from 'colors';
 import inversify from 'inversify';
 import fastify from 'fastify';
 import express from 'express';
-import e from 'express';
+
+import { StringObject, UnknownObject } from '@Utility/Types';
 
 export namespace Inversify {
   export namespace interfaces {
@@ -50,6 +51,20 @@ export namespace Fastify {
   export type Request = fastify.FastifyRequest;
   export type Response = fastify.FastifyReply;
   export type Instance = fastify.FastifyInstance;
+
+  export type SchemaRequest<
+    BODY extends UnknownObject = UnknownObject,
+    PARAMS extends StringObject = StringObject,
+    HEADERS extends StringObject = StringObject
+  > = {
+    url: string;
+    headers: HEADERS & fastify.FastifyRequest['headers'];
+    method: fastify.FastifyRequest['method'];
+    path: string;
+    params: PARAMS;
+    body: BODY;
+    query: fastify.FastifyRequest['query'];
+  };
 }
 
 export namespace Express {

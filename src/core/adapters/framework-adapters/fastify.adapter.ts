@@ -1,6 +1,8 @@
 import { Packages } from '@Packages';
 const { injectable, inject } = Packages.inversify;
 const { fastify } = Packages.fastify;
+const { v4 } = Packages.uuid;
+
 import { CoreSymbols } from '@CoreSymbols';
 import { AbstractFrameworkAdapter } from './abstract.framework-adapter';
 
@@ -11,7 +13,14 @@ import {
   IAbstractFrameworkAdapter,
   NAbstractFrameworkAdapter,
   NSchemaLoader,
+  IFunctionalityAgent,
+  NContextService,
+  ISchemaLoader,
+  ISchemaProvider,
 } from '@Core/Types';
+import { ResponseType, StatusCode } from '@common';
+import { Helpers } from '../../utility/helpers';
+import { container } from '../../ioc/core.ioc';
 
 @injectable()
 export class FastifyAdapter
@@ -79,5 +88,155 @@ export class FastifyAdapter
   protected _apiHandler = async (
     req: NAbstractFrameworkAdapter.Request<'fastify'>,
     res: NAbstractFrameworkAdapter.Response<'fastify'>
-  ): Promise<void> => {};
+  ): Promise<void> => {
+    if (!this._schemas) {
+      throw new Error('Business services schema not initialize');
+    }
+    const schemaResult = this._resolveSchemaHeaders(req.headers);
+    if (!schemaResult.ok) {
+      return res.status(StatusCode.BAD_REQUEST).send({
+        ResponseType: ResponseType.FAIL,
+        data: {
+          message: schemaResult.message,
+        },
+      });
+    }
+
+    const service = this._schemas.get(schemaResult.service);
+    if (!service) {
+      return res.status(StatusCode.BAD_REQUEST).send(this._getNotFoundStructure('service'));
+    }
+
+    const domain = service.get(schemaResult.domain);
+    if (!domain) {
+      return res.status(StatusCode.BAD_REQUEST).send(this._getNotFoundStructure('domain'));
+    }
+
+    if (!domain.routes || !domain.controllers) {
+      return res.status(StatusCode.BAD_REQUEST).send({
+        ResponseType: ResponseType.FAIL,
+        data: {
+          message: 'Domain does not have any routes',
+        },
+      });
+    }
+
+    const act = schemaResult.action + '{{' + req.method.toUpperCase() + '}}';
+    const action = domain.routes.get(act);
+    if (!action) {
+      return res.status(StatusCode.BAD_REQUEST).send(this._getNotFoundStructure('action'));
+    }
+
+    const handler = domain.controllers.get(action.handler);
+    if (!handler) {
+      return res.status(StatusCode.BAD_REQUEST).send({
+        ResponseType: ResponseType.FAIL,
+        data: {
+          message: 'Domain does not have any routes',
+        },
+      });
+    }
+
+    const store: NContextService.Store = {
+      service: schemaResult.service,
+      domain: schemaResult.domain,
+      action: schemaResult.action,
+      method: req.method,
+      path: req.url,
+      ip: req.ip,
+      requestId: v4(),
+    };
+
+    const schema: NAbstractFrameworkAdapter.Schema = {
+      getHelpers: <D extends string>(domain: D) => {
+        if (!this._schemas) {
+          throw new Error('Business services schema not initialize');
+        }
+
+        return container
+          .get<ISchemaProvider>(CoreSymbols.SchemaProvider)
+          .routines.getHelpers(this._schemas, domain);
+      },
+      getHelper: <D extends string, H extends string>(domain: D, helper: H) => {
+        if (!this._schemas) {
+          throw new Error('Business services schema not initialize');
+        }
+
+        return container
+          .get<ISchemaProvider>(CoreSymbols.SchemaProvider)
+          .routines.getHelper(this._schemas, domain, helper);
+      },
+    };
+
+    try {
+      const context: NAbstractFrameworkAdapter.Context = {
+        agents: {
+          functionalityAgent: container.get<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent),
+        },
+        storage: {
+          store: store,
+          schema: schema,
+        },
+        packages: {},
+      };
+
+      await this._contextService.storage.run(store, async () => {
+        const result = await handler<'fastify'>(
+          {
+            method: req.method,
+            headers: req.headers,
+            body: req.body,
+            params: req.params,
+            path: req.routeOptions.url,
+            url: req.url,
+            query: req.query,
+          },
+          context
+        );
+
+        if (!result) {
+          return res.status(StatusCode.NO_CONTENT).send();
+        }
+
+        switch (result.format) {
+          case 'json':
+            return res.status(result.statusCode || StatusCode.SUCCESS).send({
+              format: result.format,
+              type: result.type,
+              data: result.data,
+            });
+          case 'status':
+            return res.status(result.statusCode || StatusCode.NO_CONTENT).send();
+          case 'redirect':
+            return res.status(result.StatusCode || StatusCode.FOUND).redirect(result.url);
+          default:
+            throw Helpers.switchChecker(result);
+        }
+      });
+    } catch (e) {
+      this._contextService.exit();
+    }
+  };
+
+  private _getNotFoundStructure(param: NAbstractFrameworkAdapter.FailSchemaParameter) {
+    let message: string;
+    switch (param) {
+      case 'service':
+        message = `Service "${param}" not found`;
+        break;
+      case 'domain':
+        message = `Service "${param}" not found`;
+        break;
+      case 'action':
+        message = `Service "${param}" not found`;
+        break;
+      default:
+        throw Helpers.switchChecker(param);
+    }
+
+    return {
+      ResponseType: ResponseType.FAIL,
+      data: { message },
+    };
+  }
 }

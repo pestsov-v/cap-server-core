@@ -1,7 +1,8 @@
 import { Packages } from '@Packages';
 const { injectable, inject } = Packages.inversify;
-const { fork } = Packages.child_process;
 import { CoreSymbols } from '@CoreSymbols';
+import { container } from '../../ioc/core.ioc';
+import { MetadataKeys } from '@common';
 import { AbstractService } from '../abstract.service';
 
 import {
@@ -11,16 +12,13 @@ import {
   ISchemaLoader,
   ISchemaService,
   NAbstractService,
-  NSchemaLoader,
   NSchemaService,
-  NSchemaWorker,
 } from '@Core/Types';
 
 @injectable()
 export class SchemaService extends AbstractService implements ISchemaService {
   protected readonly _SERVICE_NAME: NSchemaService.ServiceName = 'SchemaService';
   private _config: NSchemaService.Config | undefined;
-  private _SCHEMAS: NSchemaLoader.Services | undefined;
 
   constructor(
     @inject(CoreSymbols.DiscoveryService)
@@ -71,34 +69,20 @@ export class SchemaService extends AbstractService implements ISchemaService {
     if (!this._config) {
       throw new Error('Config not set');
     }
-
-    const path = process.cwd() + '/src/core/services/schema-service/schema.worker';
-    const worker = fork(path);
-    const payload: NSchemaWorker.ParentPayload = {
-      path: this._config.schemaPath,
-    };
-
-    worker.send(payload);
-    worker.on('message', async (data: NSchemaWorker.WorkerResult) => {
-      switch (data.status) {
-        case 'OK':
-          this._emitter.emit(`services:${this._SERVICE_NAME}:schemas-load`);
-          this._SCHEMAS = this._schemaLoader.deserializeServices(data.schemas);
-
-          await this._frameworkFactory.run(this._SCHEMAS);
-          break;
-        case 'FAIL':
-          this._emitter.emit(`services:${this._SERVICE_NAME}:schemas-error`);
-          this._SCHEMAS = undefined;
-          break;
-        default:
-          break;
-      }
-    });
+    const loader = container.get<ISchemaLoader>(CoreSymbols.SchemaLoader);
+    try {
+      await loader.init();
+      Reflect.defineMetadata(MetadataKeys.SchemaLoader, loader, Reflect);
+      await import(this._config.schemaPath);
+      await this._frameworkFactory.run(loader.services);
+    } catch (e) {
+      throw e;
+    } finally {
+      await loader.destroy();
+    }
   }
 
   protected async destroy(): Promise<void> {
-    this._SCHEMAS = undefined;
     this._config = undefined;
     this._emitter.removeAllListeners();
   }

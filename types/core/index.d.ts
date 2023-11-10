@@ -6,3 +6,4 @@ export * from './loaders';
 export * from './adapters';
 export * from './agents';
 export * from './factories';
+export * from './providers';

@@ -1,15 +1,14 @@
 import { NAbstractFrameworkAdapter } from '../adapters';
 
 export interface ISchemaLoader {
+  readonly services: NSchemaLoader.Services;
+
   init(): Promise<void>;
   destroy(): Promise<void>;
   applyDomainToService(service: string, domain: string): void;
   setRoute<T extends string>(domain: string, details: NSchemaLoader.Route<T>): void;
   setController<T extends string>(domain: string, details: NSchemaLoader.Controller<T>): void;
   setHelper(domain: string, details: NSchemaLoader.Helper): void;
-
-  serialiseServices(): string;
-  deserializeServices(payload: string): Map<string, NSchemaLoader.Domains>;
 }
 
 export namespace NSchemaLoader {
@@ -25,9 +24,10 @@ export namespace NSchemaLoader {
     name: T;
     handler: NAbstractFrameworkAdapter.Handler;
   };
+  export type HelperHandler = (...args: any[]) => any;
   export type Helper<T extends string = string> = {
     name: T;
-    handler: (...args: any[]) => any;
+    handler: HelperHandler;
   };
 
   export type Controllers<T extends string> = Record<T, NAbstractFrameworkAdapter.Handler>;
@@ -36,7 +36,7 @@ export namespace NSchemaLoader {
   export type DomainStorage = {
     routes?: Map<string, NSchemaLoader.Route>;
     controllers?: Map<string, NAbstractFrameworkAdapter.Handler>;
-    helpers?: Map<string, (...args: any[]) => any>;
+    helpers?: Map<string, HelperHandler>;
   };
   export type Domains = Map<string, DomainStorage>;
   export type Services = Map<string, Domains>;
