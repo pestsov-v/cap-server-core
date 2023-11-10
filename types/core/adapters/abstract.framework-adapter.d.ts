@@ -5,6 +5,7 @@ import { Express, Fastify, SchemaRequest } from '@Packages/Types';
 import { UnknownObject, Voidable } from '@Utility/Types';
 import { NSchemaLoader } from '../loaders';
 import { NSchemaProvider } from '../providers';
+import { Helpers } from '../providers/schema.provider';
 
 export interface IAbstractFrameworkAdapter {
   start(schema: NSchemaLoader.Services): Promise<void>;
@@ -33,8 +34,17 @@ export namespace NAbstractFrameworkAdapter {
   };
   export type storage = {
     store: NContextService.Store;
-    schema: NSchemaProvider.SchemaRoutines;
+    schema: Schema;
   };
+
+  export type Schema = {
+    getHelpers: <D extends string>(domain: D) => Helpers;
+    getHelper: <D extends string, H extends string>(
+      domain: D,
+      helper: H
+    ) => NSchemaLoader.HelperHandler;
+  };
+
   export type Packages = Record<string, unknown>;
 
   export type Response<K extends FrameworkKind> = K extends 'express'

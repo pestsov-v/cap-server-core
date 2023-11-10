@@ -147,6 +147,27 @@ export class FastifyAdapter
       requestId: v4(),
     };
 
+    const schema: NAbstractFrameworkAdapter.Schema = {
+      getHelpers: <D extends string>(domain: D) => {
+        if (!this._schemas) {
+          throw new Error('Business services schema not initialize');
+        }
+
+        return container
+          .get<ISchemaProvider>(CoreSymbols.SchemaProvider)
+          .routines.getHelpers(this._schemas, domain);
+      },
+      getHelper: <D extends string, H extends string>(domain: D, helper: H) => {
+        if (!this._schemas) {
+          throw new Error('Business services schema not initialize');
+        }
+
+        return container
+          .get<ISchemaProvider>(CoreSymbols.SchemaProvider)
+          .routines.getHelper(this._schemas, domain, helper);
+      },
+    };
+
     try {
       const context: NAbstractFrameworkAdapter.Context = {
         agents: {
@@ -154,7 +175,7 @@ export class FastifyAdapter
         },
         storage: {
           store: store,
-          schema: container.get<ISchemaProvider>(CoreSymbols.SchemaProvider).routines,
+          schema: schema,
         },
         packages: {},
       };

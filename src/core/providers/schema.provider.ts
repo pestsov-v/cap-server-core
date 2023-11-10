@@ -14,18 +14,16 @@ import {
 export class SchemaProvider implements ISchemaProvider {
   constructor(
     @inject(CoreSymbols.ContextService)
-    private readonly _contextService: IContextService,
-    @inject(CoreSymbols.SchemaLoader)
-    private readonly _schemaLoader: ISchemaLoader
+    private readonly _contextService: IContextService
   ) {}
 
   public get routines(): NSchemaProvider.SchemaRoutines {
     return {
-      getHelpers: (domain: string) => {
-        return this._getHelpers(domain);
+      getHelpers: (services: NSchemaLoader.Services, domain: string) => {
+        return this._getHelpers(services, domain);
       },
-      getHelper: (domain: string, helper: string) => {
-        return this._getHelper(domain, helper);
+      getHelper: (services: NSchemaLoader.Services, domain: string, helper: string) => {
+        return this._getHelper(services, domain, helper);
       },
     };
   }
@@ -34,8 +32,8 @@ export class SchemaProvider implements ISchemaProvider {
     return this._contextService.store.service;
   }
 
-  private _getHelpers(domain: string): NSchemaProvider.Helpers {
-    const service = this._schemaLoader.services.get(this._getService);
+  private _getHelpers(services: NSchemaLoader.Services, domain: string): NSchemaProvider.Helpers {
+    const service = services.get(this._getService);
     if (!service) {
       throw new Error('Service not found');
     }
@@ -56,8 +54,12 @@ export class SchemaProvider implements ISchemaProvider {
     }
   }
 
-  private _getHelper(domain: string, helper: string): NSchemaLoader.HelperHandler {
-    const helpers = this._getHelpers(domain);
+  private _getHelper(
+    services: NSchemaLoader.Services,
+    domain: string,
+    helper: string
+  ): NSchemaLoader.HelperHandler {
+    const helpers = this._getHelpers(services, domain);
     if (!helpers) {
       throw new Error('Helpers not found');
     }
