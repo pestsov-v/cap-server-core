@@ -5,6 +5,7 @@ import { CoreSymbols } from '@CoreSymbols';
 import { AbstractConnector } from './abstract.connector';
 
 import { Mongoose } from '@Packages/Types';
+import { UnknownObject } from '@Utility/Types';
 import {
   IDiscoveryService,
   ILoggerService,
@@ -74,10 +75,14 @@ export class MongodbConnector extends AbstractConnector implements IMongodbConne
       });
     } catch (e) {
       throw e;
+    } finally {
+      this._emit('connector:MongoDbConnector:init');
     }
   }
 
   public async stop(): Promise<void> {
+    this._config = undefined;
+
     if (!this._connection) return;
 
     try {
@@ -90,6 +95,8 @@ export class MongodbConnector extends AbstractConnector implements IMongodbConne
       });
     } catch (e) {
       throw e;
+    } finally {
+      this._connection = undefined;
     }
   }
 
@@ -99,5 +106,13 @@ export class MongodbConnector extends AbstractConnector implements IMongodbConne
     }
 
     return this._connection;
+  }
+
+  private _emit(event: NMongodbConnector.Events, data?: UnknownObject): void {
+    this._emitter.emit(event, data);
+  }
+
+  public on(event: NMongodbConnector.Events, listener: (...args: any[]) => void): void {
+    this._emitter.on(event, listener);
   }
 }

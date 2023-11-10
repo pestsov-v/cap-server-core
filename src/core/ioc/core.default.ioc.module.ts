@@ -5,8 +5,10 @@ import { Initiator } from '../initiator';
 import { FunctionalityAgent } from '../agents';
 import { MongodbConnector, ServiceConnector } from '../connectors';
 import { SchemaLoader } from '../loaders/schema.loaders';
-import { SchemaProvider } from '../providers';
+import { MongodbProvider, SchemaProvider } from '../providers';
 import { ContextService, DiscoveryService, LoggerService, SchemaService } from '../services';
+import { FastifyAdapter } from '../adapters/framework-adapters';
+import { FrameworkFactory } from '../factories/framework.factory';
 
 import { Inversify } from '@Packages/Types';
 import {
@@ -18,13 +20,12 @@ import {
   IInitiator,
   ILoggerService,
   IMongodbConnector,
+  IMongodbProvider,
   ISchemaLoader,
   ISchemaProvider,
   ISchemaService,
   IServiceConnector,
 } from '@Core/Types';
-import { FastifyAdapter } from '../adapters/framework-adapters';
-import { FrameworkFactory } from '../factories/framework.factory';
 
 export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) => {
   // Initiator
@@ -42,6 +43,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
 
   // Providers
   bind<ISchemaProvider>(CoreSymbols.SchemaProvider).to(SchemaProvider).inTransientScope();
+  bind<IMongodbProvider>(CoreSymbols.MongodbProvider).to(MongodbProvider).inTransientScope();
 
   // Loaders
   bind<ISchemaLoader>(CoreSymbols.SchemaLoader).to(SchemaLoader).inSingletonScope();

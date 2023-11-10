@@ -14,6 +14,7 @@ export const CoreSymbols = {
 
   // Providers
   SchemaProvider: Symbol('SchemaProvider'),
+  MongodbProvider: Symbol('MongodbProvider'),
 
   // Loader
   SchemaLoader: Symbol('SchemaLoader'),
