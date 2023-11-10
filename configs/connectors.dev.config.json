@@ -1,0 +1,15 @@
+{
+  "mongodb": {
+    "enable": true,
+    "connect": {
+      "protocol": "mongodb",
+      "host": "localhost",
+      "port": 27017
+    },
+    "auth": {
+        "username": "root",
+        "password": "root"
+        },
+    "database": "root"
+    }
+}
