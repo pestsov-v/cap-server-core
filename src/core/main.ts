@@ -36,17 +36,3 @@ process.on('unhandledRejection', (reason, parameter) => {
 startServer().catch((e) => {
   console.log('Server end with error: ', e);
 });
-
-const s = () => {
-  return async function () {
-    return { format: 'status', statusCode: 'sa' };
-  };
-};
-
-const l = async () => s();
-
-// l()
-//   .then((log) => log().then((res) => console.log(res)))
-//   .catch((e) => console.log(e));
-
-console.log(l());

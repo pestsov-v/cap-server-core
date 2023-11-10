@@ -9,9 +9,6 @@ export interface ISchemaLoader {
   setRoute<T extends string>(domain: string, details: NSchemaLoader.Route<T>): void;
   setController<T extends string>(domain: string, details: NSchemaLoader.Controller<T>): void;
   setHelper(domain: string, details: NSchemaLoader.Helper): void;
-
-  serialiseServices(): string;
-  deserializeServices(payload: string): Map<string, NSchemaLoader.Domains>;
 }
 
 export namespace NSchemaLoader {

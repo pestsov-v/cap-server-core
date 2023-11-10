@@ -173,9 +173,6 @@ export class FastifyAdapter
           context
         );
 
-        console.log(handler);
-        // console.log(await handler<'fastify'>(req, context));
-
         if (!result) {
           return res.status(StatusCode.NO_CONTENT).send();
         }
