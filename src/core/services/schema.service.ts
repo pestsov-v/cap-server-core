@@ -83,6 +83,7 @@ export class SchemaService extends AbstractService implements ISchemaService {
 
       this._mongodbConnector.on('connector:MongoDbConnector:init', () => {
         // TODO: implement separate logic for different services
+
         container.get<IMongodbProvider>(CoreSymbols.MongodbProvider).setModels(loader.mongoSchemas);
       });
     } catch (e) {

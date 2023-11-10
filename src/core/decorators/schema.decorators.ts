@@ -46,12 +46,26 @@ export function Collect(domain: string, documents: NSchemaDecorators.Documents) 
       }
     }
 
-    if (documents.mongoSchema) {
+    if (documents.mongoSchema && documents.mongoRepository) {
       const mongoSchema = Reflect.getMetadata(
         documents.mongoSchema,
         Reflect
-      ) as NMongodbProvider.SchemaFn<UnknownObject>;
+      ) as NMongodbProvider.SchemaInfo<UnknownObject>;
+
+      console.log(mongoSchema);
       loader.setMongoSchema(domain, mongoSchema);
+
+      const handlers = Reflect.getMetadata(
+        documents.mongoRepository,
+        Reflect
+      ) as NMongodbProvider.Handlers;
+
+      for (const handler in handlers) {
+        loader.setMongoRepository<string, string, string, UnknownObject>(domain, '', {
+          name: handler,
+          handler: handlers[handler],
+        });
+      }
     }
 
     return target;
@@ -85,10 +99,21 @@ export function Helper<H extends Record<keyof H, unknown>>(name: symbol, helpers
 
 export function MongoSchema<T extends UnknownObject>(
   name: symbol,
+  model: string,
   getSchema: NMongodbProvider.SchemaFn<T>
 ) {
   return function <T extends { new (...args: any[]): {} }>(target: T) {
-    Reflect.defineMetadata(name, getSchema, Reflect);
+    Reflect.defineMetadata(name, { model, getSchema }, Reflect);
+    return target;
+  };
+}
+
+export function MongoRepository<H = UnknownObject>(
+  name: symbol,
+  handlers: NMongodbProvider.Handlers<H>
+) {
+  return function <T extends { new (...args: any[]): {} }>(target: T) {
+    Reflect.defineMetadata(name, handlers, Reflect);
     return target;
   };
 }

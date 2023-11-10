@@ -1,10 +1,9 @@
 import { IFunctionalityAgent } from '../agents';
 import { NContextService } from '../services';
 
-import { Express, Fastify, SchemaRequest } from '@Packages/Types';
-import { UnknownObject, Voidable } from '@Utility/Types';
+import { Express, Fastify } from '@Packages/Types';
+import { AnyFunction, UnknownObject, Voidable } from '@Utility/Types';
 import { NSchemaLoader } from '../loaders';
-import { NSchemaProvider } from '../providers';
 import { Helpers } from '../providers/schema.provider';
 
 export interface IAbstractFrameworkAdapter {
@@ -43,6 +42,7 @@ export namespace NAbstractFrameworkAdapter {
       domain: D,
       helper: H
     ) => NSchemaLoader.HelperHandler;
+    getMongoRepository: <T extends AnyFunction = AnyFunction>() => Map<string, T>;
   };
 
   export type Packages = Record<string, unknown>;

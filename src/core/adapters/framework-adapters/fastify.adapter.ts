@@ -15,12 +15,12 @@ import {
   NSchemaLoader,
   IFunctionalityAgent,
   NContextService,
-  ISchemaLoader,
   ISchemaProvider,
 } from '@Core/Types';
 import { ResponseType, StatusCode } from '@common';
 import { Helpers } from '../../utility/helpers';
 import { container } from '../../ioc/core.ioc';
+import { AnyFunction } from '@Utility/Types';
 
 @injectable()
 export class FastifyAdapter
@@ -165,6 +165,15 @@ export class FastifyAdapter
         return container
           .get<ISchemaProvider>(CoreSymbols.SchemaProvider)
           .routines.getHelper(this._schemas, domain, helper);
+      },
+      getMongoRepository: <T extends AnyFunction = AnyFunction>(): Map<string, T> => {
+        if (!this._schemas) {
+          throw new Error('Business services schema not initialize');
+        }
+
+        return container
+          .get<ISchemaProvider>(CoreSymbols.SchemaProvider)
+          .routines.getMongoRepository(this._schemas);
       },
     };
 

@@ -62,6 +62,10 @@ export class MongodbConnector extends AbstractConnector implements IMongodbConne
     // TODO: implement advanced configuration options
     const options: Mongoose.ConnectionOptions = {
       dbName: this._config.database,
+      auth: {
+        username: this._config.auth.username,
+        password: this._config.auth.password,
+      },
     };
 
     try {

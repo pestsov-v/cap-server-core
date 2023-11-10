@@ -7,11 +7,11 @@ import { Agents, MongoSchemaDefinition } from '@Vendor/Types';
 
 @MongoSchema<NSumaRolls.RollStructure>(
   SumaRollsSymbols.MongoSchema,
+  MongoSchemaNames.SUMA_ROLLS,
   (agents: Agents): MongoSchemaDefinition<NSumaRolls.RollStructure> => {
     const { utils } = agents.functionalityAgent;
 
     return {
-      model: MongoSchemaNames.SUMA_ROLLS,
       definition: {
         _id: {
           type: 'string',

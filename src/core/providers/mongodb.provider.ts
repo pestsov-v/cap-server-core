@@ -3,11 +3,9 @@ const { injectable, inject } = Packages.inversify;
 import { container } from '../ioc/core.ioc';
 import { CoreSymbols } from '@CoreSymbols';
 
+import { Mongoose } from '@Packages/Types';
 import {
-  IContextService,
-  IDiscoveryService,
   IFunctionalityAgent,
-  ILoggerService,
   IMongodbConnector,
   IMongodbProvider,
   NAbstractFrameworkAdapter,
@@ -17,17 +15,11 @@ import {
 @injectable()
 export class MongodbProvider implements IMongodbProvider {
   constructor(
-    @inject(CoreSymbols.DiscoveryService)
-    private readonly _discoveryService: IDiscoveryService,
-    @inject(CoreSymbols.LoggerService)
-    private readonly _loggerService: ILoggerService,
-    @inject(CoreSymbols.ContextService)
-    private readonly _contextService: IContextService,
     @inject(CoreSymbols.MongodbConnector)
     private readonly _mongodbConnector: IMongodbConnector
   ) {}
 
-  public setModels(fnModels: NMongodbProvider.SchemaFn<unknown>[]) {
+  public setModels(fnModels: NMongodbProvider.SchemaInfo<unknown>[]) {
     const { connection } = this._mongodbConnector;
 
     fnModels.forEach((fn) => {
@@ -35,13 +27,33 @@ export class MongodbProvider implements IMongodbProvider {
         functionalityAgent: container.get<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent),
       };
 
-      const model = fn(agents);
+      const model = fn.getSchema(agents);
 
       const schema = model.options
         ? new connection.Schema(model.definition, model.options)
         : new connection.Schema(model.definition);
 
-      connection.model(model.model, schema);
+      connection.model(fn.model, schema);
     });
+  }
+
+  public async create<TRawDocType>(
+    model: string,
+    docs: Mongoose.Docs<TRawDocType>,
+    options?: Mongoose.SaveOptions
+  ): Promise<Mongoose.AnyKeys<TRawDocType>> {
+    const models = this._mongodbConnector.connection.models;
+    if (!models) this._throwModelsError();
+    try {
+      return options
+        ? await models[model].create<TRawDocType>(docs, options)
+        : await models[model].create<TRawDocType>(docs);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  private _throwModelsError() {
+    throw new Error('Models not initialize');
   }
 }

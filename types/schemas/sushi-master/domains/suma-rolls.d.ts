@@ -1,4 +1,5 @@
 import { ControllerHandler } from '@Vendor/Types';
+import { NFunctionalityAgent } from '@Core/Types';
 
 export namespace NSumaRolls {
   export type RollStructure = {
@@ -11,4 +12,8 @@ export namespace NSumaRolls {
     createRoll: ControllerHandler;
   };
   export type Paths = keyof Controller;
+
+  export type MongoRepository = {
+    create: (mongoose: NFunctionalityAgent.Mongoose, structure: RollStructure) => Promise<void>;
+  };
 }

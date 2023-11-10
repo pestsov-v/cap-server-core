@@ -2,13 +2,8 @@ import { Packages } from '@Packages';
 const { injectable, inject } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
 
-import {
-  IContextService,
-  ISchemaLoader,
-  ISchemaProvider,
-  NSchemaLoader,
-  NSchemaProvider,
-} from '@Core/Types';
+import { IContextService, ISchemaProvider, NSchemaLoader, NSchemaProvider } from '@Core/Types';
+import { AnyFunction } from '@Utility/Types';
 
 @injectable()
 export class SchemaProvider implements ISchemaProvider {
@@ -24,6 +19,11 @@ export class SchemaProvider implements ISchemaProvider {
       },
       getHelper: (services: NSchemaLoader.Services, domain: string, helper: string) => {
         return this._getHelper(services, domain, helper);
+      },
+      getMongoRepository: <T extends AnyFunction = AnyFunction>(
+        services: NSchemaLoader.Services
+      ): Map<string, T> => {
+        return this._getMongoRepository<T>(services);
       },
     };
   }
@@ -58,7 +58,7 @@ export class SchemaProvider implements ISchemaProvider {
     services: NSchemaLoader.Services,
     domain: string,
     helper: string
-  ): NSchemaLoader.HelperHandler {
+  ): NSchemaLoader.HelperHandler<AnyFunction> {
     const helpers = this._getHelpers(services, domain);
     if (!helpers) {
       throw new Error('Helpers not found');
@@ -69,5 +69,43 @@ export class SchemaProvider implements ISchemaProvider {
     }
 
     return handler;
+  }
+
+  private _getMongoRepository<T extends AnyFunction = AnyFunction>(
+    services: NSchemaLoader.Services
+  ): Map<string, T> {
+    const store = this._contextService.store;
+
+    const service = services.get(store.service);
+    if (!service) {
+      throw new Error('Service not found');
+    }
+    const domain = service.get(store.domain);
+    if (!domain) {
+      throw new Error('Domain not found');
+    }
+
+    if (!domain.mongoRepoHandlers) {
+      throw new Error('Mongo repository handlers not found');
+    }
+
+    return domain.mongoRepoHandlers;
+  }
+
+  private _getMongoRepositoryHandler<T extends AnyFunction = AnyFunction>(
+    services: NSchemaLoader.Services,
+    handler: string
+  ): NSchemaLoader.HelperHandler<T> {
+    const mongoRepoHandlers = this._getMongoRepository<T>(services);
+    if (!mongoRepoHandlers) {
+      throw new Error('Mongo repository handlers not found');
+    }
+
+    const fn = mongoRepoHandlers.get(handler);
+    if (!fn) {
+      throw new Error('Mongo repository handler not found');
+    }
+
+    return fn;
   }
 }

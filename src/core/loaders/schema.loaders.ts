@@ -8,6 +8,7 @@ import {
   NSchemaLoader,
 } from '@Core/Types';
 import { UnknownObject } from '@Utility/Types';
+import { any } from 'nconf';
 
 @injectable()
 export class SchemaLoader implements ISchemaLoader {
@@ -25,14 +26,14 @@ export class SchemaLoader implements ISchemaLoader {
     return this._services;
   }
 
-  public get mongoSchemas(): NMongodbProvider.SchemaFn<UnknownObject>[] {
+  public get mongoSchemas(): NMongodbProvider.SchemaInfo<UnknownObject>[] {
     if (!this._services) throw this.throwServicesError();
 
-    const schemas: NMongodbProvider.SchemaFn<UnknownObject>[] = [];
+    const schemas: NMongodbProvider.SchemaInfo<UnknownObject>[] = [];
     this._services.forEach((service) => {
       service.forEach((domain) => {
-        if (domain.mongoSchema) {
-          schemas.push(domain.mongoSchema);
+        if (domain.mongoSchema && domain.mongoModel) {
+          schemas.push({ getSchema: domain.mongoSchema, model: domain.mongoModel });
         }
       });
     });
@@ -103,6 +104,27 @@ export class SchemaLoader implements ISchemaLoader {
     storage.helpers.set(details.name, details.handler);
   }
 
+  setMongoRepository<
+    T extends string = string,
+    H extends string = string,
+    A extends UnknownObject = UnknownObject,
+    R = void
+  >(domain: string, model: string, details: NSchemaLoader.MongoRepoHandler<T, H, A, R>) {
+    if (!this._domains) throw this.throwDomainsError();
+
+    const storage = this._domains.get(domain);
+    if (!storage) {
+      this._setDomain(domain);
+      this.setMongoRepository<T>(domain, model, details);
+      return;
+    }
+    if (!storage.mongoRepoHandlers) {
+      storage.mongoRepoHandlers = new Map<string, NAbstractFrameworkAdapter.Handler>();
+    }
+
+    storage.mongoRepoHandlers.set(details.name, details.handler);
+  }
+
   public setRoute<T extends string>(domain: string, details: NSchemaLoader.Route<T>): void {
     if (!this._domains) throw this.throwDomainsError();
 
@@ -126,7 +148,7 @@ export class SchemaLoader implements ISchemaLoader {
     }
   }
 
-  public setMongoSchema<T>(domain: string, details: NMongodbProvider.SchemaFn<T>): void {
+  public setMongoSchema<T>(domain: string, details: NMongodbProvider.SchemaInfo<T>): void {
     if (!this._domains) throw this.throwDomainsError();
     const storage = this._domains.get(domain);
     if (!storage) {
@@ -136,7 +158,8 @@ export class SchemaLoader implements ISchemaLoader {
     }
 
     if (!storage.mongoSchema) {
-      storage.mongoSchema = details;
+      storage.mongoSchema = details.getSchema;
+      storage.mongoModel = details.model;
     } else {
       throw new Error(`Mongo schema for domain ${domain} already exists`);
     }
@@ -149,6 +172,7 @@ export class SchemaLoader implements ISchemaLoader {
       routes: new Map<string, NSchemaLoader.Route>(),
       controllers: new Map<string, NAbstractFrameworkAdapter.Handler>(),
       helpers: new Map<string, (...args: any[]) => any>(),
+      mongoRepoHandlers: new Map<string, (...args: any[]) => any[]>(),
     });
   }
 }

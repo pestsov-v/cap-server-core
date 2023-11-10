@@ -1,4 +1,5 @@
 import { NSchemaLoader } from '../loaders';
+import { AnyFunction } from '@Utility/Types';
 
 export interface ISchemaProvider {
   readonly routines: NSchemaProvider.SchemaRoutines;
@@ -14,5 +15,8 @@ export namespace NSchemaProvider {
       domain: D,
       helper: H
     ) => NSchemaLoader.HelperHandler;
+    getMongoRepository: <T extends AnyFunction = AnyFunction>(
+      services: NSchemaLoader.Services
+    ) => Map<string, T>;
   };
 }
