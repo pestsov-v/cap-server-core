@@ -1,6 +1,6 @@
 import { Apply } from '@Vendor';
-import { ServiceNames } from '../common/service-names';
-import { DomainNames } from './domain-names';
+import { serviceNames } from '../common/service-names';
+import { domainNames } from './domain-names';
 
-@Apply(ServiceNames.SUSHI_MASTER, [DomainNames.SUMA_ROLLS])
+@Apply(serviceNames.SUSHI_MASTER, [domainNames.SUMA_ROLLS])
 export class SushiMasterApplication {}

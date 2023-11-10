@@ -13,6 +13,12 @@ export class SchemaLoader implements ISchemaLoader {
     this._services = new Map<string, NSchemaLoader.Domains>();
   }
 
+  public get services(): NSchemaLoader.Services {
+    if (!this._services) throw this.throwDomainsError();
+
+    return this._services;
+  }
+
   public serialiseServices(): string {
     if (!this._services) throw this.throwDomainsError();
 
@@ -74,7 +80,8 @@ export class SchemaLoader implements ISchemaLoader {
           if (domain.controllers) {
             for (const cName in domain.controllers) {
               const controller = domain.controllers[cName];
-              controllers.set(cName, new Function(controller) as NAbstractFrameworkAdapter.Handler);
+
+              controllers.set(cName, controller as NAbstractFrameworkAdapter.Handler);
             }
           }
 
@@ -82,7 +89,9 @@ export class SchemaLoader implements ISchemaLoader {
           if (domain.helpers) {
             for (const hName in domain.helpers) {
               const helper = domain.helpers[hName];
-              controllers.set(hName, new Function(helper) as (...args: any[]) => any);
+              const func = new Function(`return ${helper}`)();
+
+              controllers.set(hName, func);
             }
           }
 
@@ -95,6 +104,8 @@ export class SchemaLoader implements ISchemaLoader {
 
         services.set(sName, domains);
       }
+
+      this._services = services;
 
       return services;
     } catch (e) {
