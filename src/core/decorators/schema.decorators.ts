@@ -52,7 +52,6 @@ export function Collect(domain: string, documents: NSchemaDecorators.Documents) 
         Reflect
       ) as NMongodbProvider.SchemaInfo<UnknownObject>;
 
-      console.log(mongoSchema);
       loader.setMongoSchema(domain, mongoSchema);
 
       const handlers = Reflect.getMetadata(
@@ -61,10 +60,14 @@ export function Collect(domain: string, documents: NSchemaDecorators.Documents) 
       ) as NMongodbProvider.Handlers;
 
       for (const handler in handlers) {
-        loader.setMongoRepository<string, string, string, UnknownObject>(domain, '', {
-          name: handler,
-          handler: handlers[handler],
-        });
+        loader.setMongoRepository<string, string, string, UnknownObject>(
+          domain,
+          mongoSchema.model,
+          {
+            name: handler,
+            handler: handlers[handler],
+          }
+        );
       }
     }
 

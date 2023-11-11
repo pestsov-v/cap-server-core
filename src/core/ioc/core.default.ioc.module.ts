@@ -2,7 +2,7 @@ import { Packages } from '@Packages';
 const { ContainerModule } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
 import { Initiator } from '../initiator';
-import { FunctionalityAgent } from '../agents';
+import { FunctionalityAgent, SchemaAgent } from '../agents';
 import { MongodbConnector, ServiceConnector } from '../connectors';
 import { SchemaLoader } from '../loaders/schema.loaders';
 import { MongodbProvider, SchemaProvider } from '../providers';
@@ -21,6 +21,7 @@ import {
   ILoggerService,
   IMongodbConnector,
   IMongodbProvider,
+  ISchemaAgent,
   ISchemaLoader,
   ISchemaProvider,
   ISchemaService,
@@ -52,6 +53,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent)
     .to(FunctionalityAgent)
     .inTransientScope();
+  bind<ISchemaAgent>(CoreSymbols.SchemaAgent).to(SchemaAgent).inTransientScope();
 
   // Adapters
   bind<IAbstractFrameworkAdapter>(CoreSymbols.FastifyAdapter).to(FastifyAdapter).inSingletonScope();

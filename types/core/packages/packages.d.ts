@@ -54,7 +54,7 @@ export namespace Fastify {
   export type Instance = fastify.FastifyInstance;
 
   export type SchemaRequest<
-    BODY extends UnknownObject = UnknownObject,
+    BODY = UnknownObject,
     PARAMS extends StringObject = StringObject,
     HEADERS extends StringObject = StringObject
   > = {

@@ -1,15 +1,13 @@
-import { UnknownObject, Voidable } from '@Utility/Types';
-import {
-  NAbstractFrameworkAdapter,
-  NContextService,
-  NMongodbProvider,
-  NSchemaDecorators,
-} from '@Core/Types';
+import { StringObject, UnknownObject, Voidable } from '@Utility/Types';
+import { NAbstractFrameworkAdapter, NContextService, NMongodbProvider } from '@Core/Types';
 
-export type SchemaDocuments = NSchemaDecorators.Documents;
 export type ControllerHandler = NAbstractFrameworkAdapter.Handler;
 
-export type SchemaRequest = NAbstractFrameworkAdapter.SchemaRequest;
+export type SchemaRequest<
+  BODY = UnknownObject,
+  PARAMS extends StringObject = StringObject,
+  HEADERS extends StringObject = StringObject
+> = NAbstractFrameworkAdapter.SchemaRequest<BODY, PARAMS, HEADERS, 'fastify'>;
 export type SchemaResponse = Voidable<NAbstractFrameworkAdapter.SchemaResponse>;
 export type Context = NAbstractFrameworkAdapter.Context;
 export type Agents = NAbstractFrameworkAdapter.Agents;

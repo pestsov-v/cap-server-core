@@ -2,24 +2,32 @@ import { Controller } from '@Vendor';
 import { StatusCode } from '@common';
 import { SumaRollsSymbols } from './suma.rolls.symbols';
 
+import { SchemaResponse, SchemaRequest } from '@Vendor/Types';
 import { NSumaRolls } from '../../../../../types/schemas';
-import { SchemaResponse, SchemaRequest, Context } from '@Vendor/Types';
 
 @Controller<NSumaRolls.Controller>(SumaRollsSymbols.Controller, {
-  createRoll: async (_: SchemaRequest, context: Context): Promise<SchemaResponse> => {
-    const create = context.storage.schema
-      .getMongoRepository<NSumaRolls.MongoRepository['create']>()
-      .get('create');
+  createRoll: async (
+    req: SchemaRequest<NSumaRolls.CreateRollParams>,
+    agents
+  ): Promise<SchemaResponse> => {
+    const mongoRepository = agents.schemaAgent.getMongoRepository<NSumaRolls.MongoRepository>();
+    try {
+      const id = agents.functionalityAgent.utils.uuid;
 
-    if (create) {
-      await create(context.agents.functionalityAgent.mongoose, {
-        _id: context.agents.functionalityAgent.utils.uuid,
-        name: 'Lol',
-        price: 21,
+      await mongoRepository.create(agents.functionalityAgent.mongoose, {
+        _id: id,
+        name: req.body.name,
+        price: req.body.price,
       });
-    }
 
-    return { format: 'status', statusCode: StatusCode.GONE };
+      return {
+        format: 'json',
+        statusCode: StatusCode.CREATED,
+        data: { id },
+      };
+    } catch (e) {
+      throw e;
+    }
   },
 })
 export class SumaRollsController {}

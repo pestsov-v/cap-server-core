@@ -2,8 +2,8 @@ import { Packages } from '@Packages';
 const { injectable, inject } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
 
-import { IContextService, ISchemaProvider, NSchemaLoader, NSchemaProvider } from '@Core/Types';
-import { AnyFunction } from '@Utility/Types';
+import { IContextService, ISchemaProvider } from '@Core/Types';
+import { AnyFunction, FnObject } from '@Utility/Types';
 
 @injectable()
 export class SchemaProvider implements ISchemaProvider {
@@ -12,100 +12,47 @@ export class SchemaProvider implements ISchemaProvider {
     private readonly _contextService: IContextService
   ) {}
 
-  public get routines(): NSchemaProvider.SchemaRoutines {
-    return {
-      getHelpers: (services: NSchemaLoader.Services, domain: string) => {
-        return this._getHelpers(services, domain);
-      },
-      getHelper: (services: NSchemaLoader.Services, domain: string, helper: string) => {
-        return this._getHelper(services, domain, helper);
-      },
-      getMongoRepository: <T extends AnyFunction = AnyFunction>(
-        services: NSchemaLoader.Services
-      ): Map<string, T> => {
-        return this._getMongoRepository<T>(services);
-      },
-    };
-  }
-
-  private get _getService() {
-    return this._contextService.store.service;
-  }
-
-  private _getHelpers(services: NSchemaLoader.Services, domain: string): NSchemaProvider.Helpers {
-    const service = services.get(this._getService);
-    if (!service) {
-      throw new Error('Service not found');
-    }
-
-    const storage = service.get(domain);
-    if (!storage) {
-      throw new Error('Domain not found');
-    }
-
-    if (storage.helpers) {
-      const helpers = storage.helpers;
-      if (!helpers) {
-        throw new Error('Helpers not found');
-      }
-      return helpers;
-    } else {
-      throw new Error('Helpers not found');
-    }
-  }
-
-  private _getHelper(
-    services: NSchemaLoader.Services,
-    domain: string,
-    helper: string
-  ): NSchemaLoader.HelperHandler<AnyFunction> {
-    const helpers = this._getHelpers(services, domain);
-    if (!helpers) {
-      throw new Error('Helpers not found');
-    }
-    const handler = helpers.get(helper);
-    if (!handler) {
-      throw new Error('Helper not found');
-    }
-
-    return handler;
-  }
-
-  private _getMongoRepository<T extends AnyFunction = AnyFunction>(
-    services: NSchemaLoader.Services
-  ): Map<string, T> {
+  public getAnotherMongoRepository<T>(name: string): T {
     const store = this._contextService.store;
 
-    const service = services.get(store.service);
+    const service = store.schema.get(store.service);
     if (!service) {
       throw new Error('Service not found');
     }
-    const domain = service.get(store.domain);
+    const domain = service.get(name);
     if (!domain) {
       throw new Error('Domain not found');
     }
 
-    if (!domain.mongoRepoHandlers) {
-      throw new Error('Mongo repository handlers not found');
+    const mongoRepository = domain.mongoRepoHandlers;
+    if (!mongoRepository) {
+      throw new Error('Mongo repository not found');
     }
 
-    return domain.mongoRepoHandlers;
+    class Repository<T> {
+      private readonly _handlers: Map<string, AnyFunction>;
+      constructor(handlers: Map<string, AnyFunction>) {
+        this._handlers = handlers;
+
+        for (const [name] of this._handlers) {
+          Object.defineProperty(this, name, {
+            value: async (...args: any[]) => this._runMethod(name, ...args),
+            writable: true,
+            configurable: true,
+          });
+        }
+      }
+
+      private _runMethod(method: string, ...args: any[]): any {
+        const handler = this._handlers.get(method);
+        return handler ? handler(...args) : undefined;
+      }
+    }
+
+    return new Repository<T>(mongoRepository) as T;
   }
 
-  private _getMongoRepositoryHandler<T extends AnyFunction = AnyFunction>(
-    services: NSchemaLoader.Services,
-    handler: string
-  ): NSchemaLoader.HelperHandler<T> {
-    const mongoRepoHandlers = this._getMongoRepository<T>(services);
-    if (!mongoRepoHandlers) {
-      throw new Error('Mongo repository handlers not found');
-    }
-
-    const fn = mongoRepoHandlers.get(handler);
-    if (!fn) {
-      throw new Error('Mongo repository handler not found');
-    }
-
-    return fn;
+  public getMongoRepository<T extends FnObject = FnObject>(): T {
+    return this.getAnotherMongoRepository<T>(this._contextService.store.domain);
   }
 }

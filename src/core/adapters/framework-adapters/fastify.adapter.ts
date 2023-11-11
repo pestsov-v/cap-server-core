@@ -15,12 +15,11 @@ import {
   NSchemaLoader,
   IFunctionalityAgent,
   NContextService,
-  ISchemaProvider,
+  ISchemaAgent,
 } from '@Core/Types';
 import { ResponseType, StatusCode } from '@common';
 import { Helpers } from '../../utility/helpers';
 import { container } from '../../ioc/core.ioc';
-import { AnyFunction } from '@Utility/Types';
 
 @injectable()
 export class FastifyAdapter
@@ -145,52 +144,19 @@ export class FastifyAdapter
       path: req.url,
       ip: req.ip,
       requestId: v4(),
-    };
-
-    const schema: NAbstractFrameworkAdapter.Schema = {
-      getHelpers: <D extends string>(domain: D) => {
-        if (!this._schemas) {
-          throw new Error('Business services schema not initialize');
-        }
-
-        return container
-          .get<ISchemaProvider>(CoreSymbols.SchemaProvider)
-          .routines.getHelpers(this._schemas, domain);
-      },
-      getHelper: <D extends string, H extends string>(domain: D, helper: H) => {
-        if (!this._schemas) {
-          throw new Error('Business services schema not initialize');
-        }
-
-        return container
-          .get<ISchemaProvider>(CoreSymbols.SchemaProvider)
-          .routines.getHelper(this._schemas, domain, helper);
-      },
-      getMongoRepository: <T extends AnyFunction = AnyFunction>(): Map<string, T> => {
-        if (!this._schemas) {
-          throw new Error('Business services schema not initialize');
-        }
-
-        return container
-          .get<ISchemaProvider>(CoreSymbols.SchemaProvider)
-          .routines.getMongoRepository(this._schemas);
-      },
+      schema: this._schemas,
     };
 
     try {
       const context: NAbstractFrameworkAdapter.Context = {
-        agents: {
-          functionalityAgent: container.get<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent),
-        },
         storage: {
           store: store,
-          schema: schema,
         },
         packages: {},
       };
 
       await this._contextService.storage.run(store, async () => {
-        const result = await handler<'fastify'>(
+        const result = await handler(
           {
             method: req.method,
             headers: req.headers,
@@ -199,6 +165,10 @@ export class FastifyAdapter
             path: req.routeOptions.url,
             url: req.url,
             query: req.query,
+          },
+          {
+            functionalityAgent: container.get<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent),
+            schemaAgent: container.get<ISchemaAgent>(CoreSymbols.SchemaAgent),
           },
           context
         );

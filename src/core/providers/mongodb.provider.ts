@@ -8,6 +8,7 @@ import {
   IFunctionalityAgent,
   IMongodbConnector,
   IMongodbProvider,
+  ISchemaAgent,
   NAbstractFrameworkAdapter,
   NMongodbProvider,
 } from '@Core/Types';
@@ -25,6 +26,7 @@ export class MongodbProvider implements IMongodbProvider {
     fnModels.forEach((fn) => {
       const agents: NAbstractFrameworkAdapter.Agents = {
         functionalityAgent: container.get<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent),
+        schemaAgent: container.get<ISchemaAgent>(CoreSymbols.SchemaAgent),
       };
 
       const model = fn.getSchema(agents);

@@ -1,6 +1,6 @@
 import { NAbstractFrameworkAdapter } from '../adapters';
 import { NMongodbProvider } from '../providers';
-import { UnknownObject } from '@Utility/Types';
+import { AnyFunction, FnObject, UnknownObject } from '@Utility/Types';
 
 export interface ISchemaLoader {
   readonly services: NSchemaLoader.Services;
@@ -65,7 +65,7 @@ export namespace NSchemaLoader {
     helpers?: Map<string, HelperHandler>;
     mongoModel?: string;
     mongoSchema?: NMongodbProvider.SchemaFn<unknown>;
-    mongoRepoHandlers?: Map<string, HelperHandler>;
+    mongoRepoHandlers?: Map<string, AnyFunction>;
   };
   export type Domains = Map<string, DomainStorage>;
   export type Services = Map<string, Domains>;

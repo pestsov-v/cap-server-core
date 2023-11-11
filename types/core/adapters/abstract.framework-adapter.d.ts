@@ -1,8 +1,8 @@
-import { IFunctionalityAgent } from '../agents';
+import { IFunctionalityAgent, ISchemaAgent } from '../agents';
 import { NContextService } from '../services';
 
 import { Express, Fastify } from '@Packages/Types';
-import { AnyFunction, UnknownObject, Voidable } from '@Utility/Types';
+import { StringObject, UnknownObject, Voidable } from '@Utility/Types';
 import { NSchemaLoader } from '../loaders';
 import { Helpers } from '../providers/schema.provider';
 
@@ -30,10 +30,10 @@ export namespace NAbstractFrameworkAdapter {
 
   export type Agents = {
     functionalityAgent: IFunctionalityAgent;
+    schemaAgent: ISchemaAgent;
   };
   export type storage = {
     store: NContextService.Store;
-    schema: Schema;
   };
 
   export type Schema = {
@@ -42,7 +42,7 @@ export namespace NAbstractFrameworkAdapter {
       domain: D,
       helper: H
     ) => NSchemaLoader.HelperHandler;
-    getMongoRepository: <T extends AnyFunction = AnyFunction>() => Map<string, T>;
+    getMongoRepository: <T>() => T;
   };
 
   export type Packages = Record<string, unknown>;
@@ -60,15 +60,19 @@ export namespace NAbstractFrameworkAdapter {
     : never;
 
   export type Context = {
-    agents: Agents;
     storage: storage;
     packages: Packages;
   };
 
-  export type SchemaRequest<K extends FrameworkKind = FrameworkKind> = K extends 'express'
+  export type SchemaRequest<
+    BODY = UnknownObject,
+    PARAMS extends StringObject = StringObject,
+    HEADERS extends StringObject = StringObject,
+    K extends FrameworkKind = FrameworkKind
+  > = K extends 'express'
     ? any
     : K extends 'fastify'
-    ? Fastify.SchemaRequest
+    ? Fastify.SchemaRequest<BODY, PARAMS, HEADERS>
     : never;
 
   export type ResponseFormat = 'json' | 'redirect' | 'status';
@@ -99,8 +103,14 @@ export namespace NAbstractFrameworkAdapter {
     | StatusResponsePayload
     | JSONResponsePayload;
 
-  export type Handler = <K extends FrameworkKind>(
-    request: SchemaRequest<K>,
+  export type Handler = <
+    BODY = UnknownObject,
+    PARAMS extends StringObject = StringObject,
+    HEADERS extends StringObject = StringObject,
+    K extends FrameworkKind
+  >(
+    request: SchemaRequest<BODY, PARAMS, HEADERS, K>,
+    agents: Agents,
     context: Context
   ) => Promise<Voidable<SchemaResponse>>;
 

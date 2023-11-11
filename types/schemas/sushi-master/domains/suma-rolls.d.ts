@@ -16,4 +16,6 @@ export namespace NSumaRolls {
   export type MongoRepository = {
     create: (mongoose: NFunctionalityAgent.Mongoose, structure: RollStructure) => Promise<void>;
   };
+
+  export type CreateRollParams = Pick<RollStructure, 'name' | 'price'>;
 }
