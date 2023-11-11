@@ -8,6 +8,7 @@ import colors from 'colors';
 import inversify from 'inversify';
 import fastify from 'fastify';
 import express from 'express';
+import mongoose from 'mongoose';
 
 import { StringObject, UnknownObject } from '@Utility/Types';
 
@@ -53,7 +54,7 @@ export namespace Fastify {
   export type Instance = fastify.FastifyInstance;
 
   export type SchemaRequest<
-    BODY extends UnknownObject = UnknownObject,
+    BODY = UnknownObject,
     PARAMS extends StringObject = StringObject,
     HEADERS extends StringObject = StringObject
   > = {
@@ -71,4 +72,17 @@ export namespace Express {
   export type Request = express.Request;
   export type Response = express.Response;
   export type Instance = express.Express;
+}
+
+export namespace Mongoose {
+  export type Mongoose = mongoose.Mongoose;
+  export type ConnectionOptions = mongoose.ConnectOptions;
+  export type SchemaDefinition<T> = mongoose.SchemaDefinition<T>;
+  export type SchemaOptions = mongoose.SchemaOptions;
+
+  export type AnyKeys<T> = mongoose.AnyKeys<T>;
+  export type Docs<TRawDocType, DocContents = AnyKeys<TRawDocType>> = Array<
+    TRawDocType | DocContents
+  >;
+  export type SaveOptions = mongoose.SaveOptions;
 }

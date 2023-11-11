@@ -2,10 +2,13 @@ import { Packages } from '@Packages';
 const { ContainerModule } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
 import { Initiator } from '../initiator';
-import { FunctionalityAgent } from '../agents';
-import { ServiceConnector } from '../connectors';
+import { FunctionalityAgent, SchemaAgent } from '../agents';
+import { MongodbConnector, ServiceConnector } from '../connectors';
 import { SchemaLoader } from '../loaders/schema.loaders';
+import { MongodbProvider, SchemaProvider } from '../providers';
 import { ContextService, DiscoveryService, LoggerService, SchemaService } from '../services';
+import { FastifyAdapter } from '../adapters/framework-adapters';
+import { FrameworkFactory } from '../factories/framework.factory';
 
 import { Inversify } from '@Packages/Types';
 import {
@@ -16,14 +19,14 @@ import {
   IFunctionalityAgent,
   IInitiator,
   ILoggerService,
+  IMongodbConnector,
+  IMongodbProvider,
+  ISchemaAgent,
   ISchemaLoader,
   ISchemaProvider,
   ISchemaService,
   IServiceConnector,
 } from '@Core/Types';
-import { FastifyAdapter } from '../adapters/framework-adapters';
-import { FrameworkFactory } from '../factories/framework.factory';
-import { SchemaProvider } from '../providers';
 
 export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) => {
   // Initiator
@@ -31,6 +34,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
 
   // Connectors
   bind<IServiceConnector>(CoreSymbols.ServiceConnector).to(ServiceConnector).inSingletonScope();
+  bind<IMongodbConnector>(CoreSymbols.MongodbConnector).to(MongodbConnector).inSingletonScope();
 
   // Services
   bind<IAbstractService>(CoreSymbols.DiscoveryService).to(DiscoveryService).inSingletonScope();
@@ -40,6 +44,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
 
   // Providers
   bind<ISchemaProvider>(CoreSymbols.SchemaProvider).to(SchemaProvider).inTransientScope();
+  bind<IMongodbProvider>(CoreSymbols.MongodbProvider).to(MongodbProvider).inTransientScope();
 
   // Loaders
   bind<ISchemaLoader>(CoreSymbols.SchemaLoader).to(SchemaLoader).inSingletonScope();
@@ -48,6 +53,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent)
     .to(FunctionalityAgent)
     .inTransientScope();
+  bind<ISchemaAgent>(CoreSymbols.SchemaAgent).to(SchemaAgent).inTransientScope();
 
   // Adapters
   bind<IAbstractFrameworkAdapter>(CoreSymbols.FastifyAdapter).to(FastifyAdapter).inSingletonScope();

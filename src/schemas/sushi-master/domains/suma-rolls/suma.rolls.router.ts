@@ -11,4 +11,4 @@ import { NSumaRolls } from '../../../../../types/schemas';
     isPrivateOrganization: false,
   },
 ])
-export class SummaRollsRouter {}
+export class SumaRollsRouter {}

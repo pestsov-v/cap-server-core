@@ -1,5 +1,6 @@
 import { IAbstractService } from './abstract.service';
 import { AsyncHooks } from '@Packages/Types';
+import { NSchemaLoader } from '../loaders';
 
 export interface IContextService extends IAbstractService {
   readonly storage: AsyncHooks.AsyncLocalStorage<NContextService.Store>;
@@ -16,5 +17,6 @@ export namespace NContextService {
     domain: string;
     action: string;
     method: string;
+    schema: NSchemaLoader.Services;
   };
 }

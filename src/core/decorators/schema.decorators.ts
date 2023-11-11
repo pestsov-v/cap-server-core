@@ -1,10 +1,12 @@
 import { MetadataKeys } from '@common';
+import { UnknownObject } from '@Utility/Types';
 
 import {
   NSchemaDecorators,
   NSchemaLoader,
   NAbstractFrameworkAdapter,
   ISchemaLoader,
+  NMongodbProvider,
 } from '@Core/Types';
 
 export function Apply(service: string, domains: string[]) {
@@ -44,6 +46,31 @@ export function Collect(domain: string, documents: NSchemaDecorators.Documents) 
       }
     }
 
+    if (documents.mongoSchema && documents.mongoRepository) {
+      const mongoSchema = Reflect.getMetadata(
+        documents.mongoSchema,
+        Reflect
+      ) as NMongodbProvider.SchemaInfo<UnknownObject>;
+
+      loader.setMongoSchema(domain, mongoSchema);
+
+      const handlers = Reflect.getMetadata(
+        documents.mongoRepository,
+        Reflect
+      ) as NMongodbProvider.Handlers;
+
+      for (const handler in handlers) {
+        loader.setMongoRepository<string, string, string, UnknownObject>(
+          domain,
+          mongoSchema.model,
+          {
+            name: handler,
+            handler: handlers[handler],
+          }
+        );
+      }
+    }
+
     return target;
   };
 }
@@ -69,6 +96,27 @@ export function Controller<C extends Record<keyof C, NAbstractFrameworkAdapter.H
 export function Helper<H extends Record<keyof H, unknown>>(name: symbol, helpers: H) {
   return function <T extends { new (...args: any[]): {} }>(target: T) {
     Reflect.defineMetadata(name, helpers, Reflect);
+    return target;
+  };
+}
+
+export function MongoSchema<T extends UnknownObject>(
+  name: symbol,
+  model: string,
+  getSchema: NMongodbProvider.SchemaFn<T>
+) {
+  return function <T extends { new (...args: any[]): {} }>(target: T) {
+    Reflect.defineMetadata(name, { model, getSchema }, Reflect);
+    return target;
+  };
+}
+
+export function MongoRepository<H = UnknownObject>(
+  name: symbol,
+  handlers: NMongodbProvider.Handlers<H>
+) {
+  return function <T extends { new (...args: any[]): {} }>(target: T) {
+    Reflect.defineMetadata(name, handlers, Reflect);
     return target;
   };
 }

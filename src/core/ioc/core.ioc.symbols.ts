@@ -4,6 +4,7 @@ export const CoreSymbols = {
 
   // Connectors
   ServiceConnector: Symbol('ServiceConnector'),
+  MongodbConnector: Symbol('MongodbConnector'),
 
   // Services
   DiscoveryService: Symbol('DiscoveryService'),
@@ -13,12 +14,14 @@ export const CoreSymbols = {
 
   // Providers
   SchemaProvider: Symbol('SchemaProvider'),
+  MongodbProvider: Symbol('MongodbProvider'),
 
   // Loader
   SchemaLoader: Symbol('SchemaLoader'),
 
   // Agents
   FunctionalityAgent: Symbol('FunctionalityAgent'),
+  SchemaAgent: Symbol('SchemaAgent'),
 
   // Adapters
   FastifyAdapter: Symbol('FastifyAdapter'),

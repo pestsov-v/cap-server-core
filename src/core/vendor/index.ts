@@ -1,3 +1,15 @@
-import { Apply, Collect, Helper, Router, Controller } from '../decorators';
+import { Packages } from '@Packages';
 
-export { Apply, Collect, Helper, Router, Controller };
+import {
+  Apply,
+  Collect,
+  Helper,
+  Router,
+  Controller,
+  MongoSchema,
+  MongoRepository,
+} from '../decorators';
+export { Apply, Collect, Helper, Router, Controller, MongoSchema, MongoRepository };
+
+const { Schema } = Packages.mongoose;
+export { Schema };

@@ -3,5 +3,7 @@ export namespace NSchemaDecorators {
     router?: symbol;
     controller?: symbol;
     helper?: symbol;
+    mongoSchema?: symbol;
+    mongoRepository?: symbol;
   };
 }

@@ -14,6 +14,7 @@ import colors from 'colors';
 import fastify from 'fastify';
 import express from 'express';
 import { v4 } from 'uuid';
+import mongoose from 'mongoose';
 
 export class Packages {
   public static get inversify() {
@@ -90,5 +91,12 @@ export class Packages {
 
   public static get uuid() {
     return { v4 };
+  }
+
+  public static get mongoose() {
+    return {
+      mongoose,
+      Schema: mongoose.Schema,
+    };
   }
 }
