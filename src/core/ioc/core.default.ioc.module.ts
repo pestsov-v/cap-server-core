@@ -26,7 +26,9 @@ import {
   ISchemaProvider,
   ISchemaService,
   IServiceConnector,
+  IValidatorProvider,
 } from '@Core/Types';
+import { ValidatorProvider } from '../providers/validator.provider';
 
 export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) => {
   // Initiator
@@ -45,6 +47,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   // Providers
   bind<ISchemaProvider>(CoreSymbols.SchemaProvider).to(SchemaProvider).inTransientScope();
   bind<IMongodbProvider>(CoreSymbols.MongodbProvider).to(MongodbProvider).inTransientScope();
+  bind<IValidatorProvider>(CoreSymbols.ValidatorProvider).to(ValidatorProvider).inTransientScope();
 
   // Loaders
   bind<ISchemaLoader>(CoreSymbols.SchemaLoader).to(SchemaLoader).inSingletonScope();

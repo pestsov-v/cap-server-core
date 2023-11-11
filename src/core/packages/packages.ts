@@ -15,6 +15,7 @@ import fastify from 'fastify';
 import express from 'express';
 import { v4 } from 'uuid';
 import mongoose from 'mongoose';
+import joi from 'joi';
 
 export class Packages {
   public static get inversify() {
@@ -98,5 +99,9 @@ export class Packages {
       mongoose,
       Schema: mongoose.Schema,
     };
+  }
+
+  public static get joi() {
+    return { joi };
   }
 }

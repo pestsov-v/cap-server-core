@@ -1,19 +1,21 @@
-import { IMongodbProvider } from '../providers';
+import { IMongodbProvider, IValidatorProvider } from '../providers';
+import { IDiscoveryService } from '../services';
 
 export interface IFunctionalityAgent {
   readonly discovery: NFunctionalityAgent.Discovery;
   readonly mongoose: NFunctionalityAgent.Mongoose;
   readonly utils: NFunctionalityAgent.Utils;
+  readonly validator: NFunctionalityAgent.Validator;
 }
 
 export namespace NFunctionalityAgent {
   export type Discovery = {
-    getMandatory: <T>(name: string) => T;
-    getString: (name: string, def: string) => string;
-    getNumber: (name: string, def: number) => number;
-    getBoolean: (name: string, def: boolean) => boolean;
-    getArray: <T>(name: string, def: Array<T>) => Array<T>;
-    getBuffer: (path: string) => Promise<Buffer>;
+    getMandatory: IDiscoveryService['getSchemaMandatory'];
+    getString: IDiscoveryService['getSchemaString'];
+    getNumber: IDiscoveryService['getSchemaNumber'];
+    getBoolean: IDiscoveryService['getSchemaBoolean'];
+    getArray: IDiscoveryService['getSchemaArray'];
+    getBuffer: IDiscoveryService['getSchemaBuffer'];
   };
 
   export type Mongoose = {
@@ -22,5 +24,10 @@ export namespace NFunctionalityAgent {
 
   export type Utils = {
     uuid: string;
+  };
+
+  export type Validator = {
+    readonly validator: IValidatorProvider['validator'];
+    validate: IValidatorProvider['validate'];
   };
 }

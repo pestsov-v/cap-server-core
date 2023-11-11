@@ -11,6 +11,7 @@ import { NSumaRolls } from '../../../../../types/schemas';
     agents
   ): Promise<SchemaResponse> => {
     const mongoRepository = agents.schemaAgent.getMongoRepository<NSumaRolls.MongoRepository>();
+
     try {
       const id = agents.functionalityAgent.utils.uuid;
 
