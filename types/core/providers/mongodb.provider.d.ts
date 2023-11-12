@@ -1,7 +1,7 @@
 import { Mongoose } from '@Packages/Types';
 import { NAbstractFrameworkAdapter } from '../adapters';
-import * as punycode from 'punycode';
 import { UnknownObject } from '@Utility/Types';
+import { NFunctionalityAgent } from '../agents';
 
 export interface IMongodbProvider {
   setModels(models: NMongodbProvider.SchemaInfo<unknown>[]): void;
@@ -27,8 +27,18 @@ export namespace NMongodbProvider {
     getSchema: NMongodbProvider.SchemaFn<T>;
   };
 
-  export type Handler = <A extends UnknownObject = UnknownObject, R = void>(...args: A) => R;
-  export type Handlers<T = UnknownObject> = {
-    [K in keyof T]: Handler<Parameters<T[K]>, ReturnType<T[K]>>;
+  export type MongooseHandler = <A extends UnknownObject = UnknownObject, R = void>(
+    ...args: A
+  ) => R;
+  export type MongooseHandlers<T = UnknownObject> = {
+    [K in keyof T]: MongooseHandler<Parameters<T[K]>, ReturnType<T[K]>>;
+  };
+
+  export type DocumentHandler = <A extends UnknownObject = UnknownObject, R = void>(
+    mongoose: NFunctionalityAgent.Mongoose,
+    ...args: A
+  ) => R;
+  export type DocumentHandlers<T = UnknownObject> = {
+    [K in keyof T]: MongooseHandler<Parameters<T[K]>, ReturnType<T[K]>>;
   };
 }

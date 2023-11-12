@@ -1,5 +1,5 @@
 import { Controller } from '@Vendor';
-import { StatusCode } from '@common';
+import { ResponseType, StatusCode } from '@common';
 import { SumaRollsSymbols } from './suma.rolls.symbols';
 
 import { SchemaResponse, SchemaRequest } from '@Vendor/Types';
@@ -10,11 +10,25 @@ import { NSumaRolls } from '../../../../../types/schemas';
     req: SchemaRequest<NSumaRolls.CreateRollParams>,
     agents
   ): Promise<SchemaResponse> => {
-    const mongoRepository = agents.schemaAgent.getMongoRepository<NSumaRolls.MongoRepository>();
+    const mongoRepository =
+      agents.schemaAgent.getMongoRepository<NSumaRolls.SchemaMongoRepository>();
+    const validator = agents.schemaAgent.getValidator<NSumaRolls.SchemaValidator>();
+
+    const validateErrors = validator.createRoll(req.body);
+    if (validateErrors) {
+      return {
+        format: 'json',
+        responseType: ResponseType.VALIDATION,
+        statusCode: StatusCode.BAD_REQUEST,
+        data: {
+          errors: validateErrors,
+        },
+      };
+    }
+
     try {
       const id = agents.functionalityAgent.utils.uuid;
-
-      await mongoRepository.create(agents.functionalityAgent.mongoose, {
+      await mongoRepository.create<NSumaRolls.RollStructure>({
         _id: id,
         name: req.body.name,
         price: req.body.price,

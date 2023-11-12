@@ -1,9 +1,11 @@
 import { NSchemaLoader } from '../loaders';
-import { FnObject } from '@Utility/Types';
+import { FnObject, UnknownObject } from '@Utility/Types';
 
 export interface ISchemaProvider {
   getMongoRepository<T extends FnObject = FnObject>(): T;
   getAnotherMongoRepository<T extends FnObject = FnObject>(name: string): T;
+  getValidator<T extends UnknownObject>(): T;
+  getAnotherValidator<T>(name: string): T;
 }
 
 export namespace NSchemaProvider {

@@ -1,14 +1,14 @@
 import { Packages } from '@Packages';
 const { injectable } = Packages.inversify;
 
+import { AnyFunction, UnknownObject } from '@Utility/Types';
 import {
   ISchemaLoader,
   NAbstractFrameworkAdapter,
   NMongodbProvider,
   NSchemaLoader,
+  NValidatorProvider,
 } from '@Core/Types';
-import { UnknownObject } from '@Utility/Types';
-import { any } from 'nconf';
 
 @injectable()
 export class SchemaLoader implements ISchemaLoader {
@@ -104,6 +104,22 @@ export class SchemaLoader implements ISchemaLoader {
     storage.helpers.set(details.name, details.handler);
   }
 
+  public setValidator<T>(domain: string, validator: NSchemaLoader.Validator<T>): void {
+    if (!this._domains) throw this.throwDomainsError();
+
+    const storage = this._domains.get(domain);
+    if (!storage) {
+      this._setDomain(domain);
+      this.setValidator(domain, validator);
+      return;
+    }
+    if (!storage.validators) {
+      storage.validators = new Map<string, (...args: any[]) => any>();
+    }
+
+    storage.validators.set(validator.name, validator.handler);
+  }
+
   setMongoRepository<
     T extends string = string,
     H extends string = string,
@@ -171,8 +187,9 @@ export class SchemaLoader implements ISchemaLoader {
     this._domains.set(domain, {
       routes: new Map<string, NSchemaLoader.Route>(),
       controllers: new Map<string, NAbstractFrameworkAdapter.Handler>(),
-      helpers: new Map<string, (...args: any[]) => any>(),
-      mongoRepoHandlers: new Map<string, (...args: any[]) => any[]>(),
+      helpers: new Map<string, AnyFunction>(),
+      mongoRepoHandlers: new Map<string, AnyFunction>(),
+      validators: new Map<string, NValidatorProvider.ValidateHandler<UnknownObject>>(),
     });
   }
 }

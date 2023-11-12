@@ -9,6 +9,7 @@ import { NFunctionalityAgent } from '@Core/Types';
     mongoose: NFunctionalityAgent.Mongoose,
     structure: NSumaRolls.RollStructure
   ): Promise<void> => {
+    console.log('222');
     try {
       await mongoose.create(MongoSchemaNames.SUMA_ROLLS, [structure]);
     } catch (e) {

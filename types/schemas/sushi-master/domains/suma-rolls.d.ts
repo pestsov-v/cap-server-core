@@ -1,5 +1,17 @@
 import { ControllerHandler } from '@Vendor/Types';
-import { NFunctionalityAgent } from '@Core/Types';
+import {
+  IValidatorProvider,
+  NFunctionalityAgent,
+  NMongodbProvider,
+  NValidatorProvider,
+} from '@Core/Types';
+import { Joi } from '@Packages/Types';
+import { Nullable } from '@Utility/Types';
+import {
+  DocumentHandler,
+  ExtractHandlerType,
+  Handler,
+} from '../../../core/providers/validator.provider';
 
 export namespace NSumaRolls {
   export type RollStructure = {
@@ -11,11 +23,24 @@ export namespace NSumaRolls {
   export type Controller = {
     createRoll: ControllerHandler;
   };
+
   export type Paths = keyof Controller;
 
   export type MongoRepository = {
-    create: (mongoose: NFunctionalityAgent.Mongoose, structure: RollStructure) => Promise<void>;
+    create: NMongodbProvider.DocumentHandler<{ structure: RollStructure }, Promise<void>>;
+  };
+
+  export type SchemaMongoRepository = {
+    create: NMongodbProvider.MongooseHandler<{ structure: RollStructure }, Promise<void>>;
   };
 
   export type CreateRollParams = Pick<RollStructure, 'name' | 'price'>;
+
+  export type Validator = {
+    createRoll: NValidatorProvider.DocumentHandler<NSumaRolls.CreateRollParams>;
+  };
+
+  export type SchemaValidator = {
+    createRoll: NValidatorProvider.ValidateHandler<NSumaRolls.CreateRollParams>;
+  };
 }

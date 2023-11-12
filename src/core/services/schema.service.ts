@@ -52,7 +52,7 @@ export class SchemaService extends AbstractService implements ISchemaService {
 
       return true;
     } catch (e) {
-      this._loggerService.error(e);
+      this._loggerService.error(e, { scope: 'Core', tag: 'Init', errorType: 'FATAL' });
       return false;
     } finally {
       this._emitter.emit(`services:${this._SERVICE_NAME}:schemas-init`);

@@ -9,6 +9,7 @@ import inversify from 'inversify';
 import fastify from 'fastify';
 import express from 'express';
 import mongoose from 'mongoose';
+import joi from 'joi';
 
 import { StringObject, UnknownObject } from '@Utility/Types';
 
@@ -85,4 +86,10 @@ export namespace Mongoose {
     TRawDocType | DocContents
   >;
   export type SaveOptions = mongoose.SaveOptions;
+}
+
+export namespace Joi {
+  export type Root = joi.Root;
+  export type ObjectSchema<T> = joi.ObjectSchema<T>;
+  export type PartialSchemaMap<T> = joi.PartialSchemaMap<T>;
 }

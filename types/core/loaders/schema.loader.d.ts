@@ -1,5 +1,5 @@
 import { NAbstractFrameworkAdapter } from '../adapters';
-import { NMongodbProvider } from '../providers';
+import { NMongodbProvider, NValidatorProvider } from '../providers';
 import { AnyFunction, FnObject, UnknownObject } from '@Utility/Types';
 
 export interface ISchemaLoader {
@@ -9,8 +9,9 @@ export interface ISchemaLoader {
   init(): Promise<void>;
   destroy(): Promise<void>;
   applyDomainToService(service: string, domain: string): void;
-  setRoute<T extends string>(domain: string, details: NSchemaLoader.Route<T>): void;
-  setController<T extends string>(domain: string, details: NSchemaLoader.Controller<T>): void;
+  setRoute<T extends string>(domain: string, route: NSchemaLoader.Route<T>): void;
+  setController<T extends string>(domain: string, controller: NSchemaLoader.Controller<T>): void;
+  setValidator<T>(domain, validator: NSchemaLoader.Validator<T>): void;
   setMongoRepository<
     D extends string = string,
     T extends string = string,
@@ -20,9 +21,9 @@ export interface ISchemaLoader {
   >(
     domain: string,
     model: string,
-    details: NSchemaLoader.MongoRepoHandler<T, H, A, R>
+    handler: NSchemaLoader.MongoRepoHandler<T, H, A, R>
   ): void;
-  setHelper(domain: string, details: NSchemaLoader.Helper): void;
+  setHelper(domain: string, helper: NSchemaLoader.Helper): void;
   setMongoSchema<T>(domain: string, details: NMongodbProvider.SchemaInfo<T>): void;
 }
 
@@ -33,6 +34,11 @@ export namespace NSchemaLoader {
     handler: T;
     isPrivateUser?: boolean;
     isPrivateOrganization?: boolean;
+  };
+
+  export type Validator<T> = {
+    name: handler;
+    handler: NValidatorProvider.ValidateHandler<T>;
   };
 
   export type Controller<T extends string = string> = {
@@ -47,7 +53,7 @@ export namespace NSchemaLoader {
     R = void
   > = {
     name: T;
-    handler: NMongodbProvider.Handlers<H, A, R>;
+    handler: NMongodbProvider.MongooseHandlers<H, A, R>;
   };
 
   export type HelperHandler<T extends (...args: any[]) => any> = T;
@@ -66,6 +72,7 @@ export namespace NSchemaLoader {
     mongoModel?: string;
     mongoSchema?: NMongodbProvider.SchemaFn<unknown>;
     mongoRepoHandlers?: Map<string, AnyFunction>;
+    validators?: Map<string, NValidatorProvider.ValidateHandler>;
   };
   export type Domains = Map<string, DomainStorage>;
   export type Services = Map<string, Domains>;

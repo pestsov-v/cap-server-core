@@ -3,5 +3,6 @@ export const ResponseType = {
   REDIRECT: 'redirect',
   SUCCESS: 'success',
   ERROR: 'error',
+  VALIDATION: 'validation',
   FAIL: 'fail',
 } as const;

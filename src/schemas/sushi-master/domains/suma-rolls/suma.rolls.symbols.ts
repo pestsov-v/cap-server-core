@@ -5,4 +5,5 @@ export const SumaRollsSymbols = {
   Helper: Symbol('SumaRollsHelper'),
   MongoSchema: Symbol('SumaRollsMongoSchema'),
   MongoRepository: Symbol('SumaRollsMongoRepository'),
+  Validator: Symbol('SumaRollsValidator'),
 } as const;

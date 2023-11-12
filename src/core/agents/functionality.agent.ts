@@ -2,13 +2,14 @@ import { Packages } from '@Packages';
 const { injectable, inject } = Packages.inversify;
 const { v4 } = Packages.uuid;
 import { container } from '../ioc/core.ioc';
-import { Mongoose } from '@Packages/Types';
+import { Joi, Mongoose } from '@Packages/Types';
 import { CoreSymbols } from '@CoreSymbols';
 
 import {
   IDiscoveryService,
   IFunctionalityAgent,
   IMongodbProvider,
+  IValidatorProvider,
   NFunctionalityAgent,
 } from '@Core/Types';
 
@@ -59,6 +60,17 @@ export class FunctionalityAgent implements IFunctionalityAgent {
   public get utils(): NFunctionalityAgent.Utils {
     return {
       uuid: v4(),
+    };
+  }
+
+  public get validator(): NFunctionalityAgent.Validator {
+    return {
+      validator: container.get<IValidatorProvider>(CoreSymbols.ValidatorProvider).validator,
+      validate: <T>(map: Joi.ObjectSchema<T>, body: T) => {
+        return container
+          .get<IValidatorProvider>(CoreSymbols.ValidatorProvider)
+          .validate<T>(map, body);
+      },
     };
   }
 }
