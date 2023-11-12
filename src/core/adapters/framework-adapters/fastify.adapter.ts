@@ -17,10 +17,12 @@ import {
   NContextService,
   ISchemaAgent,
   IBaseOperationAgent,
+  IExceptionProvider,
 } from '@Core/Types';
 import { ResponseType, StatusCode } from '@common';
 import { Helpers } from '../../utility/helpers';
 import { container } from '../../ioc/core.ioc';
+import { Guards } from '@Guards';
 
 @injectable()
 export class FastifyAdapter
@@ -195,6 +197,13 @@ export class FastifyAdapter
         }
       });
     } catch (e) {
+      if (Guards.isValidationError(e)) {
+        const response = container
+          .get<IExceptionProvider>(CoreSymbols.ExceptionProvider)
+          .resolveValidation(e);
+        return res.status(response.statusCode).send(response.payload);
+      }
+    } finally {
       this._contextService.exit();
     }
   };

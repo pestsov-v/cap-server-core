@@ -12,19 +12,17 @@ import { NSumaRolls } from '../../../../../types/schemas';
   ): Promise<SchemaResponse> => {
     const mongoRepository =
       agents.schemaAgent.getMongoRepository<NSumaRolls.SchemaMongoRepository>();
-    const validator = agents.schemaAgent.getValidator<NSumaRolls.SchemaValidator>();
+    const schema =
+      agents.functionalityAgent.validator.validator.object<NSumaRolls.CreateRollParams>({
+        name: agents.functionalityAgent.validator.validator.string().required().min(3),
+        price: agents.functionalityAgent.validator.validator.number().required().min(0),
+      });
 
-    const validateErrors = validator.createRoll(req.body);
-    if (validateErrors) {
-      return {
-        format: 'json',
-        responseType: ResponseType.VALIDATION,
-        statusCode: StatusCode.BAD_REQUEST,
-        data: {
-          errors: validateErrors,
-        },
-      };
-    }
+    const errors = agents.baseAgent.validator.validateOrThrow<NSumaRolls.CreateRollParams>(
+      schema,
+      req.body
+    );
+    if (errors) throw errors;
 
     try {
       const id = agents.functionalityAgent.utils.uuid;
