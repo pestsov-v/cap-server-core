@@ -66,7 +66,7 @@ export class FunctionalityAgent implements IFunctionalityAgent {
   public get validator(): NFunctionalityAgent.Validator {
     return {
       validator: container.get<IValidatorProvider>(CoreSymbols.ValidatorProvider).validator,
-      validate: <T>(map: Joi.PartialSchemaMap<T>, body: T) => {
+      validate: <T>(map: Joi.ObjectSchema<T>, body: T) => {
         return container
           .get<IValidatorProvider>(CoreSymbols.ValidatorProvider)
           .validate<T>(map, body);

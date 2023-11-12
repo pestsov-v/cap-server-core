@@ -13,12 +13,11 @@ export class ValidatorProvider implements IValidatorProvider {
   }
 
   public validate<T>(
-    map: Joi.PartialSchemaMap<T>,
+    map: Joi.ObjectSchema<T>,
     body: T
   ): Nullable<NValidatorProvider.ErrorResult[]> {
-    const schema = joi.object<T>(map);
+    const validateResult = map.validate(body);
 
-    const validateResult = schema.validate(body);
     const errors: NValidatorProvider.ErrorResult[] = [];
     if (validateResult.error && validateResult.error.details) {
       validateResult.error.details.forEach((value) => {

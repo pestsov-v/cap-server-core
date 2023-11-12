@@ -1,7 +1,7 @@
 import { IAbstractService } from '@Core/Types';
 
 export interface ILoggerService extends IAbstractService {
-  error(msg: any, options?: NLoggerService.CoreErrorOptions): void;
+  error(msg: any, options: NLoggerService.CoreErrorOptions): void;
   warn(msg: string, options?: NLoggerService.CoreWarnOptions): void;
   system(msg: string, options?: NLoggerService.CoreSystemOptions): void;
   api(options: NLoggerService.CoreApiOptions): void;

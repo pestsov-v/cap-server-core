@@ -8,7 +8,6 @@ import { AbstractService } from './abstract.service';
 import { Winston } from '@Packages/Types';
 import { IDiscoveryService, ILoggerService, NLoggerService } from '@Core/Types';
 import { Helpers } from '../utility/helpers';
-import { level } from 'winston';
 
 @injectable()
 export class LoggerService extends AbstractService implements ILoggerService {
@@ -130,7 +129,7 @@ export class LoggerService extends AbstractService implements ILoggerService {
 
   public async destroy(): Promise<void> {}
 
-  public error(msg: any, options?: NLoggerService.CoreErrorOptions): void {
+  public error(msg: any, options: NLoggerService.CoreErrorOptions): void {
     if (this._loggers.core) {
       this._loggers.core.log('error', { msg, ...options });
     }
@@ -254,7 +253,7 @@ export class LoggerService extends AbstractService implements ILoggerService {
             case 'storage':
             case 'info':
             case 'verbose':
-              throw new Error(`Console level "${level}" not implemented`);
+              throw new Error(`Console level "${info.level}" not implemented`);
           }
 
           return str;

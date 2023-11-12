@@ -1,5 +1,5 @@
 import { MetadataKeys } from '@common';
-import { UnknownObject } from '@Utility/Types';
+import { FnObject, UnknownObject } from '@Utility/Types';
 
 import {
   NSchemaDecorators,
@@ -7,6 +7,7 @@ import {
   NAbstractFrameworkAdapter,
   ISchemaLoader,
   NMongodbProvider,
+  NValidatorProvider,
 } from '@Core/Types';
 
 export function Apply(service: string, domains: string[]) {
@@ -57,7 +58,7 @@ export function Collect(domain: string, documents: NSchemaDecorators.Documents) 
       const handlers = Reflect.getMetadata(
         documents.mongoRepository,
         Reflect
-      ) as NMongodbProvider.Handlers;
+      ) as NMongodbProvider.MongooseHandlers;
 
       for (const handler in handlers) {
         loader.setMongoRepository<string, string, string, UnknownObject>(
@@ -69,6 +70,22 @@ export function Collect(domain: string, documents: NSchemaDecorators.Documents) 
           }
         );
       }
+    }
+
+    if (documents.validator) {
+      const handlers = Reflect.getMetadata(
+        documents.validator,
+        Reflect
+      ) as NValidatorProvider.Handlers<FnObject>;
+
+      for (const handler in handlers) {
+        loader.setValidator(domain, {
+          name: handler,
+          handler: handlers[handler],
+        });
+      }
+    } else {
+      throw new Error('Validator not found');
     }
 
     return target;
@@ -113,7 +130,17 @@ export function MongoSchema<T extends UnknownObject>(
 
 export function MongoRepository<H = UnknownObject>(
   name: symbol,
-  handlers: NMongodbProvider.Handlers<H>
+  handlers: NMongodbProvider.MongooseHandlers<H>
+) {
+  return function <T extends { new (...args: any[]): {} }>(target: T) {
+    Reflect.defineMetadata(name, handlers, Reflect);
+    return target;
+  };
+}
+
+export function Validator<T extends UnknownObject>(
+  name: symbol,
+  handlers: NValidatorProvider.Handlers<T>
 ) {
   return function <T extends { new (...args: any[]): {} }>(target: T) {
     Reflect.defineMetadata(name, handlers, Reflect);

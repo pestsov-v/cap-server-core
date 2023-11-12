@@ -79,6 +79,7 @@ export namespace NAbstractFrameworkAdapter {
 
   export interface BaseResponsePayload {
     format: ResponseFormat;
+    responseType?: string;
   }
 
   export interface RedirectResponsePayload extends BaseResponsePayload {

@@ -8,5 +8,6 @@ import { SumaRollsSymbols } from './suma.rolls.symbols';
   controller: SumaRollsSymbols.Controller,
   mongoSchema: SumaRollsSymbols.MongoSchema,
   mongoRepository: SumaRollsSymbols.MongoRepository,
+  validator: SumaRollsSymbols.Validator,
 })
 export class SumaRolesCollector {}
