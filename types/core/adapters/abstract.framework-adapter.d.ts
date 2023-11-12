@@ -1,4 +1,4 @@
-import { IFunctionalityAgent, ISchemaAgent } from '../agents';
+import { IBaseOperationAgent, IFunctionalityAgent, ISchemaAgent } from '../agents';
 import { NContextService } from '../services';
 
 import { Express, Fastify } from '@Packages/Types';
@@ -31,6 +31,7 @@ export namespace NAbstractFrameworkAdapter {
   export type Agents = {
     functionalityAgent: IFunctionalityAgent;
     schemaAgent: ISchemaAgent;
+    baseAgent: IBaseOperationAgent;
   };
   export type storage = {
     store: NContextService.Store;

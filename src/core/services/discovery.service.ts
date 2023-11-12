@@ -9,12 +9,7 @@ const { dotenv } = Packages.dotenv;
 import { AbstractService } from './abstract.service';
 
 import { Nconf } from '@Packages/Types';
-import {
-  IDiscoveryService,
-  NAbstractService,
-  NDiscoveryService,
-  NLoggerService,
-} from '@Core/Types';
+import { IDiscoveryService, NAbstractService, NDiscoveryService } from '@Core/Types';
 
 @injectable()
 export class DiscoveryService extends AbstractService implements IDiscoveryService {
@@ -50,6 +45,11 @@ export class DiscoveryService extends AbstractService implements IDiscoveryServi
     this._emitter.on(event, listener);
   }
 
+  private async _setConfigurations(): Promise<void> {
+    await this._setExternalConfig();
+    await this._setInternalConfig();
+  }
+
   private async _setExternalConfig(): Promise<void> {
     const internalConfigPath = `${os.homedir()}/.cap_configs/schemas/${this._schema}.${this._mode}`;
     try {
@@ -68,11 +68,6 @@ export class DiscoveryService extends AbstractService implements IDiscoveryServi
     } catch (e) {
       throw e;
     }
-  }
-
-  private async _setConfigurations(): Promise<void> {
-    await this._setExternalConfig();
-    await this._setInternalConfig();
   }
 
   private async _setInternalConfig(): Promise<void> {

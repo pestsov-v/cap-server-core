@@ -16,6 +16,7 @@ import {
   IFunctionalityAgent,
   NContextService,
   ISchemaAgent,
+  IBaseOperationAgent,
 } from '@Core/Types';
 import { ResponseType, StatusCode } from '@common';
 import { Helpers } from '../../utility/helpers';
@@ -169,6 +170,7 @@ export class FastifyAdapter
           {
             functionalityAgent: container.get<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent),
             schemaAgent: container.get<ISchemaAgent>(CoreSymbols.SchemaAgent),
+            baseAgent: container.get<IBaseOperationAgent>(CoreSymbols.BaseOperationAgent),
           },
           context
         );

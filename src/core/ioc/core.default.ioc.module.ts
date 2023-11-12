@@ -15,6 +15,7 @@ import {
   IAbstractFactory,
   IAbstractFrameworkAdapter,
   IAbstractService,
+  IBaseOperationAgent,
   IContextService,
   IFunctionalityAgent,
   IInitiator,
@@ -29,6 +30,7 @@ import {
   IValidatorProvider,
 } from '@Core/Types';
 import { ValidatorProvider } from '../providers/validator.provider';
+import { BaseOperationAgent } from '../agents/base-operation.agent';
 
 export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) => {
   // Initiator
@@ -53,10 +55,13 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<ISchemaLoader>(CoreSymbols.SchemaLoader).to(SchemaLoader).inSingletonScope();
 
   // Agents
+  bind<ISchemaAgent>(CoreSymbols.SchemaAgent).to(SchemaAgent).inTransientScope();
   bind<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent)
     .to(FunctionalityAgent)
     .inTransientScope();
-  bind<ISchemaAgent>(CoreSymbols.SchemaAgent).to(SchemaAgent).inTransientScope();
+  bind<IBaseOperationAgent>(CoreSymbols.BaseOperationAgent)
+    .to(BaseOperationAgent)
+    .inTransientScope();
 
   // Adapters
   bind<IAbstractFrameworkAdapter>(CoreSymbols.FastifyAdapter).to(FastifyAdapter).inSingletonScope();

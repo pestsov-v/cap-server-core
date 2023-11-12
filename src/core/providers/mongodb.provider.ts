@@ -5,6 +5,7 @@ import { CoreSymbols } from '@CoreSymbols';
 
 import { Mongoose } from '@Packages/Types';
 import {
+  IBaseOperationAgent,
   IFunctionalityAgent,
   IMongodbConnector,
   IMongodbProvider,
@@ -27,6 +28,7 @@ export class MongodbProvider implements IMongodbProvider {
       const agents: NAbstractFrameworkAdapter.Agents = {
         functionalityAgent: container.get<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent),
         schemaAgent: container.get<ISchemaAgent>(CoreSymbols.SchemaAgent),
+        baseAgent: container.get<IBaseOperationAgent>(CoreSymbols.BaseOperationAgent),
       };
 
       const model = fn.getSchema(agents);

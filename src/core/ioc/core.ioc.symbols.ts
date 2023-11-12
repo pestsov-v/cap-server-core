@@ -23,6 +23,7 @@ export const CoreSymbols = {
   // Agents
   FunctionalityAgent: Symbol('FunctionalityAgent'),
   SchemaAgent: Symbol('SchemaAgent'),
+  BaseOperationAgent: Symbol('BaseOperationAgent'),
 
   // Adapters
   FastifyAdapter: Symbol('FastifyAdapter'),
