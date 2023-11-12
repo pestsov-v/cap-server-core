@@ -6,10 +6,13 @@ import { CoreSymbols } from '@CoreSymbols';
 import { Mongoose } from '@Packages/Types';
 import {
   IBaseOperationAgent,
+  IContextService,
   IFunctionalityAgent,
+  ILoggerService,
   IMongodbConnector,
   IMongodbProvider,
   ISchemaAgent,
+  ISchemaProvider,
   NAbstractFrameworkAdapter,
   NMongodbProvider,
 } from '@Core/Types';

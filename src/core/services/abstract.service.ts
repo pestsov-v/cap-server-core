@@ -50,7 +50,7 @@ export abstract class AbstractService implements IAbstractService {
         if (this._loggerService) {
           this._loggerService.system(msg, { namespace: this._SERVICE_NAME, scope: 'Core' });
         } else {
-          this.sendConsoleLog(msg);
+          Helpers.levelConsoleLog(msg, 'cyan', 'system', this._SERVICE_NAME);
         }
         this.emit(`services:${this._SERVICE_NAME}:start`);
       } else {
@@ -78,7 +78,7 @@ export abstract class AbstractService implements IAbstractService {
       if (this._loggerService) {
         this._loggerService.system(msg, { namespace: this._SERVICE_NAME, scope: 'Core' });
       } else {
-        this.sendConsoleLog(msg);
+        Helpers.levelConsoleLog(msg, 'cyan', 'system', this._SERVICE_NAME);
       }
       this._isStarted = false;
 
@@ -101,12 +101,5 @@ export abstract class AbstractService implements IAbstractService {
 
   protected notStartedError(): Error {
     return new Error(`Service "${this._SERVICE_NAME}" not started`);
-  }
-
-  private sendConsoleLog(msg: string): void {
-    const namespace = Helpers.addBrackets(Helpers.centralized(20, this._SERVICE_NAME));
-    const level = Helpers.addLevel('system', 'bgMagenta', 'green');
-    const log = format(new Date(), 'yyyy-MM-dd HH:mm:ss') + ' ' + level + namespace + msg;
-    console.log(colors.cyan(log));
   }
 }

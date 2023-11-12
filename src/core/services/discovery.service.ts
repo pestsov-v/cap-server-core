@@ -10,6 +10,7 @@ import { AbstractService } from './abstract.service';
 
 import { Nconf } from '@Packages/Types';
 import { IDiscoveryService, NAbstractService, NDiscoveryService } from '@Core/Types';
+import { Helpers } from '../utility/helpers';
 
 @injectable()
 export class DiscoveryService extends AbstractService implements IDiscoveryService {
@@ -52,19 +53,20 @@ export class DiscoveryService extends AbstractService implements IDiscoveryServi
 
   private async _setExternalConfig(): Promise<void> {
     const internalConfigPath = `${os.homedir()}/.cap_configs/schemas/${this._schema}.${this._mode}`;
+    let msg: string;
+
     try {
       if (await fse.pathExists(internalConfigPath)) {
-        console.info('The configuration of the external file is written in environment variables');
+        msg = 'The configuration of the external file is written in environment variables';
         const file = await fse.readFile(internalConfigPath, 'utf-8');
         const config = dotenv.parse(file);
         Object.keys(config).forEach((env) => {
           process.env[env] = config[env];
         });
       } else {
-        console.warn(
-          'The configuration of the external file is not written in environment variables'
-        );
+        msg = 'The configuration of the external file is not written in environment variables';
       }
+      Helpers.levelConsoleLog(msg, 'cyan', 'info', this._SERVICE_NAME, 'bgGreen', 'black');
     } catch (e) {
       throw e;
     }

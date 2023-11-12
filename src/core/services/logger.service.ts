@@ -80,7 +80,7 @@ export class LoggerService extends AbstractService implements ILoggerService {
             ),
             level: this._discoveryService.getString(
               'services:logger:transports:console:core:level',
-              'schema'
+              'verbose'
             ),
           },
           schema: {
@@ -118,6 +118,7 @@ export class LoggerService extends AbstractService implements ILoggerService {
 
       this._container.add(this._LOGGER_TYPES.core, {
         levels: this._CORE_LEVELS,
+        level: this._config.transports.console.core.level,
         transports: coreTransports,
       });
     }
@@ -153,8 +154,10 @@ export class LoggerService extends AbstractService implements ILoggerService {
     }
   }
 
-  public database(msg: string, options?: NLoggerService.CoreDatabaseOptions): void {
-    throw new Error('Method not implemented');
+  public database(options: NLoggerService.CoreDatabaseOptions): void {
+    if (this._loggers.core) {
+      this._loggers.core.log('database', { ...options });
+    }
   }
 
   public storage(msg: string, options?: NLoggerService.CoreStorageOptions): void {
@@ -209,8 +212,12 @@ export class LoggerService extends AbstractService implements ILoggerService {
             if (info.sessionId) str += 'SessionId: ' + info.sessionId;
           };
           let str = info.timestamp + ' ';
-          const namespace = Helpers.addBrackets(Helpers.centralized(20, info.namespace));
+          let namespace: string = ' ';
+          if (info.namespace) {
+            namespace = Helpers.addBrackets(Helpers.centralized(20, info.namespace));
+          }
           const coreLevels = info.level as keyof NLoggerService.CoreLoggerLevels;
+
           switch (coreLevels) {
             case 'error':
               str += Helpers.addLevel(info.level, 'black', 'red');
@@ -241,15 +248,29 @@ export class LoggerService extends AbstractService implements ILoggerService {
               break;
             case 'api':
               str += '{ ';
-              str += 'Application: ' + info.application + ' ';
-              str += 'Collection: ' + info.collection + ' ';
-              str += 'Action: ' + info.version + '/' + info.action;
+              str += 'Service: ' + info.service + ' ';
+              str += 'Domain: ' + info.domain + ' ';
+              str += 'Action: ' + info.action;
               str += ' } ';
-              str += info.method.toUpperCase() + ' | ' + info.path + '\n';
+              str += info.method() + ' | ' + info.path + '\n';
               str += ' '.repeat(3);
               str += 'RequestId: ' + info.requestId;
               break;
             case 'database':
+              str += Helpers.addLevel(info.level, 'bgBlack', 'magenta');
+              str += ' Request id: ' + info.requestId + ' ';
+              str += '{ ' + info.databaseType + ' | ';
+              str += 'Collection: ' + info.collection + ' }';
+              str += '\n';
+              str += ' '.repeat(3);
+              str += 'Service: ' + info.service + ' | ';
+              str += 'Domain: ' + info.domain + ' | ';
+              str += 'Action: ' + info.action;
+              str += '\n';
+              str += ' '.repeat(3) + 'Operation type: "' + info.operation + '"';
+              str += '\n';
+              str += ' '.repeat(3) + 'Payload: ' + info.payload;
+              break;
             case 'storage':
             case 'info':
             case 'verbose':

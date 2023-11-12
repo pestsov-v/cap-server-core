@@ -7,6 +7,7 @@ import { AbstractConnector } from './abstract.connector';
 import { Mongoose } from '@Packages/Types';
 import { UnknownObject } from '@Utility/Types';
 import {
+  IContextService,
   IDiscoveryService,
   ILoggerService,
   IMongodbConnector,
@@ -22,7 +23,9 @@ export class MongodbConnector extends AbstractConnector implements IMongodbConne
     @inject(CoreSymbols.DiscoveryService)
     private readonly _discoveryService: IDiscoveryService,
     @inject(CoreSymbols.LoggerService)
-    private readonly _loggerService: ILoggerService
+    private readonly _loggerService: ILoggerService,
+    @inject(CoreSymbols.ContextService)
+    private readonly _contextService: IContextService
   ) {
     super();
   }
@@ -71,6 +74,22 @@ export class MongodbConnector extends AbstractConnector implements IMongodbConne
     try {
       const url = `${protocol}://${host}:${port}`;
       this._connection = await mongoose.connect(url, options);
+
+      this._connection.set('debug', true);
+      this._connection.set('debug', (collection, operation, payload) => {
+        const store = this._contextService.store;
+        this._loggerService.database({
+          databaseType: 'mongodb',
+          collection: collection,
+          requestId: store.requestId,
+          service: store.service,
+          domain: store.domain,
+          action: store.action,
+          scope: 'Schema',
+          operation: operation,
+          payload: JSON.stringify(payload),
+        });
+      });
 
       this._loggerService.system(`Mongodb connector has been started on ${url}.`, {
         tag: 'Connection',

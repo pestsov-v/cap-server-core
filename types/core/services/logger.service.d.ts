@@ -5,7 +5,7 @@ export interface ILoggerService extends IAbstractService {
   warn(msg: string, options?: NLoggerService.CoreWarnOptions): void;
   system(msg: string, options?: NLoggerService.CoreSystemOptions): void;
   api(options: NLoggerService.CoreApiOptions): void;
-  database(msg: string, options?: NLoggerService.CoreDatabaseOptions): void;
+  database(options: NLoggerService.CoreDatabaseOptions): void;
   storage(msg: string, options?: NLoggerService.CoreStorageOptions): void;
   info(msg: string, options?: NLoggerService.CoreInfoOptions): void;
   schema(msg: string, options?: NLoggerService.CoreSchemaOptions): void;
@@ -120,9 +120,27 @@ export namespace NLoggerService {
     version: string;
     action: string;
   }
-  export interface CoreDatabaseOptions extends ScopeOptions, CoreBaseOptions {
-    scope: 'Core';
+
+  export type DatabaseType = 'mongodb';
+  export interface BaseDatabaseOptions extends ScopeOptions, CoreBaseOptions {
+    scope: 'Core' | 'Schema';
+    databaseType: DatabaseType;
+    service: string;
+    domain: string;
+    action: string;
   }
+  export interface MongodbDatabaseOptions
+    extends BaseDatabaseOptions,
+      ScopeOptions,
+      CoreBaseOptions {
+    databaseType: 'mongodb';
+    collection: string;
+    operation: string;
+    payload?: string;
+  }
+
+  export type CoreDatabaseOptions = MongodbDatabaseOptions;
+
   export interface CoreStorageOptions extends ScopeOptions, CoreBaseOptions {
     scope: 'Core';
   }
