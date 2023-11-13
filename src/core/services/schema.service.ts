@@ -13,9 +13,12 @@ import {
   IMongodbProvider,
   ISchemaLoader,
   ISchemaService,
+  ITypeormConnector,
   NAbstractService,
   NSchemaService,
+  NTypeormConnector,
 } from '@Core/Types';
+import { Typeorm } from '@Packages/Types';
 
 @injectable()
 export class SchemaService extends AbstractService implements ISchemaService {
@@ -32,7 +35,9 @@ export class SchemaService extends AbstractService implements ISchemaService {
     @inject(CoreSymbols.FrameworkFactory)
     private readonly _frameworkFactory: IAbstractFactory,
     @inject(CoreSymbols.MongodbConnector)
-    private readonly _mongodbConnector: IMongodbConnector
+    private readonly _mongodbConnector: IMongodbConnector,
+    @inject(CoreSymbols.TypeormConnector)
+    private readonly _typeormConnector: ITypeormConnector
   ) {
     super();
   }
@@ -90,6 +95,10 @@ export class SchemaService extends AbstractService implements ISchemaService {
         // TODO: implement separate logic for different services
 
         container.get<IMongodbProvider>(CoreSymbols.MongodbProvider).setModels(loader.mongoSchemas);
+      });
+      this._typeormConnector.on('connector:TypeormConnector:start', () => {
+        const entities: Typeorm.EntitySchema<unknown>[] = [];
+        this._typeormConnector.emit('connector:TypeormConnector:entities:load', entities);
       });
     } catch (e) {
       throw e;

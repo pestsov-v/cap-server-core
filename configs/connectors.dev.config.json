@@ -1,6 +1,6 @@
 {
   "mongodb": {
-    "enable": true,
+    "enable": false,
     "connect": {
       "protocol": "mongodb",
       "host": "localhost",
@@ -15,7 +15,8 @@
   "typeorm": {
     "enable": true,
     "connect": {
-      "dbType": "postgresql",
+      "dbType": "postgres",
+      "protocol": "http",
       "host": "localhost",
       "port": 5432,
       "database": "root"

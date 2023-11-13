@@ -12,12 +12,13 @@ export interface ITypeormConnector extends IAbstractConnector {
 export namespace NTypeormConnector {
   export type Events =
     | 'connector:TypeormConnector:start'
-    | 'connector:TypeOrmConnector:entities:load';
+    | 'connector:TypeormConnector:entities:load';
   export type DatabaseType = Typeorm.DatabaseType;
 
   export type Config = {
     enable: boolean;
     type: DatabaseType;
+    protocol: string;
     host: string;
     port: number;
     username: string;

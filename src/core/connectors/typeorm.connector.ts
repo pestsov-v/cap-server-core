@@ -5,13 +5,13 @@ import { CoreSymbols } from '@CoreSymbols';
 import { AbstractConnector } from './abstract.connector';
 
 import { Typeorm } from '@Packages/Types';
+import { Voidable } from '@Utility/Types';
 import {
   IDiscoveryService,
   ILoggerService,
   ITypeormConnector,
   NTypeormConnector,
 } from '@Core/Types';
-import { Voidable } from '@Utility/Types';
 
 @injectable()
 export class TypeormConnector extends AbstractConnector implements ITypeormConnector {
@@ -34,8 +34,9 @@ export class TypeormConnector extends AbstractConnector implements ITypeormConne
       type: this._discoveryService.getMandatory<Typeorm.DatabaseType>(
         'connectors:typeorm:connect:dbType'
       ),
+      protocol: this._discoveryService.getString('connectors:typeorm:connect:protocol', 'http'),
       host: this._discoveryService.getString('connectors:typeorm:connect:host', 'localhost'),
-      port: this._discoveryService.getNumber('connectors:typeorm:connect:port', 5432),
+      port: this._discoveryService.getMandatory<number>('connectors:typeorm:connect:port'),
       username: this._discoveryService.getString('connectors:typeorm:auth:username', ''),
       password: this._discoveryService.getString('connectors:typeorm:auth:password', ''),
       database: this._discoveryService.getString('connectors:typeorm:connect:database', ''),
@@ -49,20 +50,36 @@ export class TypeormConnector extends AbstractConnector implements ITypeormConne
       throw new Error('Config is not set');
     }
 
-    this._emitter.emit('connector:TypeormConnector:start');
+    if (!this._config.enable) {
+      this._loggerService.warn('Typeorm connector is disabled', {
+        tag: 'Connection',
+        scope: 'Core',
+        namespace: 'TypeormConnector',
+      });
+      return;
+    }
+
     this._emitter.on(
-      'connector:TypeOrmConnector:entities:load',
+      'connector:TypeormConnector:entities:load',
       (entities: Typeorm.EntitySchema<unknown>[]) => {
         this._entities = entities;
       }
     );
+    this._emitter.emit('connector:TypeormConnector:start');
 
     if (!this._entities) {
       throw new Error('Entities is not set');
     }
 
+    if (this._entities.length === 0) {
+      this._loggerService.warn('Typeorm entities list is empty.', {
+        namespace: 'TypeormConnector',
+        scope: 'Core',
+      });
+    }
+
     try {
-      const { type, host, port, database, password, username } = this._config;
+      const { type, protocol, host, port, database, password, username } = this._config;
       const options: Typeorm.DataSourceOptions = {
         type: type,
         host: host,
@@ -75,11 +92,14 @@ export class TypeormConnector extends AbstractConnector implements ITypeormConne
       };
       this._connection = new DataSource(options);
 
-      this._loggerService.system(`Typeorm connector has been started on ${''}.`, {
-        tag: 'Connection',
-        scope: 'Core',
-        namespace: 'TypeormConnector',
-      });
+      this._loggerService.system(
+        `Typeorm connector with type "${type}" has been started on ${protocol}://${host}:${port}.`,
+        {
+          tag: 'Connection',
+          scope: 'Core',
+          namespace: 'TypeormConnector',
+        }
+      );
     } catch (e) {
       throw e;
     }
