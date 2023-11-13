@@ -7,14 +7,19 @@ import { AbstractService } from './abstract.service';
 
 import {
   IAbstractFactory,
+  IBaseOperationAgent,
   IDiscoveryService,
+  IFunctionalityAgent,
   ILoggerService,
   IMongodbConnector,
   IMongodbProvider,
+  ISchemaAgent,
   ISchemaLoader,
   ISchemaService,
   ITypeormConnector,
+  NAbstractFrameworkAdapter,
   NAbstractService,
+  NMongodbProvider,
   NSchemaService,
   NTypeormConnector,
 } from '@Core/Types';
@@ -98,6 +103,17 @@ export class SchemaService extends AbstractService implements ISchemaService {
       });
       this._typeormConnector.on('connector:TypeormConnector:start', () => {
         const entities: Typeorm.EntitySchema<unknown>[] = [];
+
+        loader.typeormSchemas.forEach((schema) => {
+          const agents: NAbstractFrameworkAdapter.Agents = {
+            functionalityAgent: container.get<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent),
+            schemaAgent: container.get<ISchemaAgent>(CoreSymbols.SchemaAgent),
+            baseAgent: container.get<IBaseOperationAgent>(CoreSymbols.BaseOperationAgent),
+          };
+
+          entities.push(schema.getSchema(agents));
+        });
+
         this._typeormConnector.emit('connector:TypeormConnector:entities:load', entities);
       });
     } catch (e) {

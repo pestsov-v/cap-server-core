@@ -8,6 +8,7 @@ import {
   ISchemaLoader,
   NMongodbProvider,
   NValidatorProvider,
+  NTypeormProvider,
 } from '@Core/Types';
 
 export function Apply(service: string, domains: string[]) {
@@ -26,6 +27,8 @@ export function Collect(domain: string, documents: NSchemaDecorators.Documents) 
     Reflect.defineMetadata(domain, documents, Reflect);
 
     const loader = Reflect.getMetadata(MetadataKeys.SchemaLoader, Reflect) as ISchemaLoader;
+
+    loader.setDomain(domain);
     if (documents.router) {
       const routes = Reflect.getMetadata(documents.router, Reflect) as NSchemaLoader.Routes<string>;
       if (routes) {
@@ -84,8 +87,15 @@ export function Collect(domain: string, documents: NSchemaDecorators.Documents) 
           handler: handlers[handler],
         });
       }
-    } else {
-      throw new Error('Validator not found');
+    }
+
+    if (documents.typeormSchema) {
+      const typeormSchema = Reflect.getMetadata(
+        documents.typeormSchema,
+        Reflect
+      ) as NTypeormProvider.SchemaInfo<UnknownObject>;
+
+      loader.setTypeormSchema(domain, typeormSchema);
     }
 
     return target;
@@ -134,6 +144,17 @@ export function MongoRepository<H = UnknownObject>(
 ) {
   return function <T extends { new (...args: any[]): {} }>(target: T) {
     Reflect.defineMetadata(name, handlers, Reflect);
+    return target;
+  };
+}
+
+export function TypeormSchema<T extends UnknownObject>(
+  name: symbol,
+  model: string,
+  getSchema: NTypeormProvider.SchemaFn<T>
+) {
+  return function <T extends { new (...args: any[]): {} }>(target: T) {
+    Reflect.defineMetadata(name, { model, getSchema }, Reflect);
     return target;
   };
 }

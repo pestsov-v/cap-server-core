@@ -15,6 +15,7 @@ import {
   SchemaProvider,
   ExceptionProvider,
   ValidatorProvider,
+  TypeormProvider,
 } from '../providers';
 
 import { Inversify } from '@Packages/Types';
@@ -38,6 +39,7 @@ import {
   IValidatorProvider,
   IValidatorBaseOperation,
   ITypeormConnector,
+  ITypeormProvider,
 } from '@Core/Types';
 
 export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) => {
@@ -58,6 +60,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   // Providers
   bind<ISchemaProvider>(CoreSymbols.SchemaProvider).to(SchemaProvider).inTransientScope();
   bind<IMongodbProvider>(CoreSymbols.MongodbProvider).to(MongodbProvider).inTransientScope();
+  bind<ITypeormProvider>(CoreSymbols.TypeormProvider).to(TypeormProvider).inTransientScope();
   bind<IValidatorProvider>(CoreSymbols.ValidatorProvider).to(ValidatorProvider).inTransientScope();
   bind<IExceptionProvider>(CoreSymbols.ExceptionProvider).to(ExceptionProvider).inTransientScope();
 

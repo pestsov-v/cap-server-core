@@ -10,6 +10,7 @@ import {
   IDiscoveryService,
   ILoggerService,
   ITypeormConnector,
+  NLoggerService,
   NTypeormConnector,
 } from '@Core/Types';
 
@@ -71,11 +72,14 @@ export class TypeormConnector extends AbstractConnector implements ITypeormConne
       throw new Error('Entities is not set');
     }
 
-    if (this._entities.length === 0) {
-      this._loggerService.warn('Typeorm entities list is empty.', {
-        namespace: 'TypeormConnector',
-        scope: 'Core',
-      });
+    const logOptions: NLoggerService.CoreWarnOptions = {
+      namespace: 'TypeormConnector',
+      scope: 'Core',
+    };
+    if (this._entities.length > 0) {
+      this._loggerService.system('Typeorm entities successful loaded.', logOptions);
+    } else {
+      this._loggerService.warn('Typeorm entities list is empty.', logOptions);
     }
 
     try {
@@ -92,6 +96,8 @@ export class TypeormConnector extends AbstractConnector implements ITypeormConne
       };
       this._connection = new DataSource(options);
 
+      // await this._connection.initialize();
+
       this._loggerService.system(
         `Typeorm connector with type "${type}" has been started on ${protocol}://${host}:${port}.`,
         {
@@ -107,8 +113,18 @@ export class TypeormConnector extends AbstractConnector implements ITypeormConne
 
   public async stop(): Promise<void> {
     this._config = undefined;
+
+    if (!this._connection) return;
+    await this.connection.destroy();
     this._connection = undefined;
+
     this._emitter.removeAllListeners();
+
+    this._loggerService.system(`Typeorm connector has been stopped.`, {
+      tag: 'Connection',
+      scope: 'Core',
+      namespace: 'TypeormConnector',
+    });
   }
 
   public emit<T>(event: NTypeormConnector.Events, data?: Voidable<T>): void {

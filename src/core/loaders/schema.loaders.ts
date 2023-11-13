@@ -7,6 +7,7 @@ import {
   NAbstractFrameworkAdapter,
   NMongodbProvider,
   NSchemaLoader,
+  NTypeormProvider,
   NValidatorProvider,
 } from '@Core/Types';
 
@@ -34,6 +35,21 @@ export class SchemaLoader implements ISchemaLoader {
       service.forEach((domain) => {
         if (domain.mongoSchema && domain.mongoModel) {
           schemas.push({ getSchema: domain.mongoSchema, model: domain.mongoModel });
+        }
+      });
+    });
+
+    return schemas;
+  }
+
+  public get typeormSchemas(): NTypeormProvider.SchemaInfo<UnknownObject>[] {
+    if (!this._services) throw this.throwServicesError();
+
+    const schemas: NTypeormProvider.SchemaInfo<UnknownObject>[] = [];
+    this._services.forEach((service) => {
+      service.forEach((domain) => {
+        if (domain.typeormSchema && domain.typeormModel) {
+          schemas.push({ getSchema: domain.typeormSchema, model: domain.typeormModel });
         }
       });
     });
@@ -77,7 +93,7 @@ export class SchemaLoader implements ISchemaLoader {
 
     const storage = this._domains.get(domain);
     if (!storage) {
-      this._setDomain(domain);
+      this.setDomain(domain);
       this.setController<T>(domain, details);
       return;
     }
@@ -93,7 +109,7 @@ export class SchemaLoader implements ISchemaLoader {
 
     const storage = this._domains.get(domain);
     if (!storage) {
-      this._setDomain(domain);
+      this.setDomain(domain);
       this.setHelper(domain, details);
       return;
     }
@@ -109,7 +125,7 @@ export class SchemaLoader implements ISchemaLoader {
 
     const storage = this._domains.get(domain);
     if (!storage) {
-      this._setDomain(domain);
+      this.setDomain(domain);
       this.setValidator(domain, validator);
       return;
     }
@@ -130,7 +146,7 @@ export class SchemaLoader implements ISchemaLoader {
 
     const storage = this._domains.get(domain);
     if (!storage) {
-      this._setDomain(domain);
+      this.setDomain(domain);
       this.setMongoRepository<T>(domain, model, details);
       return;
     }
@@ -146,7 +162,7 @@ export class SchemaLoader implements ISchemaLoader {
 
     const storage = this._domains.get(domain);
     if (!storage) {
-      this._setDomain(domain);
+      this.setDomain(domain);
       this.setRoute<T>(domain, details);
       return;
     }
@@ -168,7 +184,7 @@ export class SchemaLoader implements ISchemaLoader {
     if (!this._domains) throw this.throwDomainsError();
     const storage = this._domains.get(domain);
     if (!storage) {
-      this._setDomain(domain);
+      this.setDomain(domain);
       this.setMongoSchema<T>(domain, details);
       return;
     }
@@ -181,7 +197,25 @@ export class SchemaLoader implements ISchemaLoader {
     }
   }
 
-  private _setDomain(domain: string): void {
+  public setTypeormSchema<T>(domain: string, details: NTypeormProvider.SchemaInfo<T>): void {
+    if (!this._domains) throw this.throwDomainsError();
+
+    const storage = this._domains.get(domain);
+    if (!storage) {
+      this.setDomain(domain);
+      this.setTypeormSchema<T>(domain, details);
+      return;
+    }
+
+    if (!storage.mongoSchema) {
+      storage.typeormSchema = details.getSchema;
+      storage.typeormModel = details.model;
+    } else {
+      throw new Error(`Mongo schema for domain ${domain} already exists`);
+    }
+  }
+
+  public setDomain(domain: string): void {
     if (!this._domains) throw this.throwDomainsError();
 
     this._domains.set(domain, {

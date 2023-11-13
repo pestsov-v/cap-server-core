@@ -1,17 +1,20 @@
 import { NAbstractFrameworkAdapter } from '../adapters';
-import { NMongodbProvider, NValidatorProvider } from '../providers';
+import { NMongodbProvider, NTypeormProvider, NValidatorProvider } from '../providers';
 import { AnyFunction, FnObject, UnknownObject } from '@Utility/Types';
 
 export interface ISchemaLoader {
   readonly services: NSchemaLoader.Services;
   readonly mongoSchemas: NMongodbProvider.SchemaInfo<UnknownObject>[];
+  readonly typeormSchemas: NTypeormProvider.SchemaInfo<UnknownObject>[];
 
   init(): Promise<void>;
   destroy(): Promise<void>;
+  setDomain(domain: string): void;
   applyDomainToService(service: string, domain: string): void;
   setRoute<T extends string>(domain: string, route: NSchemaLoader.Route<T>): void;
   setController<T extends string>(domain: string, controller: NSchemaLoader.Controller<T>): void;
   setValidator<T>(domain, validator: NSchemaLoader.Validator<T>): void;
+  setMongoSchema<T>(domain: string, details: NMongodbProvider.SchemaInfo<T>): void;
   setMongoRepository<
     D extends string = string,
     T extends string = string,
@@ -23,8 +26,8 @@ export interface ISchemaLoader {
     model: string,
     handler: NSchemaLoader.MongoRepoHandler<T, H, A, R>
   ): void;
+  setTypeormSchema<T>(domain: string, details: NTypeormProvider.SchemaInfo<T>): void;
   setHelper(domain: string, helper: NSchemaLoader.Helper): void;
-  setMongoSchema<T>(domain: string, details: NMongodbProvider.SchemaInfo<T>): void;
 }
 
 export namespace NSchemaLoader {
@@ -72,6 +75,9 @@ export namespace NSchemaLoader {
     mongoModel?: string;
     mongoSchema?: NMongodbProvider.SchemaFn<unknown>;
     mongoRepoHandlers?: Map<string, AnyFunction>;
+    typeormModel?: string;
+    typeormSchema?: NTypeormProvider.SchemaFn<unknown>;
+    typeormRepoHandlers?: Map<string, AnyFunction>;
     validators?: Map<string, NValidatorProvider.ValidateHandler>;
   };
   export type Domains = Map<string, DomainStorage>;

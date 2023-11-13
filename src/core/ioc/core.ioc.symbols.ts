@@ -16,6 +16,7 @@ export const CoreSymbols = {
   // Providers
   SchemaProvider: Symbol('SchemaProvider'),
   MongodbProvider: Symbol('MongodbProvider'),
+  TypeormProvider: Symbol('TypeormProvider'),
   ValidatorProvider: Symbol('ValidatorProvider'),
   ExceptionProvider: Symbol('ExceptionProvider'),
 
