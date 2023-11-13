@@ -6,6 +6,8 @@ export interface ISchemaProvider {
   getAnotherMongoRepository<T extends FnObject = FnObject>(name: string): T;
   getValidator<T extends UnknownObject>(): T;
   getAnotherValidator<T>(name: string): T;
+  getTypeormRepository<T>(): T;
+  getAnotherTypeormRepository<T>(name: string): T;
 }
 
 export namespace NSchemaProvider {

@@ -1,4 +1,4 @@
-import { IMongodbProvider, IValidatorProvider } from '../providers';
+import { IMongodbProvider, ITypeormProvider, IValidatorProvider } from '../providers';
 import { IDiscoveryService } from '../services';
 
 export interface IFunctionalityAgent {
@@ -29,5 +29,9 @@ export namespace NFunctionalityAgent {
   export type Validator = {
     readonly validator: IValidatorProvider['validator'];
     validate: IValidatorProvider['validate'];
+  };
+
+  export type typeorm = {
+    getRepository<T>(): ITypeormProvider['getRepository'];
   };
 }

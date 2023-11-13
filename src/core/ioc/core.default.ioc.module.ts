@@ -8,13 +8,14 @@ import { FrameworkFactory } from '../factories';
 import { SchemaLoader } from '../loaders';
 import { ValidatorBaseOperation } from '../base-operations';
 import { FunctionalityAgent, SchemaAgent, BaseOperationAgent } from '../agents';
-import { MongodbConnector, ServiceConnector } from '../connectors';
+import { MongodbConnector, ServiceConnector, TypeormConnector } from '../connectors';
 import { ContextService, DiscoveryService, LoggerService, SchemaService } from '../services';
 import {
   MongodbProvider,
   SchemaProvider,
   ExceptionProvider,
   ValidatorProvider,
+  TypeormProvider,
 } from '../providers';
 
 import { Inversify } from '@Packages/Types';
@@ -37,6 +38,8 @@ import {
   IServiceConnector,
   IValidatorProvider,
   IValidatorBaseOperation,
+  ITypeormConnector,
+  ITypeormProvider,
 } from '@Core/Types';
 
 export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) => {
@@ -46,6 +49,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   // Connectors
   bind<IServiceConnector>(CoreSymbols.ServiceConnector).to(ServiceConnector).inSingletonScope();
   bind<IMongodbConnector>(CoreSymbols.MongodbConnector).to(MongodbConnector).inSingletonScope();
+  bind<ITypeormConnector>(CoreSymbols.TypeormConnector).to(TypeormConnector).inSingletonScope();
 
   // Services
   bind<IAbstractService>(CoreSymbols.DiscoveryService).to(DiscoveryService).inSingletonScope();
@@ -56,6 +60,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   // Providers
   bind<ISchemaProvider>(CoreSymbols.SchemaProvider).to(SchemaProvider).inTransientScope();
   bind<IMongodbProvider>(CoreSymbols.MongodbProvider).to(MongodbProvider).inTransientScope();
+  bind<ITypeormProvider>(CoreSymbols.TypeormProvider).to(TypeormProvider).inTransientScope();
   bind<IValidatorProvider>(CoreSymbols.ValidatorProvider).to(ValidatorProvider).inTransientScope();
   bind<IExceptionProvider>(CoreSymbols.ExceptionProvider).to(ExceptionProvider).inTransientScope();
 

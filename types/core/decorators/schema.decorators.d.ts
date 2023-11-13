@@ -5,6 +5,8 @@ export namespace NSchemaDecorators {
     helper?: symbol;
     mongoSchema?: symbol;
     mongoRepository?: symbol;
+    typeormSchema?: symbol;
+    typeormRepository?: symbol;
     validator?: symbol;
   };
 }

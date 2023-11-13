@@ -27,4 +27,14 @@ export class SchemaAgent implements ISchemaAgent {
   public getValidator<T extends UnknownObject>(): T {
     return container.get<ISchemaProvider>(CoreSymbols.SchemaProvider).getValidator<T>();
   }
+
+  public getAnotherTypeormRepository<T extends FnObject = FnObject>(name: string): T {
+    return container
+      .get<ISchemaProvider>(CoreSymbols.SchemaProvider)
+      .getAnotherTypeormRepository(name);
+  }
+
+  public getTypeormRepository<T extends FnObject = FnObject>(): T {
+    return container.get<ISchemaProvider>(CoreSymbols.SchemaProvider).getTypeormRepository<T>();
+  }
 }

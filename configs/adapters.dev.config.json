@@ -4,7 +4,7 @@
     "serverTag": "MASTER_01",
     "protocol": "http",
     "host": "localhost",
-    "port": 11011,
+    "port": 11023,
     "urls": {
       "api": "/v1/call/api/"
     }

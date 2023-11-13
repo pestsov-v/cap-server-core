@@ -1,5 +1,5 @@
 import { MetadataKeys } from '@common';
-import { FnObject, UnknownObject } from '@Utility/Types';
+import { AnyFunction, FnObject, UnknownObject } from '@Utility/Types';
 
 import {
   NSchemaDecorators,
@@ -8,6 +8,7 @@ import {
   ISchemaLoader,
   NMongodbProvider,
   NValidatorProvider,
+  NTypeormProvider,
 } from '@Core/Types';
 
 export function Apply(service: string, domains: string[]) {
@@ -26,6 +27,8 @@ export function Collect(domain: string, documents: NSchemaDecorators.Documents) 
     Reflect.defineMetadata(domain, documents, Reflect);
 
     const loader = Reflect.getMetadata(MetadataKeys.SchemaLoader, Reflect) as ISchemaLoader;
+
+    loader.setDomain(domain);
     if (documents.router) {
       const routes = Reflect.getMetadata(documents.router, Reflect) as NSchemaLoader.Routes<string>;
       if (routes) {
@@ -84,8 +87,27 @@ export function Collect(domain: string, documents: NSchemaDecorators.Documents) 
           handler: handlers[handler],
         });
       }
-    } else {
-      throw new Error('Validator not found');
+    }
+
+    if (documents.typeormSchema && documents.typeormRepository) {
+      const typeormSchema = Reflect.getMetadata(
+        documents.typeormSchema,
+        Reflect
+      ) as NTypeormProvider.SchemaInfo<UnknownObject>;
+
+      loader.setTypeormSchema(domain, typeormSchema);
+
+      const handlers = Reflect.getMetadata(
+        documents.typeormRepository,
+        Reflect
+      ) as NTypeormProvider.Handlers<FnObject>;
+
+      for (const handler in handlers) {
+        loader.setTypeormRepository(domain, typeormSchema.model, {
+          name: handler,
+          handler: handlers[handler],
+        });
+      }
     }
 
     return target;
@@ -132,6 +154,24 @@ export function MongoRepository<H = UnknownObject>(
   name: symbol,
   handlers: NMongodbProvider.MongooseHandlers<H>
 ) {
+  return function <T extends { new (...args: any[]): {} }>(target: T) {
+    Reflect.defineMetadata(name, handlers, Reflect);
+    return target;
+  };
+}
+
+export function TypeormSchema<T extends UnknownObject>(
+  name: symbol,
+  model: string,
+  getSchema: NTypeormProvider.SchemaFn<T>
+) {
+  return function <T extends { new (...args: any[]): {} }>(target: T) {
+    Reflect.defineMetadata(name, { model, getSchema }, Reflect);
+    return target;
+  };
+}
+
+export function TypeormRepository<H extends FnObject = FnObject>(name: symbol, handlers: H) {
   return function <T extends { new (...args: any[]): {} }>(target: T) {
     Reflect.defineMetadata(name, handlers, Reflect);
     return target;

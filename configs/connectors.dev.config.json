@@ -1,6 +1,6 @@
 {
   "mongodb": {
-    "enable": true,
+    "enable": false,
     "connect": {
       "protocol": "mongodb",
       "host": "localhost",
@@ -11,5 +11,20 @@
         "password": "root"
         },
     "database": "nisu"
+    },
+  "typeorm": {
+    "enable": true,
+    "connect": {
+      "dbType": "postgres",
+      "protocol": "http",
+      "host": "localhost",
+      "port": 5432,
+      "database": "root",
+      "schema": "public"
+    },
+    "auth": {
+      "username": "postgres",
+      "password": "postgres"
     }
+  }
 }

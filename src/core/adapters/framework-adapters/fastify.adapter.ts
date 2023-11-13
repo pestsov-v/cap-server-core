@@ -116,7 +116,7 @@ export class FastifyAdapter
 
     if (!domain.routes || !domain.controllers) {
       return res.status(StatusCode.BAD_REQUEST).send({
-        ResponseType: ResponseType.FAIL,
+        responseType: ResponseType.FAIL,
         data: {
           message: 'Domain does not have any routes',
         },
@@ -132,7 +132,7 @@ export class FastifyAdapter
     const handler = domain.controllers.get(action.handler);
     if (!handler) {
       return res.status(StatusCode.BAD_REQUEST).send({
-        ResponseType: ResponseType.FAIL,
+        responseType: ResponseType.FAIL,
         data: {
           message: 'Domain does not have any routes',
         },
@@ -204,7 +204,7 @@ export class FastifyAdapter
         return res.status(response.statusCode).send(response.payload);
       } else {
         return res.status(StatusCode.SERVER_ERROR).send({
-          ResponseType: ResponseType.ERROR,
+          responseType: ResponseType.ERROR,
           data: {
             message: e,
           },
@@ -232,7 +232,7 @@ export class FastifyAdapter
     }
 
     return {
-      ResponseType: ResponseType.FAIL,
+      responseType: ResponseType.FAIL,
       data: { message },
     };
   }

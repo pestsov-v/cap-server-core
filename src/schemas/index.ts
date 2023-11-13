@@ -1,1 +1,1 @@
-export * from './sushi-master';
+export * from './sys-admin';

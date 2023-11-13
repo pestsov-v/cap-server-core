@@ -32,7 +32,7 @@ export class MongodbConnector extends AbstractConnector implements IMongodbConne
 
   private _setConfig(): void {
     this._config = {
-      enable: this._discoveryService.getBoolean('connectors:mongodb:enable', true),
+      enable: this._discoveryService.getBoolean('connectors:mongodb:enable', false),
       protocol: this._discoveryService.getString('connectors:mongodb:connect:protocol', 'mongodb'),
       host: this._discoveryService.getString('connectors:mongodb:connect:host', 'localhost'),
       port: this._discoveryService.getNumber('connectors:mongodb:connect:port', 27017),
@@ -52,7 +52,7 @@ export class MongodbConnector extends AbstractConnector implements IMongodbConne
     }
 
     if (!this._config.enable) {
-      this._loggerService.system('Mongodb connector is disabled', {
+      this._loggerService.warn('Mongodb connector is disabled.', {
         tag: 'Connection',
         scope: 'Core',
         namespace: 'MongodbConnector',

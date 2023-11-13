@@ -9,6 +9,7 @@ import fastify from 'fastify';
 import express from 'express';
 import mongoose from 'mongoose';
 import joi from 'joi';
+import typeorm from 'typeorm';
 
 import { StringObject, UnknownObject } from '@Utility/Types';
 
@@ -269,6 +270,14 @@ export namespace Mongoose {
     TRawDocType,
     'deleteMany'
   >;
+}
+
+export namespace Typeorm {
+  export type DataSource = typeorm.DataSource;
+  export type DataSourceOptions = typeorm.DataSourceOptions;
+  export type EntitySchema<T> = typeorm.EntitySchema<T>;
+  export type DatabaseType = Exclude<'oracle', typeorm.DatabaseType>;
+  export type Repository<T> = typeorm.Repository<T>;
 }
 
 export namespace Joi {
