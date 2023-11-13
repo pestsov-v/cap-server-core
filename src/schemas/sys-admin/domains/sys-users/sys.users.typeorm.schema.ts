@@ -11,23 +11,28 @@ import { EntitySchema } from 'typeorm/entity-schema/EntitySchema';
     return new EntitySchema({
       name: TypeormSchemaNames.SYS_USERS,
       columns: {
-        EMAIL: {
+        USER_ID: {
           type: 'string',
+          primary: true,
+          generated: 'uuid',
+        },
+        EMAIL: {
+          type: 'varchar',
           nullable: false,
           length: 320,
         },
         PHONE: {
-          type: 'string',
+          type: 'varchar',
           nullable: false,
           length: 13,
         },
         FIRST_NAME: {
-          type: 'string',
+          type: 'varchar',
           nullable: false,
           length: 50,
         },
         LAST_NAME: {
-          type: 'string',
+          type: 'varchar',
           nullable: false,
           length: 50,
         },

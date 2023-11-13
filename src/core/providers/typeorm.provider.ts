@@ -1,8 +1,8 @@
 import { Packages } from '@Packages';
 const { injectable, inject } = Packages.inversify;
+import { CoreSymbols } from '@CoreSymbols';
 
 import { IContextService, ITypeormConnector, ITypeormProvider } from '@Core/Types';
-import { CoreSymbols } from '@CoreSymbols';
 
 @injectable()
 export class TypeormProvider implements ITypeormProvider {
@@ -12,8 +12,4 @@ export class TypeormProvider implements ITypeormProvider {
     @inject(CoreSymbols.ContextService)
     private readonly _contextService: IContextService
   ) {}
-
-  public setEntities() {
-    const { connection } = this._typeormConnector;
-  }
 }

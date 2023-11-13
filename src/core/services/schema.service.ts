@@ -17,6 +17,7 @@ import {
   ISchemaLoader,
   ISchemaService,
   ITypeormConnector,
+  ITypeormProvider,
   NAbstractFrameworkAdapter,
   NAbstractService,
   NMongodbProvider,

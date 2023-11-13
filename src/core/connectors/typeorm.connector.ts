@@ -41,6 +41,7 @@ export class TypeormConnector extends AbstractConnector implements ITypeormConne
       username: this._discoveryService.getString('connectors:typeorm:auth:username', ''),
       password: this._discoveryService.getString('connectors:typeorm:auth:password', ''),
       database: this._discoveryService.getString('connectors:typeorm:connect:database', ''),
+      schema: this._discoveryService.getString('connectors:typeorm:connect:schema', 'public'),
     };
   }
 
@@ -83,7 +84,7 @@ export class TypeormConnector extends AbstractConnector implements ITypeormConne
     }
 
     try {
-      const { type, protocol, host, port, database, password, username } = this._config;
+      const { type, protocol, host, port, database, password, username, schema } = this._config;
       const options: Typeorm.DataSourceOptions = {
         type: type,
         host: host,
@@ -93,10 +94,12 @@ export class TypeormConnector extends AbstractConnector implements ITypeormConne
         password: password,
         useUTC: true,
         entities: this._entities,
+        schema: schema,
+        synchronize: true,
       };
       this._connection = new DataSource(options);
 
-      // await this._connection.initialize();
+      await this._connection.initialize();
 
       this._loggerService.system(
         `Typeorm connector with type "${type}" has been started on ${protocol}://${host}:${port}.`,

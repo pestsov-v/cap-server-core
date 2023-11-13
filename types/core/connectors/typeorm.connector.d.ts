@@ -24,5 +24,6 @@ export namespace NTypeormConnector {
     username: string;
     password: string;
     database: string;
+    schema: string;
   };
 }
