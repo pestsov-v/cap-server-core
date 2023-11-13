@@ -10,8 +10,10 @@ import express from 'express';
 import mongoose from 'mongoose';
 import joi from 'joi';
 import typeorm from 'typeorm';
+import { Redis, RedisOptions } from 'ioredis';
 
 import { StringObject, UnknownObject } from '@Utility/Types';
+import { CommonRedisOptions } from 'ioredis/built/redis/RedisOptions';
 
 export namespace Inversify {
   export namespace interfaces {
@@ -283,4 +285,9 @@ export namespace Typeorm {
 export namespace Joi {
   export type Root = joi.Root;
   export type ObjectSchema<T> = joi.ObjectSchema<T>;
+}
+
+export namespace IoRedis {
+  export type IoRedis = Redis;
+  export type IoRedisOptions = RedisOptions;
 }

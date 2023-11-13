@@ -6,6 +6,7 @@ export const CoreSymbols = {
   ServiceConnector: Symbol('ServiceConnector'),
   MongodbConnector: Symbol('MongodbConnector'),
   TypeormConnector: Symbol('TypeormConnector'),
+  RedisConnector: Symbol('RedisConnector'),
 
   // Services
   DiscoveryService: Symbol('DiscoveryService'),

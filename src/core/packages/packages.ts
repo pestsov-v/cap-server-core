@@ -17,6 +17,7 @@ import { v4 } from 'uuid';
 import mongoose from 'mongoose';
 import { DataSource } from 'typeorm';
 import joi from 'joi';
+import ioredis from 'ioredis';
 
 export class Packages {
   public static get inversify() {
@@ -108,5 +109,9 @@ export class Packages {
 
   public static get joi() {
     return { joi };
+  }
+
+  public static get ioredis() {
+    return { ioredis };
   }
 }

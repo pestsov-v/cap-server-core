@@ -8,7 +8,12 @@ import { FrameworkFactory } from '../factories';
 import { SchemaLoader } from '../loaders';
 import { ValidatorBaseOperation } from '../base-operations';
 import { FunctionalityAgent, SchemaAgent, BaseOperationAgent } from '../agents';
-import { MongodbConnector, ServiceConnector, TypeormConnector } from '../connectors';
+import {
+  MongodbConnector,
+  RedisConnector,
+  ServiceConnector,
+  TypeormConnector,
+} from '../connectors';
 import { ContextService, DiscoveryService, LoggerService, SchemaService } from '../services';
 import {
   MongodbProvider,
@@ -40,6 +45,7 @@ import {
   IValidatorBaseOperation,
   ITypeormConnector,
   ITypeormProvider,
+  IRedisConnector,
 } from '@Core/Types';
 
 export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) => {
@@ -50,6 +56,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<IServiceConnector>(CoreSymbols.ServiceConnector).to(ServiceConnector).inSingletonScope();
   bind<IMongodbConnector>(CoreSymbols.MongodbConnector).to(MongodbConnector).inSingletonScope();
   bind<ITypeormConnector>(CoreSymbols.TypeormConnector).to(TypeormConnector).inSingletonScope();
+  bind<IRedisConnector>(CoreSymbols.RedisConnector).to(RedisConnector).inSingletonScope();
 
   // Services
   bind<IAbstractService>(CoreSymbols.DiscoveryService).to(DiscoveryService).inSingletonScope();
