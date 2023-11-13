@@ -103,7 +103,7 @@ export class SchemaService extends AbstractService implements ISchemaService {
         container.get<IMongodbProvider>(CoreSymbols.MongodbProvider).setModels(loader.mongoSchemas);
       });
       this._typeormConnector.on('connector:TypeormConnector:start', () => {
-        const entities: Typeorm.EntitySchema<unknown>[] = [];
+        const entities = new Map<string, Typeorm.EntitySchema<unknown>>();
 
         loader.typeormSchemas.forEach((schema) => {
           const agents: NAbstractFrameworkAdapter.Agents = {
@@ -112,7 +112,7 @@ export class SchemaService extends AbstractService implements ISchemaService {
             baseAgent: container.get<IBaseOperationAgent>(CoreSymbols.BaseOperationAgent),
           };
 
-          entities.push(schema.getSchema(agents));
+          entities.set(schema.model, schema.getSchema(agents));
         });
 
         this._typeormConnector.emit('connector:TypeormConnector:entities:load', entities);

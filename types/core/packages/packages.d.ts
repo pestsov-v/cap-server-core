@@ -12,10 +12,6 @@ import joi from 'joi';
 import typeorm from 'typeorm';
 
 import { StringObject, UnknownObject } from '@Utility/Types';
-import { DataSourceOptions } from 'typeorm/data-source/DataSourceOptions';
-import { EntitySchema } from 'typeorm/entity-schema/EntitySchema';
-import { DatabaseType } from 'typeorm/driver/types/DatabaseType';
-import { EntitySchemaOptions } from 'typeorm/entity-schema/EntitySchemaOptions';
 
 export namespace Inversify {
   export namespace interfaces {
@@ -279,9 +275,9 @@ export namespace Mongoose {
 export namespace Typeorm {
   export type DataSource = typeorm.DataSource;
   export type DataSourceOptions = typeorm.DataSourceOptions;
-  export type EntitySchemaOptions<T> = typeorm.EntitySchemaOptions<T>;
   export type EntitySchema<T> = typeorm.EntitySchema<T>;
   export type DatabaseType = Exclude<'oracle', typeorm.DatabaseType>;
+  export type Repository<T> = typeorm.Repository<T>;
 }
 
 export namespace Joi {

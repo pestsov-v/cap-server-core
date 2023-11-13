@@ -215,6 +215,29 @@ export class SchemaLoader implements ISchemaLoader {
     }
   }
 
+  public setTypeormRepository<T extends string = string>(
+    domain: string,
+    model: string,
+    details: {
+      name: string;
+      handler: AnyFunction;
+    }
+  ): void {
+    if (!this._domains) throw this.throwDomainsError();
+
+    const storage = this._domains.get(domain);
+    if (!storage) {
+      this.setDomain(domain);
+      this.setTypeormRepository<T>(domain, model, details);
+      return;
+    }
+    if (!storage.typeormRepoHandlers) {
+      storage.typeormRepoHandlers = new Map<string, AnyFunction>();
+    }
+
+    storage.typeormRepoHandlers.set(details.name, details.handler);
+  }
+
   public setDomain(domain: string): void {
     if (!this._domains) throw this.throwDomainsError();
 

@@ -18,7 +18,8 @@ import {
 export class TypeormConnector extends AbstractConnector implements ITypeormConnector {
   private _connection: Typeorm.DataSource | undefined;
   private _config: NTypeormConnector.Config | undefined;
-  private _entities: Typeorm.EntitySchema<unknown>[] | undefined;
+  private _entities: Map<string, Typeorm.EntitySchema<unknown>> | undefined;
+  private _repositories: Map<string, Typeorm.Repository<unknown>>;
 
   constructor(
     @inject(CoreSymbols.DiscoveryService)
@@ -27,6 +28,8 @@ export class TypeormConnector extends AbstractConnector implements ITypeormConne
     private readonly _loggerService: ILoggerService
   ) {
     super();
+
+    this._repositories = new Map<string, Typeorm.Repository<unknown>>();
   }
 
   private _setConfig(): void {
@@ -63,7 +66,7 @@ export class TypeormConnector extends AbstractConnector implements ITypeormConne
 
     this._emitter.on(
       'connector:TypeormConnector:entities:load',
-      (entities: Typeorm.EntitySchema<unknown>[]) => {
+      (entities: Map<string, Typeorm.EntitySchema<unknown>>) => {
         this._entities = entities;
       }
     );
@@ -77,7 +80,7 @@ export class TypeormConnector extends AbstractConnector implements ITypeormConne
       namespace: 'TypeormConnector',
       scope: 'Core',
     };
-    if (this._entities.length > 0) {
+    if (this._entities.size > 0) {
       this._loggerService.system('Typeorm entities successful loaded.', logOptions);
     } else {
       this._loggerService.warn('Typeorm entities list is empty.', logOptions);
@@ -93,13 +96,17 @@ export class TypeormConnector extends AbstractConnector implements ITypeormConne
         username: username,
         password: password,
         useUTC: true,
-        entities: this._entities,
+        entities: Array.from(this._entities.values()),
         schema: schema,
         synchronize: true,
       };
       this._connection = new DataSource(options);
 
       await this._connection.initialize();
+
+      for (const [name, entity] of this._entities) {
+        this._repositories.set(name, this._connection.getRepository(entity));
+      }
 
       this._loggerService.system(
         `Typeorm connector with type "${type}" has been started on ${protocol}://${host}:${port}.`,
@@ -128,6 +135,15 @@ export class TypeormConnector extends AbstractConnector implements ITypeormConne
       scope: 'Core',
       namespace: 'TypeormConnector',
     });
+  }
+
+  public getRepository<T>(name: string): Typeorm.Repository<T> {
+    const repository = this._repositories.get(name);
+    if (!repository) {
+      throw new Error(`Repository "${name}" not found`);
+    }
+
+    return repository as Typeorm.Repository<T>;
   }
 
   public emit<T>(event: NTypeormConnector.Events, data?: Voidable<T>): void {

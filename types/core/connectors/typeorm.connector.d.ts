@@ -4,6 +4,7 @@ import { Voidable } from '@Utility/Types';
 
 export interface ITypeormConnector extends IAbstractConnector {
   readonly connection: Typeorm.DataSource;
+  getRepository<T>(name: string): Typeorm.Repository<T>;
 
   emit<T>(event: NTypeormConnector.Events, data?: Voidable<T>): void;
   on(event: NTypeormConnector.Events, listener: () => void): void;

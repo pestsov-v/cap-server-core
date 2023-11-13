@@ -1,6 +1,7 @@
 import { NAbstractFrameworkAdapter } from '../adapters';
+
+import { AnyFunction, UnknownObject } from '@Utility/Types';
 import { NMongodbProvider, NTypeormProvider, NValidatorProvider } from '../providers';
-import { AnyFunction, FnObject, UnknownObject } from '@Utility/Types';
 
 export interface ISchemaLoader {
   readonly services: NSchemaLoader.Services;
@@ -27,6 +28,14 @@ export interface ISchemaLoader {
     handler: NSchemaLoader.MongoRepoHandler<T, H, A, R>
   ): void;
   setTypeormSchema<T>(domain: string, details: NTypeormProvider.SchemaInfo<T>): void;
+  setTypeormRepository<T extends string = string>(
+    domain: string,
+    model: string,
+    details: {
+      name: string;
+      handler: AnyFunction;
+    }
+  ): void;
   setHelper(domain: string, helper: NSchemaLoader.Helper): void;
 }
 

@@ -9,6 +9,7 @@ import {
   MongoSchema,
   MongoRepository,
   TypeormSchema,
+  TypeormRepository,
   Validator,
 } from '../decorators';
 export {
@@ -20,6 +21,7 @@ export {
   MongoSchema,
   MongoRepository,
   TypeormSchema,
+  TypeormRepository,
   Validator,
 };
 

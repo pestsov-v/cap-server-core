@@ -1,5 +1,5 @@
 import { MetadataKeys } from '@common';
-import { FnObject, UnknownObject } from '@Utility/Types';
+import { AnyFunction, FnObject, UnknownObject } from '@Utility/Types';
 
 import {
   NSchemaDecorators,
@@ -89,13 +89,25 @@ export function Collect(domain: string, documents: NSchemaDecorators.Documents) 
       }
     }
 
-    if (documents.typeormSchema) {
+    if (documents.typeormSchema && documents.typeormRepository) {
       const typeormSchema = Reflect.getMetadata(
         documents.typeormSchema,
         Reflect
       ) as NTypeormProvider.SchemaInfo<UnknownObject>;
 
       loader.setTypeormSchema(domain, typeormSchema);
+
+      const handlers = Reflect.getMetadata(
+        documents.typeormRepository,
+        Reflect
+      ) as NTypeormProvider.Handlers<FnObject>;
+
+      for (const handler in handlers) {
+        loader.setTypeormRepository(domain, typeormSchema.model, {
+          name: handler,
+          handler: handlers[handler],
+        });
+      }
     }
 
     return target;
@@ -155,6 +167,13 @@ export function TypeormSchema<T extends UnknownObject>(
 ) {
   return function <T extends { new (...args: any[]): {} }>(target: T) {
     Reflect.defineMetadata(name, { model, getSchema }, Reflect);
+    return target;
+  };
+}
+
+export function TypeormRepository<H extends FnObject = FnObject>(name: symbol, handlers: H) {
+  return function <T extends { new (...args: any[]): {} }>(target: T) {
+    Reflect.defineMetadata(name, handlers, Reflect);
     return target;
   };
 }

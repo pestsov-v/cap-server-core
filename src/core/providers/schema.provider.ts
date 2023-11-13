@@ -3,7 +3,12 @@ const { injectable, inject } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
 import { container } from '../ioc/core.ioc';
 
-import { IContextService, IFunctionalityAgent, ISchemaProvider } from '@Core/Types';
+import {
+  IContextService,
+  IFunctionalityAgent,
+  ISchemaProvider,
+  ITypeormProvider,
+} from '@Core/Types';
 import { AnyFunction, FnObject, UnknownObject } from '@Utility/Types';
 
 @injectable()
@@ -108,5 +113,54 @@ export class SchemaProvider implements ISchemaProvider {
 
   public getValidator<T extends UnknownObject>(): T {
     return this.getAnotherValidator<T>(this._contextService.store.domain);
+  }
+
+  public getAnotherTypeormRepository<T>(name: string): T {
+    const store = this._contextService.store;
+
+    const service = store.schema.get(store.service);
+    if (!service) {
+      throw new Error('Service not found');
+    }
+    const domain = service.get(name);
+    if (!domain) {
+      throw new Error('Domain not found');
+    }
+
+    const handlers = domain.typeormRepoHandlers;
+    if (!handlers) {
+      throw new Error('Typeorm repository handlers not found');
+    }
+
+    class Repository<T> {
+      private readonly _handlers: Map<string, AnyFunction>;
+      constructor(handlers: Map<string, AnyFunction>) {
+        this._handlers = handlers;
+
+        for (const [name] of this._handlers) {
+          Object.defineProperty(this, name, {
+            value: (...args: any[]) => this._runMethod(name, ...args),
+            writable: true,
+            configurable: true,
+          });
+        }
+      }
+
+      private _runMethod(method: string, ...args: any[]): any {
+        const handler = this._handlers.get(method);
+        if (handler && domain && domain.typeormModel) {
+          const validator = container
+            .get<ITypeormProvider>(CoreSymbols.TypeormProvider)
+            .getRepository(domain.typeormModel);
+          return handler(validator, ...args);
+        }
+      }
+    }
+
+    return new Repository<T>(handlers) as T;
+  }
+
+  public getTypeormRepository<T>(): T {
+    return this.getAnotherTypeormRepository<T>(this._contextService.store.domain);
   }
 }
