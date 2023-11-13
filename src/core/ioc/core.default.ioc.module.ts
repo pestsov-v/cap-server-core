@@ -8,7 +8,7 @@ import { FrameworkFactory } from '../factories';
 import { SchemaLoader } from '../loaders';
 import { ValidatorBaseOperation } from '../base-operations';
 import { FunctionalityAgent, SchemaAgent, BaseOperationAgent } from '../agents';
-import { MongodbConnector, ServiceConnector } from '../connectors';
+import { MongodbConnector, ServiceConnector, TypeormConnector } from '../connectors';
 import { ContextService, DiscoveryService, LoggerService, SchemaService } from '../services';
 import {
   MongodbProvider,
@@ -37,6 +37,7 @@ import {
   IServiceConnector,
   IValidatorProvider,
   IValidatorBaseOperation,
+  ITypeormConnector,
 } from '@Core/Types';
 
 export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) => {
@@ -46,6 +47,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   // Connectors
   bind<IServiceConnector>(CoreSymbols.ServiceConnector).to(ServiceConnector).inSingletonScope();
   bind<IMongodbConnector>(CoreSymbols.MongodbConnector).to(MongodbConnector).inSingletonScope();
+  bind<ITypeormConnector>(CoreSymbols.TypeormConnector).to(TypeormConnector).inSingletonScope();
 
   // Services
   bind<IAbstractService>(CoreSymbols.DiscoveryService).to(DiscoveryService).inSingletonScope();

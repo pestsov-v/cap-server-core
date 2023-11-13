@@ -15,6 +15,7 @@ import fastify from 'fastify';
 import express from 'express';
 import { v4 } from 'uuid';
 import mongoose from 'mongoose';
+import { DataSource } from 'typeorm';
 import joi from 'joi';
 
 export class Packages {
@@ -99,6 +100,10 @@ export class Packages {
       mongoose,
       Schema: mongoose.Schema,
     };
+  }
+
+  public static get typeorm() {
+    return { DataSource };
   }
 
   public static get joi() {

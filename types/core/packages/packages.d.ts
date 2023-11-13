@@ -9,8 +9,12 @@ import fastify from 'fastify';
 import express from 'express';
 import mongoose from 'mongoose';
 import joi from 'joi';
+import typeorm from 'typeorm';
 
 import { StringObject, UnknownObject } from '@Utility/Types';
+import { DataSourceOptions } from 'typeorm/data-source/DataSourceOptions';
+import { EntitySchema } from 'typeorm/entity-schema/EntitySchema';
+import { DatabaseType } from 'typeorm/driver/types/DatabaseType';
 
 export namespace Inversify {
   export namespace interfaces {
@@ -269,6 +273,13 @@ export namespace Mongoose {
     TRawDocType,
     'deleteMany'
   >;
+}
+
+export namespace Typeorm {
+  export type DataSource = typeorm.DataSource;
+  export type DataSourceOptions = typeorm.DataSourceOptions;
+  export type EntitySchema<T> = typeorm.EntitySchema<T>;
+  export type DatabaseType = Exclude<'oracle', typeorm.DatabaseType>;
 }
 
 export namespace Joi {
