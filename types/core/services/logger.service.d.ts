@@ -86,7 +86,7 @@ export namespace NLoggerService {
   export type ErrorType = 'FATAL' | 'FAIL' | 'EXCEPTION' | 'CUSTOM';
 
   export interface CoreBaseOptions {
-    namespace?: string;
+    namespace: string;
     errorId?: string;
     tag?: ServiceTag;
     traceId?: string;

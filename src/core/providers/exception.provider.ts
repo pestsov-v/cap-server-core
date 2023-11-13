@@ -3,6 +3,7 @@ const { injectable } = Packages.inversify;
 import { ResponseType, StatusCode } from '@common';
 
 import {
+  ICoreError,
   IExceptionProvider,
   IValidatorError,
   NExceptionProvider,
@@ -16,6 +17,29 @@ class ValidatorError extends Error implements IValidatorError {
     super(message);
 
     this.errors = errors;
+  }
+}
+
+class CoreError extends Error implements ICoreError {
+  public readonly namespace: string;
+  public readonly tag: string | undefined;
+  public readonly requestId: string | undefined;
+  public readonly sessionId: string | undefined;
+  public readonly trace: string | undefined;
+  public readonly msg: string | undefined;
+
+  constructor(message: string, options: NExceptionProvider.CoreError) {
+    super(message);
+
+    this.namespace = options.namespace;
+    this.tag = options.tag;
+    this.requestId = options.requestId;
+    this.sessionId = options.sessionId;
+    this.trace = this.stack;
+    this.msg = this.message;
+
+    Object.setPrototypeOf(this, new.target.prototype);
+    Error.captureStackTrace(this);
   }
 }
 
@@ -33,5 +57,9 @@ export class ExceptionProvider implements IExceptionProvider {
         data: { errors: e.errors },
       },
     };
+  }
+
+  public throwError(message: string, options: NExceptionProvider.CoreError): ICoreError {
+    return new CoreError(message, options);
   }
 }

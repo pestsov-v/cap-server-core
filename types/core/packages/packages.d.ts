@@ -1,5 +1,4 @@
 import events from 'events';
-import child_process from 'child_process';
 import async_hooks from 'async_hooks';
 
 import nconf from 'nconf';
@@ -34,15 +33,10 @@ export namespace Winston {
   export type Logger = winston.Logger;
   export type Container = winston.Container;
   export type transport = winston.transport;
-  export type TransformableInfo = winston.TransformableInfo;
 }
 
 export namespace Color {
   export type Color = colors.Color;
-}
-
-export namespace ChildProcess {
-  export type Worker = child_process.Worker;
 }
 
 export namespace AsyncHooks {
@@ -77,19 +71,207 @@ export namespace Express {
 
 export namespace Mongoose {
   export type Mongoose = mongoose.Mongoose;
+  export type AnyObject = mongoose.AnyObject;
+  export type THydratedDocumentType<DocType> = mongoose.HydratedDocument<DocType>;
   export type ConnectionOptions = mongoose.ConnectOptions;
   export type SchemaDefinition<T> = mongoose.SchemaDefinition<T>;
+  export type DeleteResult = mongodb.DeleteResult;
   export type SchemaOptions = mongoose.SchemaOptions;
-
+  export type PipelineStage = mongoose.PipelineStage;
+  export type PathsToValidate = mongoose.PathsToValidate;
+  export type HydrateOptions = { setters?: boolean };
+  export type AggregateOptions = mongoose.AggregateOptions;
+  export type UpdateQuery<TRawDocType> = mongoose.UpdateQuery<TRawDocType>;
+  export type UpdateWithAggregationPipeline = mongoose.UpdateWithAggregationPipeline;
+  export type PopulateOptions = mongoose.PopulateOptions;
+  export type AggregateResult<TRowDocType> = mongoose.Aggregate<Array<TRowDocType>>;
   export type AnyKeys<T> = mongoose.AnyKeys<T>;
   export type Docs<TRawDocType, DocContents = AnyKeys<TRawDocType>> = Array<
     TRawDocType | DocContents
   >;
+  export type InsertManyOptions = mongoose.InsertManyOptions & { lean: true };
   export type SaveOptions = mongoose.SaveOptions;
+  export type FilterQuery<TRawDocType> = mongoose.FilterQuery<TRawDocType>;
+  export type ProjectionType<TRawDocType> = mongoose.ProjectionType<TRawDocType>;
+  export type QueryOptions<TRawDocType> = mongoose.QueryOptions<TRawDocType>;
+  export type QueryWithHelpers<ResultType, DocType, THelpers, RawDocType, QueryOp> =
+    mongoose.QueryWithHelpers<ResultType, DocType, THelpers, RawDocType, QueryOp>;
+
+  export type InsertManyResult<TRawDocType = TRawDocType> = Mongoose.InsertManyResult<TRawDocType>;
+  export type HydrateResult<
+    TRawDocType,
+    THydratedDocumentType = Mongoose.THydratedDocumentType<TRawDocType>
+  > = THydratedDocumentType;
+  export type PopulateResult<
+    TRawDocType,
+    THydratedDocumentType = Mongoose.THydratedDocumentType<TRawDocType>
+  > = Array<THydratedDocumentType>;
+  export type CountDocumentsResult<
+    TRawDocType,
+    THydratedDocumentType = Mongoose.THydratedDocumentType<TRawDocType>,
+    TQueryHelpers = {}
+  > = Mongoose.QueryWithHelpers<
+    number,
+    THydratedDocumentType,
+    TQueryHelpers,
+    TRawDocType,
+    'countDocuments'
+  >;
+  export type ExistsResult<
+    TRawDocType,
+    THydratedDocumentType = Mongoose.THydratedDocumentType<TRawDocType>,
+    TQueryHelpers = {}
+  > = Mongoose.QueryWithHelpers<
+    { _id: Mongoose.InferId<TRawDocType> } | null,
+    THydratedDocumentType,
+    TQueryHelpers,
+    TRawDocType,
+    'exists'
+  >;
+  export type FindResult<
+    TRawDocType,
+    ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>,
+    TQueryHelpers = {}
+  > = Promise<
+    Mongoose.QueryWithHelpers<Array<ResultDoc>, ResultDoc, TQueryHelpers, TRawDocType, 'find'>
+  >;
+  export type FindByIdResult<
+    TRawDocType,
+    THydratedDocumentType = Mongoose.THydratedDocumentType<TRawDocType>,
+    TQueryHelpers = {}
+  > = Mongoose.QueryWithHelpers<
+    Mongoose.DeleteResult,
+    THydratedDocumentType,
+    TQueryHelpers,
+    TRawDocType,
+    'findById'
+  >;
+  export type FindByIdAndUpdateResult<
+    ResultDoc,
+    THydratedDocumentType = Mongoose.THydratedDocumentType<ResultDoc>,
+    TQueryHelpers = {}
+  > = Mongoose.QueryWithHelpers<
+    Mongoose.ModifyResult<ResultDoc>,
+    ResultDoc,
+    TQueryHelpers,
+    ResultDoc,
+    'findByIdAndUpdate'
+  > | null;
+  export type FindByIdAndDeleteResult<
+    TRawDocType,
+    THydratedDocumentType = Mongoose.THydratedDocumentType<TRawDocType>,
+    TQueryHelpers = {}
+  > = Mongoose.QueryWithHelpers<
+    ResultDoc | null,
+    ResultDoc,
+    TQueryHelpers,
+    TRawDocType,
+    'findByIdAndDelete'
+  >;
+  export type FindOneResult<
+    TRawDocType,
+    THydratedDocumentType = Mongoose.THydratedDocumentType<TRawDocType>,
+    TQueryHelpers = {}
+  > = Mongoose.QueryWithHelpers<
+    Mongoose.DeleteResult,
+    THydratedDocumentType,
+    TQueryHelpers,
+    TRawDocType,
+    'findOne'
+  >;
+  export type FindOneAndUpdateResult<
+    ResultDoc,
+    THydratedDocumentType = Mongoose.THydratedDocumentType<ResultDoc>,
+    TQueryHelpers = {}
+  > = Mongoose.QueryWithHelpers<
+    Mongoose.ModifyResult<ResultDoc>,
+    ResultDoc,
+    TQueryHelpers,
+    ResultDoc,
+    'findOneAndUpdate'
+  >;
+  export type FindOneAndReplaceResult<
+    ResultDoc,
+    THydratedDocumentType = Mongoose.THydratedDocumentType<ResultDoc>,
+    TQueryHelpers = {}
+  > = Mongoose.QueryWithHelpers<
+    Mongoose.ModifyResult<ResultDoc>,
+    ResultDoc,
+    TQueryHelpers,
+    ResultDoc,
+    'findOneAndReplace'
+  >;
+  export type FindOneAndDeleteResult<
+    ResultDoc,
+    THydratedDocumentType = Mongoose.THydratedDocumentType<ResultDoc>,
+    TQueryHelpers = {}
+  > = Mongoose.QueryWithHelpers<
+    ResultDoc | null,
+    ResultDoc,
+    TQueryHelpers,
+    ResultDoc,
+    'findOneAndDelete'
+  >;
+  export type ReplaceOneResult<
+    ResultDoc,
+    THydratedDocumentType = Mongoose.THydratedDocumentType<ResultDoc>,
+    TQueryHelpers = {}
+  > = Mongoose.QueryWithHelpers<
+    Mongoose.UpdateWriteOpResult,
+    ResultDoc,
+    TQueryHelpers,
+    ResultDoc,
+    'replaceOne'
+  >;
+  export type UpdateOneResult<
+    ResultDoc,
+    THydratedDocumentType = Mongoose.THydratedDocumentType<ResultDoc>,
+    TQueryHelpers = {}
+  > = Promise<
+    Mongoose.QueryWithHelpers<
+      Mongoose.UpdateWriteOpResult,
+      ResultDoc,
+      TQueryHelpers,
+      ResultDoc,
+      'updateOne'
+    >
+  >;
+  export type UpdateManyResult<
+    ResultDoc,
+    THydratedDocumentType = Mongoose.THydratedDocumentType<ResultDoc>,
+    TQueryHelpers = {}
+  > = Mongoose.QueryWithHelpers<
+    Mongoose.UpdateWriteOpResult,
+    ResultDoc,
+    TQueryHelpers,
+    ResultDoc,
+    'updateMany'
+  >;
+  export type DeleteOne<
+    TRawDocType,
+    THydratedDocumentType = Mongoose.THydratedDocumentType<TRawDocType>,
+    TQueryHelpers = {}
+  > = Mongoose.QueryWithHelpers<
+    Mongoose.DeleteResult,
+    THydratedDocumentType,
+    TQueryHelpers,
+    TRawDocType,
+    'deleteOne'
+  >;
+  export type DeleteMany<
+    TRawDocType,
+    THydratedDocumentType = Mongoose.THydratedDocumentType<TRawDocType>,
+    TQueryHelpers = {}
+  > = Mongoose.QueryWithHelpers<
+    Mongoose.DeleteResult,
+    THydratedDocumentType,
+    TQueryHelpers,
+    TRawDocType,
+    'deleteMany'
+  >;
 }
 
 export namespace Joi {
   export type Root = joi.Root;
   export type ObjectSchema<T> = joi.ObjectSchema<T>;
-  export type PartialSchemaMap<T> = joi.PartialSchemaMap<T>;
 }

@@ -79,6 +79,7 @@ export class MongodbConnector extends AbstractConnector implements IMongodbConne
       this._connection.set('debug', (collection, operation, payload) => {
         const store = this._contextService.store;
         this._loggerService.database({
+          namespace: MongodbConnector.name,
           databaseType: 'mongodb',
           collection: collection,
           requestId: store.requestId,

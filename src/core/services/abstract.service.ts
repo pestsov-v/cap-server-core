@@ -1,8 +1,6 @@
 import { Packages } from '@Packages';
 const { injectable } = Packages.inversify;
 const { EventEmitter } = Packages.events;
-const { format } = Packages.dateFns;
-const { colors } = Packages.colors;
 import { Guards } from '@Guards';
 import { Helpers } from '../utility/helpers';
 

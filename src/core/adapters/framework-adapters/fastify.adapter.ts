@@ -202,6 +202,13 @@ export class FastifyAdapter
           .get<IExceptionProvider>(CoreSymbols.ExceptionProvider)
           .resolveValidation(e);
         return res.status(response.statusCode).send(response.payload);
+      } else {
+        return res.status(StatusCode.SERVER_ERROR).send({
+          ResponseType: ResponseType.ERROR,
+          data: {
+            message: e,
+          },
+        });
       }
     } finally {
       this._contextService.exit();
