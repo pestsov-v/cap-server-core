@@ -9,7 +9,7 @@
       "console": {
         "core": {
           "enable": true,
-          "level": "schema"
+          "level": "verbose"
         },
         "schema": {
           "enable": true,

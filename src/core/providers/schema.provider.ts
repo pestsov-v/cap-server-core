@@ -1,15 +1,10 @@
 import { Packages } from '@Packages';
 const { injectable, inject } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
-
-import {
-  IContextService,
-  IFunctionalityAgent,
-  ISchemaProvider,
-  IValidatorProvider,
-} from '@Core/Types';
-import { AnyFunction, FnObject, UnknownObject } from '@Utility/Types';
 import { container } from '../ioc/core.ioc';
+
+import { IContextService, IFunctionalityAgent, ISchemaProvider } from '@Core/Types';
+import { AnyFunction, FnObject, UnknownObject } from '@Utility/Types';
 
 @injectable()
 export class SchemaProvider implements ISchemaProvider {

@@ -16,10 +16,13 @@ import {
   IFunctionalityAgent,
   NContextService,
   ISchemaAgent,
+  IBaseOperationAgent,
+  IExceptionProvider,
 } from '@Core/Types';
 import { ResponseType, StatusCode } from '@common';
 import { Helpers } from '../../utility/helpers';
 import { container } from '../../ioc/core.ioc';
+import { Guards } from '@Guards';
 
 @injectable()
 export class FastifyAdapter
@@ -169,6 +172,7 @@ export class FastifyAdapter
           {
             functionalityAgent: container.get<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent),
             schemaAgent: container.get<ISchemaAgent>(CoreSymbols.SchemaAgent),
+            baseAgent: container.get<IBaseOperationAgent>(CoreSymbols.BaseOperationAgent),
           },
           context
         );
@@ -193,6 +197,20 @@ export class FastifyAdapter
         }
       });
     } catch (e) {
+      if (Guards.isValidationError(e)) {
+        const response = container
+          .get<IExceptionProvider>(CoreSymbols.ExceptionProvider)
+          .resolveValidation(e);
+        return res.status(response.statusCode).send(response.payload);
+      } else {
+        return res.status(StatusCode.SERVER_ERROR).send({
+          ResponseType: ResponseType.ERROR,
+          data: {
+            message: e,
+          },
+        });
+      }
+    } finally {
       this._contextService.exit();
     }
   };

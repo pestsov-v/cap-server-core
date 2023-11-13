@@ -16,6 +16,7 @@ export const CoreSymbols = {
   SchemaProvider: Symbol('SchemaProvider'),
   MongodbProvider: Symbol('MongodbProvider'),
   ValidatorProvider: Symbol('ValidatorProvider'),
+  ExceptionProvider: Symbol('ExceptionProvider'),
 
   // Loader
   SchemaLoader: Symbol('SchemaLoader'),
@@ -23,10 +24,14 @@ export const CoreSymbols = {
   // Agents
   FunctionalityAgent: Symbol('FunctionalityAgent'),
   SchemaAgent: Symbol('SchemaAgent'),
+  BaseOperationAgent: Symbol('BaseOperationAgent'),
 
   // Adapters
   FastifyAdapter: Symbol('FastifyAdapter'),
 
   // Factories
   FrameworkFactory: Symbol('FrameworkFactory'),
+
+  // Base operations
+  ValidatorBaseOperation: Symbol('ValidatorBaseOperation'),
 } as const;

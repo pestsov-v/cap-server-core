@@ -7,3 +7,4 @@ export * from './adapters';
 export * from './agents';
 export * from './factories';
 export * from './providers';
+export * from './base-operations';

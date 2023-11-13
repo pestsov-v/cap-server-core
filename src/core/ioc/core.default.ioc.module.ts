@@ -1,21 +1,30 @@
 import { Packages } from '@Packages';
 const { ContainerModule } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
+
 import { Initiator } from '../initiator';
-import { FunctionalityAgent, SchemaAgent } from '../agents';
+import { FastifyAdapter } from '../adapters';
+import { FrameworkFactory } from '../factories';
+import { SchemaLoader } from '../loaders';
+import { ValidatorBaseOperation } from '../base-operations';
+import { FunctionalityAgent, SchemaAgent, BaseOperationAgent } from '../agents';
 import { MongodbConnector, ServiceConnector } from '../connectors';
-import { SchemaLoader } from '../loaders/schema.loaders';
-import { MongodbProvider, SchemaProvider } from '../providers';
 import { ContextService, DiscoveryService, LoggerService, SchemaService } from '../services';
-import { FastifyAdapter } from '../adapters/framework-adapters';
-import { FrameworkFactory } from '../factories/framework.factory';
+import {
+  MongodbProvider,
+  SchemaProvider,
+  ExceptionProvider,
+  ValidatorProvider,
+} from '../providers';
 
 import { Inversify } from '@Packages/Types';
 import {
   IAbstractFactory,
   IAbstractFrameworkAdapter,
   IAbstractService,
+  IBaseOperationAgent,
   IContextService,
+  IExceptionProvider,
   IFunctionalityAgent,
   IInitiator,
   ILoggerService,
@@ -27,8 +36,8 @@ import {
   ISchemaService,
   IServiceConnector,
   IValidatorProvider,
+  IValidatorBaseOperation,
 } from '@Core/Types';
-import { ValidatorProvider } from '../providers/validator.provider';
 
 export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) => {
   // Initiator
@@ -48,19 +57,28 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<ISchemaProvider>(CoreSymbols.SchemaProvider).to(SchemaProvider).inTransientScope();
   bind<IMongodbProvider>(CoreSymbols.MongodbProvider).to(MongodbProvider).inTransientScope();
   bind<IValidatorProvider>(CoreSymbols.ValidatorProvider).to(ValidatorProvider).inTransientScope();
+  bind<IExceptionProvider>(CoreSymbols.ExceptionProvider).to(ExceptionProvider).inTransientScope();
 
   // Loaders
   bind<ISchemaLoader>(CoreSymbols.SchemaLoader).to(SchemaLoader).inSingletonScope();
 
   // Agents
+  bind<ISchemaAgent>(CoreSymbols.SchemaAgent).to(SchemaAgent).inTransientScope();
   bind<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent)
     .to(FunctionalityAgent)
     .inTransientScope();
-  bind<ISchemaAgent>(CoreSymbols.SchemaAgent).to(SchemaAgent).inTransientScope();
+  bind<IBaseOperationAgent>(CoreSymbols.BaseOperationAgent)
+    .to(BaseOperationAgent)
+    .inTransientScope();
 
   // Adapters
   bind<IAbstractFrameworkAdapter>(CoreSymbols.FastifyAdapter).to(FastifyAdapter).inSingletonScope();
 
   // Factories
   bind<IAbstractFactory>(CoreSymbols.FrameworkFactory).to(FrameworkFactory).inSingletonScope();
+
+  // base-operations
+  bind<IValidatorBaseOperation>(CoreSymbols.ValidatorBaseOperation)
+    .to(ValidatorBaseOperation)
+    .inTransientScope();
 });
