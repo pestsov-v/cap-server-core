@@ -108,4 +108,12 @@ export class RedisConnector extends AbstractConnector implements IRedisConnector
       namespace: 'RedisConnector',
     });
   }
+
+  public get connection(): IoRedis.IoRedis {
+    if (!this._connection) {
+      throw new Error('Redis connection is not set');
+    }
+
+    return this._connection;
+  }
 }

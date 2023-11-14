@@ -1,6 +1,9 @@
-import { IAbstractConnector } from '../connectors';
+import { IAbstractConnector } from './abstract.connector';
+import { IoRedis } from '@Packages/Types';
 
-export interface IRedisConnector extends IAbstractConnector {}
+export interface IRedisConnector extends IAbstractConnector {
+  readonly connection: IoRedis.IoRedis;
+}
 
 export namespace NRedisConnector {
   export type Config = {

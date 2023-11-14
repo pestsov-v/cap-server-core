@@ -8,4 +8,8 @@ export class Guards {
   public static isValidationError(x: IValidatorError | unknown): x is IValidatorError {
     return typeof x === 'object' && x !== null && 'errors' in x;
   }
+
+  public static isString(x: string | unknown): x is string {
+    return typeof x === 'string';
+  }
 }

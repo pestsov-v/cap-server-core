@@ -20,6 +20,7 @@ export const CoreSymbols = {
   TypeormProvider: Symbol('TypeormProvider'),
   ValidatorProvider: Symbol('ValidatorProvider'),
   ExceptionProvider: Symbol('ExceptionProvider'),
+  RedisProvider: Symbol('RedisProvider'),
 
   // Loader
   SchemaLoader: Symbol('SchemaLoader'),

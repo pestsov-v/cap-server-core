@@ -14,13 +14,20 @@ import {
   ServiceConnector,
   TypeormConnector,
 } from '../connectors';
-import { ContextService, DiscoveryService, LoggerService, SchemaService } from '../services';
+import {
+  ContextService,
+  DiscoveryService,
+  LoggerService,
+  SchemaService,
+  SessionService,
+} from '../services';
 import {
   MongodbProvider,
   SchemaProvider,
   ExceptionProvider,
   ValidatorProvider,
   TypeormProvider,
+  RedisProvider,
 } from '../providers';
 
 import { Inversify } from '@Packages/Types';
@@ -70,6 +77,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<ITypeormProvider>(CoreSymbols.TypeormProvider).to(TypeormProvider).inTransientScope();
   bind<IValidatorProvider>(CoreSymbols.ValidatorProvider).to(ValidatorProvider).inTransientScope();
   bind<IExceptionProvider>(CoreSymbols.ExceptionProvider).to(ExceptionProvider).inTransientScope();
+  bind<IRedisProvider>(CoreSymbols.RedisProvider).to(RedisProvider).inTransientScope();
 
   // Loaders
   bind<ISchemaLoader>(CoreSymbols.SchemaLoader).to(SchemaLoader).inSingletonScope();
