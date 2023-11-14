@@ -5,12 +5,12 @@ const { os } = Packages.os;
 const { path } = Packages.path;
 const { fse, fsp } = Packages.fs;
 const { dotenv } = Packages.dotenv;
+import { Helpers } from '../utility/helpers';
 
 import { AbstractService } from './abstract.service';
 
 import { Nconf } from '@Packages/Types';
 import { IDiscoveryService, NAbstractService, NDiscoveryService } from '@Core/Types';
-import { Helpers } from '../utility/helpers';
 
 @injectable()
 export class DiscoveryService extends AbstractService implements IDiscoveryService {
@@ -18,6 +18,8 @@ export class DiscoveryService extends AbstractService implements IDiscoveryServi
   private _nconf: Nconf.Provider | undefined;
   private _schema: string | undefined;
   private _mode: string = 'dev';
+  protected _serverTag: string | undefined;
+
   protected readonly _discoveryService = this;
   protected readonly _loggerService = undefined;
 
@@ -25,6 +27,7 @@ export class DiscoveryService extends AbstractService implements IDiscoveryServi
     this._nconf = nconf;
     this._schema = process.env.SERVER_SCHEMA;
     this._mode = process.env.MODE ?? this._mode;
+    this._serverTag = process.env.SERVER_TAG ?? 'default_01';
 
     try {
       await this._setConfigurations();
@@ -33,6 +36,14 @@ export class DiscoveryService extends AbstractService implements IDiscoveryServi
     } catch (e) {
       throw e;
     }
+  }
+
+  public get serverTag(): string {
+    if (!this._serverTag) {
+      throw new Error('Server tag environment variable not set');
+    }
+
+    return this._serverTag;
   }
 
   public async reloadConfigurations(): Promise<void> {

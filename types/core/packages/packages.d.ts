@@ -10,6 +10,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import joi from 'joi';
 import typeorm from 'typeorm';
+import { Redis, RedisOptions } from 'ioredis';
+import jwt, { Algorithm } from 'jsonwebtoken';
 
 import { StringObject, UnknownObject } from '@Utility/Types';
 
@@ -283,4 +285,13 @@ export namespace Typeorm {
 export namespace Joi {
   export type Root = joi.Root;
   export type ObjectSchema<T> = joi.ObjectSchema<T>;
+}
+
+export namespace IoRedis {
+  export type IoRedis = Redis;
+  export type IoRedisOptions = RedisOptions;
+}
+
+export namespace Jwt {
+  export type Algorithm = jwt.Algorithm;
 }

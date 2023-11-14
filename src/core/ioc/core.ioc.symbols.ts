@@ -6,12 +6,15 @@ export const CoreSymbols = {
   ServiceConnector: Symbol('ServiceConnector'),
   MongodbConnector: Symbol('MongodbConnector'),
   TypeormConnector: Symbol('TypeormConnector'),
+  RedisConnector: Symbol('RedisConnector'),
 
   // Services
   DiscoveryService: Symbol('DiscoveryService'),
   LoggerService: Symbol('LoggerService'),
   SchemaService: Symbol('SchemaService'),
   ContextService: Symbol('ContextService'),
+  ScramblerService: Symbol('ScramblerService'),
+  SessionService: Symbol('SessionService'),
 
   // Providers
   SchemaProvider: Symbol('SchemaProvider'),
@@ -19,6 +22,7 @@ export const CoreSymbols = {
   TypeormProvider: Symbol('TypeormProvider'),
   ValidatorProvider: Symbol('ValidatorProvider'),
   ExceptionProvider: Symbol('ExceptionProvider'),
+  RedisProvider: Symbol('RedisProvider'),
 
   // Loader
   SchemaLoader: Symbol('SchemaLoader'),

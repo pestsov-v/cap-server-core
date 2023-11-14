@@ -8,14 +8,26 @@ import { FrameworkFactory } from '../factories';
 import { SchemaLoader } from '../loaders';
 import { ValidatorBaseOperation } from '../base-operations';
 import { FunctionalityAgent, SchemaAgent, BaseOperationAgent } from '../agents';
-import { MongodbConnector, ServiceConnector, TypeormConnector } from '../connectors';
-import { ContextService, DiscoveryService, LoggerService, SchemaService } from '../services';
+import {
+  MongodbConnector,
+  RedisConnector,
+  ServiceConnector,
+  TypeormConnector,
+} from '../connectors';
+import {
+  ContextService,
+  DiscoveryService,
+  LoggerService,
+  SchemaService,
+  SessionService,
+} from '../services';
 import {
   MongodbProvider,
   SchemaProvider,
   ExceptionProvider,
   ValidatorProvider,
   TypeormProvider,
+  RedisProvider,
 } from '../providers';
 
 import { Inversify } from '@Packages/Types';
@@ -40,7 +52,12 @@ import {
   IValidatorBaseOperation,
   ITypeormConnector,
   ITypeormProvider,
+  IRedisConnector,
+  IRedisProvider,
+  IScramblerService,
+  ISessionService,
 } from '@Core/Types';
+import { ScramblerService } from '../services/scrambler.service';
 
 export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) => {
   // Initiator
@@ -50,12 +67,15 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<IServiceConnector>(CoreSymbols.ServiceConnector).to(ServiceConnector).inSingletonScope();
   bind<IMongodbConnector>(CoreSymbols.MongodbConnector).to(MongodbConnector).inSingletonScope();
   bind<ITypeormConnector>(CoreSymbols.TypeormConnector).to(TypeormConnector).inSingletonScope();
+  bind<IRedisConnector>(CoreSymbols.RedisConnector).to(RedisConnector).inSingletonScope();
 
   // Services
   bind<IAbstractService>(CoreSymbols.DiscoveryService).to(DiscoveryService).inSingletonScope();
   bind<ILoggerService>(CoreSymbols.LoggerService).to(LoggerService).inSingletonScope();
   bind<ISchemaService>(CoreSymbols.SchemaService).to(SchemaService).inSingletonScope();
   bind<IContextService>(CoreSymbols.ContextService).to(ContextService).inSingletonScope();
+  bind<IScramblerService>(CoreSymbols.ScramblerService).to(ScramblerService).inSingletonScope();
+  bind<ISessionService>(CoreSymbols.SessionService).to(SessionService).inSingletonScope();
 
   // Providers
   bind<ISchemaProvider>(CoreSymbols.SchemaProvider).to(SchemaProvider).inTransientScope();
@@ -63,6 +83,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<ITypeormProvider>(CoreSymbols.TypeormProvider).to(TypeormProvider).inTransientScope();
   bind<IValidatorProvider>(CoreSymbols.ValidatorProvider).to(ValidatorProvider).inTransientScope();
   bind<IExceptionProvider>(CoreSymbols.ExceptionProvider).to(ExceptionProvider).inTransientScope();
+  bind<IRedisProvider>(CoreSymbols.RedisProvider).to(RedisProvider).inTransientScope();
 
   // Loaders
   bind<ISchemaLoader>(CoreSymbols.SchemaLoader).to(SchemaLoader).inSingletonScope();

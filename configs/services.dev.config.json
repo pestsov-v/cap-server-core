@@ -20,5 +20,14 @@
   },
   "schema": {
     "schema-path": "/home/pescov/Documents/GitHub/cap-server-core/src/schemas/index.ts"
+  },
+  "scrambler": {
+    "enable": true,
+    "salt": 10,
+    "secret": "baldur",
+    "randomBytes": 32,
+    "accessExpiredAt": 10,
+    "refreshExpiredAt": 30,
+    "defaultAlgorithm": "sha256"
   }
 }
