@@ -8,6 +8,7 @@ import {
   IDiscoveryService,
   ILoggerService,
   ISchemaService,
+  IScramblerService,
   IServiceConnector,
 } from '@Core/Types';
 
@@ -21,7 +22,9 @@ export class ServiceConnector extends AbstractConnector implements IServiceConne
     @inject(CoreSymbols.SchemaService)
     private readonly _schemaService: ISchemaService,
     @inject(CoreSymbols.ContextService)
-    private readonly _contextService: IContextService
+    private readonly _contextService: IContextService,
+    @inject(CoreSymbols.ScramblerService)
+    private readonly _scramblerService: IScramblerService
   ) {
     super();
   }
@@ -29,12 +32,14 @@ export class ServiceConnector extends AbstractConnector implements IServiceConne
   public async start(): Promise<void> {
     await this._discoveryService.start();
     await this._loggerService.start();
+    await this._scramblerService.start();
     await this._schemaService.start();
     await this._contextService.start();
   }
   public async stop(): Promise<void> {
     await this._contextService.stop();
     await this._schemaService.stop();
+    await this._scramblerService.stop();
     await this._loggerService.stop();
     await this._discoveryService.stop();
   }

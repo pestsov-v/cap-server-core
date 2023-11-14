@@ -11,9 +11,9 @@ import mongoose from 'mongoose';
 import joi from 'joi';
 import typeorm from 'typeorm';
 import { Redis, RedisOptions } from 'ioredis';
+import jwt, { Algorithm } from 'jsonwebtoken';
 
 import { StringObject, UnknownObject } from '@Utility/Types';
-import { CommonRedisOptions } from 'ioredis/built/redis/RedisOptions';
 
 export namespace Inversify {
   export namespace interfaces {
@@ -290,4 +290,8 @@ export namespace Joi {
 export namespace IoRedis {
   export type IoRedis = Redis;
   export type IoRedisOptions = RedisOptions;
+}
+
+export namespace Jwt {
+  export type Algorithm = jwt.Algorithm;
 }

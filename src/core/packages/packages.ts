@@ -3,6 +3,7 @@ import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import async_hooks from 'async_hooks';
+import crypto from 'crypto';
 
 import { injectable, inject, ContainerModule, Container } from 'inversify';
 import { format } from 'date-fns';
@@ -18,6 +19,8 @@ import mongoose from 'mongoose';
 import { DataSource } from 'typeorm';
 import joi from 'joi';
 import ioredis from 'ioredis';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
 export class Packages {
   public static get inversify() {
@@ -113,5 +116,17 @@ export class Packages {
 
   public static get ioredis() {
     return { ioredis };
+  }
+
+  public static get jwt() {
+    return { jwt };
+  }
+
+  public static get bcrypt() {
+    return { bcrypt };
+  }
+
+  public static get crypto() {
+    return { crypto };
   }
 }
