@@ -14,7 +14,13 @@ import {
   ServiceConnector,
   TypeormConnector,
 } from '../connectors';
-import { ContextService, DiscoveryService, LoggerService, SchemaService } from '../services';
+import {
+  ContextService,
+  DiscoveryService,
+  LoggerService,
+  SchemaService,
+  SessionService,
+} from '../services';
 import {
   MongodbProvider,
   SchemaProvider,
@@ -49,6 +55,7 @@ import {
   IRedisConnector,
   IRedisProvider,
   IScramblerService,
+  ISessionService,
 } from '@Core/Types';
 import { ScramblerService } from '../services/scrambler.service';
 
@@ -68,6 +75,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<ISchemaService>(CoreSymbols.SchemaService).to(SchemaService).inSingletonScope();
   bind<IContextService>(CoreSymbols.ContextService).to(ContextService).inSingletonScope();
   bind<IScramblerService>(CoreSymbols.ScramblerService).to(ScramblerService).inSingletonScope();
+  bind<ISessionService>(CoreSymbols.SessionService).to(SessionService).inSingletonScope();
 
   // Providers
   bind<ISchemaProvider>(CoreSymbols.SchemaProvider).to(SchemaProvider).inTransientScope();

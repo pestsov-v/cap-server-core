@@ -14,6 +14,7 @@ export const CoreSymbols = {
   SchemaService: Symbol('SchemaService'),
   ContextService: Symbol('ContextService'),
   ScramblerService: Symbol('ScramblerService'),
+  SessionService: Symbol('SessionService'),
 
   // Providers
   SchemaProvider: Symbol('SchemaProvider'),
