@@ -1,6 +1,8 @@
 import { IAbstractService, NAbstractService } from '@Core/Types';
 
 export interface IDiscoveryService extends IAbstractService {
+  readonly serverTag: string;
+
   on(event: NDiscoveryService.Event, listener: NAbstractService.Listener): void;
   reloadConfigurations(): Promise<void>;
 
