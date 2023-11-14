@@ -10,11 +10,12 @@ import {
   IFunctionalityAgent,
   IMongodbProvider,
   IScramblerService,
+  ISessionService,
   IValidatorProvider,
   NFunctionalityAgent,
   NScramblerService,
 } from '@Core/Types';
-import { UnknownObject } from '@Utility/Types';
+import { Nullable, UnknownObject } from '@Utility/Types';
 
 @injectable()
 export class FunctionalityAgent implements IFunctionalityAgent {
@@ -22,7 +23,9 @@ export class FunctionalityAgent implements IFunctionalityAgent {
     @inject(CoreSymbols.DiscoveryService)
     private readonly _discoveryService: IDiscoveryService,
     @inject(CoreSymbols.ScramblerService)
-    private readonly _scramblerService: IScramblerService
+    private readonly _scramblerService: IScramblerService,
+    @inject(CoreSymbols.SessionService)
+    private readonly _sessionService: ISessionService
   ) {}
 
   public get discovery(): NFunctionalityAgent.Discovery {
@@ -111,6 +114,28 @@ export class FunctionalityAgent implements IFunctionalityAgent {
         userPassword: string
       ): Promise<boolean> => {
         return this._scramblerService.comparePassword(candidatePassword, userPassword);
+      },
+    };
+  }
+
+  public get sessions(): NFunctionalityAgent.Sessions {
+    return {
+      http: {
+        openHttpSession: async <T extends UnknownObject>(
+          userId: string,
+          payload: T
+        ): Promise<string> => {
+          return this._sessionService.openHttpSession<T>(userId, payload);
+        },
+        getHttpSessionInfo: async <T extends UnknownObject>(
+          userId: string,
+          sessionId: string
+        ): Promise<Nullable<T>> => {
+          return this._sessionService.getHttpSessionInfo<T>(userId, sessionId);
+        },
+        deleteHttpSession: async (userId: string, sessionId: string): Promise<void> => {
+          return this._sessionService.deleteHttpSession(userId, sessionId);
+        },
       },
     };
   }

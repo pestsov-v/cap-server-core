@@ -1,5 +1,10 @@
 import { IMongodbProvider, ITypeormProvider, IValidatorProvider } from '../providers';
-import { IDiscoveryService, IScramblerService, NScramblerService } from '../services';
+import {
+  IDiscoveryService,
+  IScramblerService,
+  ISessionService,
+  NScramblerService,
+} from '../services';
 import { UnknownObject } from '@Utility/Types';
 import { Jwt } from '@Packages/Types';
 
@@ -9,6 +14,7 @@ export interface IFunctionalityAgent {
   readonly utils: NFunctionalityAgent.Utils;
   readonly validator: NFunctionalityAgent.Validator;
   readonly scrambler: NFunctionalityAgent.Scrambler;
+  readonly sessions: NFunctionalityAgent.Sessions;
 }
 
 export namespace NFunctionalityAgent {
@@ -48,5 +54,15 @@ export namespace NFunctionalityAgent {
     createHash: IScramblerService['createHash'];
     hashedPassword: IScramblerService['hashedPassword'];
     comparePassword: IScramblerService['comparePassword'];
+  };
+
+  export type HttpSessions = {
+    openHttpSession: ISessionService['openHttpSession'];
+    getHttpSessionInfo: ISessionService['getHttpSessionInfo'];
+    deleteHttpSession: ISessionService['deleteHttpSession'];
+  };
+
+  export type Sessions = {
+    http: HttpSessions;
   };
 }
