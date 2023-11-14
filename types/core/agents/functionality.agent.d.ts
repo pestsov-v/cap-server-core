@@ -1,11 +1,14 @@
 import { IMongodbProvider, ITypeormProvider, IValidatorProvider } from '../providers';
-import { IDiscoveryService } from '../services';
+import { IDiscoveryService, IScramblerService, NScramblerService } from '../services';
+import { UnknownObject } from '@Utility/Types';
+import { Jwt } from '@Packages/Types';
 
 export interface IFunctionalityAgent {
   readonly discovery: NFunctionalityAgent.Discovery;
   readonly mongoose: NFunctionalityAgent.Mongoose;
   readonly utils: NFunctionalityAgent.Utils;
   readonly validator: NFunctionalityAgent.Validator;
+  readonly scrambler: NFunctionalityAgent.Scrambler;
 }
 
 export namespace NFunctionalityAgent {
@@ -33,5 +36,17 @@ export namespace NFunctionalityAgent {
 
   export type typeorm = {
     getRepository<T>(): ITypeormProvider['getRepository'];
+  };
+
+  export type Scrambler = {
+    readonly accessExpiredAt: IScramblerService['accessExpiredAt'];
+    readonly refreshExpiredAt: IScramblerService['refreshExpiredAt'];
+
+    generateAccessToken: IScramblerService['generateAccessToken'];
+    generateRefreshToken: IScramblerService['generateRefreshToken'];
+    verifyToken: IScramblerService['verifyToken'];
+    createHash: IScramblerService['createHash'];
+    hashedPassword: IScramblerService['hashedPassword'];
+    comparePassword: IScramblerService['comparePassword'];
   };
 }

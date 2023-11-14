@@ -2,22 +2,27 @@ import { Packages } from '@Packages';
 const { injectable, inject } = Packages.inversify;
 const { v4 } = Packages.uuid;
 import { container } from '../ioc/core.ioc';
-import { Joi, Mongoose } from '@Packages/Types';
+import { Joi, Jwt, Mongoose } from '@Packages/Types';
 import { CoreSymbols } from '@CoreSymbols';
 
 import {
   IDiscoveryService,
   IFunctionalityAgent,
   IMongodbProvider,
+  IScramblerService,
   IValidatorProvider,
   NFunctionalityAgent,
+  NScramblerService,
 } from '@Core/Types';
+import { UnknownObject } from '@Utility/Types';
 
 @injectable()
 export class FunctionalityAgent implements IFunctionalityAgent {
   constructor(
     @inject(CoreSymbols.DiscoveryService)
-    private readonly _discoveryService: IDiscoveryService
+    private readonly _discoveryService: IDiscoveryService,
+    @inject(CoreSymbols.ScramblerService)
+    private readonly _scramblerService: IScramblerService
   ) {}
 
   public get discovery(): NFunctionalityAgent.Discovery {
@@ -70,6 +75,42 @@ export class FunctionalityAgent implements IFunctionalityAgent {
         return container
           .get<IValidatorProvider>(CoreSymbols.ValidatorProvider)
           .validate<T>(map, body);
+      },
+    };
+  }
+
+  public get scrambler(): NFunctionalityAgent.Scrambler {
+    return {
+      accessExpiredAt: this._scramblerService.accessExpiredAt,
+      refreshExpiredAt: this._scramblerService.refreshExpiredAt,
+      generateAccessToken: <T extends UnknownObject>(
+        payload: T,
+        algorithm?: Jwt.Algorithm
+      ): NScramblerService.ConvertJwtInfo => {
+        return this._scramblerService.generateAccessToken(payload, algorithm);
+      },
+      generateRefreshToken: <T extends UnknownObject>(
+        payload: T,
+        algorithm?: Jwt.Algorithm
+      ): NScramblerService.ConvertJwtInfo => {
+        return this._scramblerService.generateRefreshToken(payload, algorithm);
+      },
+      verifyToken: async <T extends UnknownObject>(
+        token: string
+      ): Promise<NScramblerService.JwtTokenPayload<T>> => {
+        return this._scramblerService.verifyToken(token);
+      },
+      createHash: (algorithm?: Jwt.Algorithm): string => {
+        return this._scramblerService.createHash(algorithm);
+      },
+      hashedPassword: async (password: string): Promise<string> => {
+        return this._scramblerService.hashedPassword(password);
+      },
+      comparePassword: async (
+        candidatePassword: string,
+        userPassword: string
+      ): Promise<boolean> => {
+        return this._scramblerService.comparePassword(candidatePassword, userPassword);
       },
     };
   }
