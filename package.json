@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.5",
+    "bcrypt": "^5.1.1",
     "colors": "^1.4.0",
     "date-fns": "^2.30.0",
     "dotenv": "^16.3.1",
@@ -36,6 +37,7 @@
     "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "^5.52.0",
     "@typescript-eslint/parser": "^5.52.0",
+    "@types/bcrypt": "^5.0.2",
     "eslint": "^8.34.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.6.0",
