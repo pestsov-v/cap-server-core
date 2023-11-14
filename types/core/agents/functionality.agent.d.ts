@@ -29,6 +29,26 @@ export namespace NFunctionalityAgent {
 
   export type Mongoose = {
     create: IMongodbProvider['create'];
+    insertMany: IMongodbProvider['insertMany'];
+    aggregate: IMongodbProvider['aggregate'];
+    hydrate: IMongodbProvider['hydrate'];
+    populate: IMongodbProvider['populate'];
+    validate: IMongodbProvider['validate'];
+    countDocuments: IMongodbProvider['countDocuments'];
+    exists: IMongodbProvider['exists'];
+    find: IMongodbProvider['find'];
+    findById: IMongodbProvider['findById'];
+    findByIdAndUpdate: IMongodbProvider['findByIdAndUpdate'];
+    findByIdAndDelete: IMongodbProvider['findByIdAndDelete'];
+    findOne: IMongodbProvider['findOne'];
+    findOneAndUpdate: IMongodbProvider['findOneAndUpdate'];
+    findOneAndReplace: IMongodbProvider['findOneAndReplace'];
+    findOneAndDelete: IMongodbProvider['findOneAndDelete'];
+    updateOne: IMongodbProvider['updateOne'];
+    updateMany: IMongodbProvider['updateMany'];
+    replaceOne: IMongodbProvider['replaceOne'];
+    deleteOne: IMongodbProvider['deleteOne'];
+    deleteMany: IMongodbProvider['deleteMany'];
   };
 
   export type Utils = {

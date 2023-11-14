@@ -60,7 +60,211 @@ export class FunctionalityAgent implements IFunctionalityAgent {
       ): Promise<Mongoose.AnyKeys<T>> => {
         return container
           .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
-          .create(model, docs, options);
+          .create<T>(model, docs, options);
+      },
+      insertMany: async <TRawDocType, DocContents = TRawDocType>(
+        model: string,
+        docs: Mongoose.Docs<TRawDocType>,
+        options?: Mongoose.InsertManyOptions
+      ): Promise<Mongoose.InsertManyResult> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .insertMany<TRawDocType, DocContents>(model, docs, options);
+      },
+      aggregate: async <TRawDocType>(
+        model: string,
+        pipeline?: Mongoose.PipelineStage[],
+        options?: Mongoose.AggregateOptions
+      ): Promise<Mongoose.AggregateResult<TRawDocType>> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .aggregate<TRawDocType>(model, pipeline, options);
+      },
+      hydrate: async <TRawDocType>(
+        model: string,
+        obj: UnknownObject,
+        projection?: Mongoose.AnyObject,
+        options?: Mongoose.HydrateOptions
+      ): Promise<Mongoose.HydrateResult<TRawDocType>> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .hydrate<TRawDocType>(model, obj, projection, options);
+      },
+      populate: async <TRawDocType>(
+        model: string,
+        docs: Array<Mongoose.Docs<TRawDocType>>,
+        options: Mongoose.PopulateOptions | Array<Mongoose.PopulateOptions> | string
+      ): Promise<Mongoose.PopulateResult<TRawDocType>> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .populate<TRawDocType>(model, docs, options);
+      },
+      validate: async (
+        name: string,
+        optional: unknown,
+        pathsToValidate: Mongoose.PathsToValidate
+      ): Promise<void> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .validate(name, optional, pathsToValidate);
+      },
+      countDocuments: async <TRawDocType>(
+        model: string,
+        filter?: Mongoose.FilterQuery<TRawDocType>,
+        options?: Mongoose.QueryOptions<TRawDocType>
+      ): Promise<Mongoose.CountDocumentsResult<TRawDocType>> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .countDocuments<TRawDocType>(model, filter, options);
+      },
+      exists: async <TRawDocType>(
+        model: string,
+        filter: Mongoose.FilterQuery<TRawDocType>
+      ): Promise<Mongoose.ExistsResult<TRawDocType>> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .exists<TRawDocType>(model, filter);
+      },
+      find: async <TRawDocType>(
+        model: string,
+        filter: Mongoose.FilterQuery<TRawDocType>,
+        projection?: Nullable<Mongoose.ProjectionType<TRawDocType>>,
+        options?: Nullable<Mongoose.QueryOptions<TRawDocType>>
+      ): Mongoose.FindResult<TRawDocType> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .find<TRawDocType>(model, filter, projection, options);
+      },
+      findById: async <TRawDocType, ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>>(
+        model: string,
+        id: string,
+        projection?: Mongoose.ProjectionType<TRawDocType | null>,
+        options?: Mongoose.QueryOptions<TRawDocType | null>
+      ): Promise<Mongoose.FindByIdResult<ResultDoc>> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .findById<TRawDocType, ResultDoc>(model, id, projection, options);
+      },
+      findByIdAndUpdate: async <
+        TRawDocType,
+        ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>
+      >(
+        model: string,
+        id: string,
+        update: Mongoose.UpdateQuery<TRawDocType>,
+        options: Mongoose.QueryOptions<TRawDocType> & { rawResult?: true }
+      ): Promise<Mongoose.FindByIdAndUpdateResult<ResultDoc>> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .findByIdAndUpdate<TRawDocType, ResultDoc>(model, id, update, options);
+      },
+      findByIdAndDelete: async <
+        TRawDocType,
+        ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>
+      >(
+        model: string,
+        id?: string,
+        options?: Mongoose.QueryOptions<TRawDocType>
+      ): Promise<Mongoose.FindByIdAndDeleteResult<ResultDoc>> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .findByIdAndDelete<TRawDocType, ResultDoc>(model, id, options);
+      },
+      findOne: async <TRawDocType, ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>>(
+        model: string,
+        filter?: Mongoose.FilterQuery<TRawDocType>,
+        projection?: Mongoose.ProjectionType<TRawDocType>,
+        options?: Mongoose.QueryOptions<TRawDocType>
+      ): Promise<Mongoose.FindOneResult<ResultDoc>> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .findOne<TRawDocType, ResultDoc>(model, filter, projection, options);
+      },
+      findOneAndUpdate: async <
+        TRawDocType,
+        ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>
+      >(
+        model: string,
+        id: string,
+        update: Mongoose.UpdateQuery<TRawDocType>,
+        options: Mongoose.QueryOptions<TRawDocType> & { rawResult: true }
+      ): Promise<Mongoose.FindOneAndUpdateResult<ResultDoc>> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .findOneAndUpdate<TRawDocType, ResultDoc>(model, id, update, options);
+      },
+      findOneAndReplace: async <
+        TRawDocType,
+        ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>
+      >(
+        model: string,
+        filter: Mongoose.FilterQuery<TRawDocType>,
+        replacement: TRawDocType | Mongoose.AnyObject,
+        options: Mongoose.QueryOptions<TRawDocType> & { rawResult: true }
+      ): Promise<Mongoose.FindOneAndReplaceResult<ResultDoc>> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .findOneAndReplace<TRawDocType, ResultDoc>(model, filter, replacement, options);
+      },
+      findOneAndDelete: async <
+        TRawDocType,
+        ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>
+      >(
+        model: string,
+        filter: Mongoose.FilterQuery<TRawDocType>,
+        options?: Mongoose.QueryOptions<TRawDocType>
+      ): Promise<Mongoose.FindOneAndDeleteResult<ResultDoc>> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .findOneAndDelete<TRawDocType, ResultDoc>(model, filter, options);
+      },
+      updateOne: async <TRawDocType, ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>>(
+        model: string,
+        filter?: Mongoose.FilterQuery<TRawDocType>,
+        update?: Mongoose.UpdateQuery<TRawDocType | Mongoose.UpdateWithAggregationPipeline>,
+        options?: Mongoose.QueryOptions<TRawDocType>
+      ): Promise<Mongoose.UpdateOneResult<ResultDoc>> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .updateOne<TRawDocType, ResultDoc>(model, filter, update, options);
+      },
+      updateMany: async <TRawDocType, ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>>(
+        model: string,
+        filter?: Mongoose.FilterQuery<TRawDocType>,
+        update?: Mongoose.UpdateQuery<TRawDocType | Mongoose.UpdateWithAggregationPipeline>,
+        options?: Mongoose.QueryOptions<TRawDocType>
+      ): Promise<Mongoose.UpdateManyResult<ResultDoc>> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .updateMany<TRawDocType, ResultDoc>(model, filter, update, options);
+      },
+      replaceOne: async <TRawDocType, ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>>(
+        model: string,
+        filter?: Mongoose.FilterQuery<TRawDocType>,
+        replacement?: TRawDocType | Mongoose.AnyObject,
+        options?: Mongoose.QueryOptions<TRawDocType>
+      ): Promise<Mongoose.ReplaceOneResult<ResultDoc>> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .replaceOne<TRawDocType, ResultDoc>(model, filter, replacement, options);
+      },
+      deleteOne: async <TRawDocType>(
+        model: string,
+        filter?: Mongoose.FilterQuery<TRawDocType>,
+        options?: Mongoose.QueryOptions<TRawDocType>
+      ): Promise<Mongoose.DeleteOne<TRawDocType>> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .deleteOne<TRawDocType>(model, filter, options);
+      },
+      deleteMany: async <TRawDocType>(
+        model: string,
+        filter?: Mongoose.FilterQuery<TRawDocType>,
+        options?: Mongoose.QueryOptions<TRawDocType>
+      ): Promise<Mongoose.DeleteMany<TRawDocType>> => {
+        return container
+          .get<IMongodbProvider>(CoreSymbols.MongodbProvider)
+          .deleteMany<TRawDocType>(model, filter, options);
       },
     };
   }

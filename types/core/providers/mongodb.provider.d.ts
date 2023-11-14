@@ -16,23 +16,23 @@ export interface IMongodbProvider {
     options?: Mongoose.InsertManyOptions
   ): Promise<Mongoose.InsertManyResult<TRawDocType>>;
   aggregate<TRawDocType>(
-    name: string,
+    model: string,
     pipeline?: Mongoose.PipelineStage[],
     options?: Mongoose.AggregateOptions
   ): Promise<Mongoose.AggregateResult<TRawDocType>>;
   hydrate<TRawDocType>(
-    name: string,
+    model: string,
     obj: UnknownObject,
     projection?: Mongoose.AnyObject,
     options?: Mongoose.HydrateOptions
   ): Promise<Mongoose.HydrateResult<TRawDocType>>;
   populate<TRawDocType>(
-    name: string,
+    model: string,
     docs: Array<Mongoose.Docs<TRawDocType>>,
     options: Mongoose.PopulateOptions | Array<Mongoose.PopulateOptions> | string
   ): Promise<Mongoose.PopulateResult<TRawDocType>>;
   validate(
-    name: string,
+    model: string,
     optional: unknown,
     pathsToValidate: Mongoose.PathsToValidate
   ): Promise<void>;
@@ -52,7 +52,7 @@ export interface IMongodbProvider {
     options?: Nullable<Mongoose.QueryOptions<TRawDocType>>
   ): Mongoose.FindResult<TRawDocType>;
   findById<TRawDocType, ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>>(
-    name: string,
+    model: string,
     id: string,
     projection?: Mongoose.ProjectionType<TRawDocType | null>,
     options?: Mongoose.QueryOptions<TRawDocType | null>
@@ -64,7 +64,7 @@ export interface IMongodbProvider {
     options: Mongoose.QueryOptions<TRawDocType> & { rawResult?: true }
   ): Promise<Mongoose.FindByIdAndUpdateResult<ResultDoc>>;
   findByIdAndDelete<TRawDocType, ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>>(
-    name: string,
+    model: string,
     id?: string,
     options?: Mongoose.QueryOptions<TRawDocType>
   ): Promise<Mongoose.FindByIdAndDeleteResult<ResultDoc>>;
@@ -75,36 +75,36 @@ export interface IMongodbProvider {
     options?: Mongoose.QueryOptions<TRawDocType>
   ): Promise<Mongoose.FindOneResult<ResultDoc>>;
   findOneAndUpdate<TRawDocType, ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>>(
-    name: string,
+    model: string,
     id: string,
     update: Mongoose.UpdateQuery<TRawDocType>,
     options: Mongoose.QueryOptions<TRawDocType> & { rawResult: true }
   ): Promise<Mongoose.FindOneAndUpdateResult<ResultDoc>>;
   findOneAndReplace<TRawDocType, ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>>(
-    name: string,
+    model: string,
     filter: Mongoose.FilterQuery<TRawDocType>,
     replacement: TRawDocType | Mongoose.AnyObject,
     options: Mongoose.QueryOptions<TRawDocType> & { rawResult: true }
   ): Promise<Mongoose.FindOneAndReplaceResult<ResultDoc>>;
   findOneAndDelete<TRawDocType, ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>>(
-    name: string,
+    model: string,
     filter: Mongoose.FilterQuery<TRawDocType>,
     options?: Mongoose.QueryOptions<TRawDocType>
   ): Promise<Mongoose.FindOneAndDeleteResult<ResultDoc>>;
   updateOne<TRawDocType, ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>>(
-    name: string,
+    model: string,
     filter?: Mongoose.FilterQuery<TRawDocType>,
     update?: Mongoose.UpdateQuery<TRawDocType | Mongoose.UpdateWithAggregationPipeline>,
     options?: Mongoose.QueryOptions<TRawDocType>
   ): Promise<Mongoose.UpdateOneResult<ResultDoc>>;
   updateMany<TRawDocType, ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>>(
-    name: string,
+    model: string,
     filter?: Mongoose.FilterQuery<TRawDocType>,
     update?: Mongoose.UpdateQuery<TRawDocType | Mongoose.UpdateWithAggregationPipeline>,
     options?: Mongoose.QueryOptions<TRawDocType>
   ): Promise<Mongoose.UpdateManyResult<ResultDoc>>;
   replaceOne<TRawDocType, ResultDoc = Mongoose.THydratedDocumentType<TRawDocType>>(
-    name: string,
+    model: string,
     filter?: Mongoose.FilterQuery<TRawDocType>,
     replacement?: TRawDocType | Mongoose.AnyObject,
     options?: Mongoose.QueryOptions<TRawDocType>
