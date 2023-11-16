@@ -1,4 +1,9 @@
-import { IMongodbProvider, ITypeormProvider, IValidatorProvider } from '../providers';
+import {
+  IExceptionProvider,
+  IMongodbProvider,
+  ITypeormProvider,
+  IValidatorProvider,
+} from '../providers';
 import {
   IDiscoveryService,
   IScramblerService,
@@ -15,6 +20,7 @@ export interface IFunctionalityAgent {
   readonly validator: NFunctionalityAgent.Validator;
   readonly scrambler: NFunctionalityAgent.Scrambler;
   readonly sessions: NFunctionalityAgent.Sessions;
+  readonly exception: NFunctionalityAgent.Exception;
 }
 
 export namespace NFunctionalityAgent {
@@ -85,5 +91,9 @@ export namespace NFunctionalityAgent {
 
   export type Sessions = {
     http: HttpSessions;
+  };
+
+  export type Exception = {
+    throwValidation: IExceptionProvider['throwValidation'];
   };
 }

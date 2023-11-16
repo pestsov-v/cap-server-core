@@ -6,6 +6,7 @@ import { AbstractConnector } from './abstract.connector';
 import {
   IContextService,
   IDiscoveryService,
+  ILocalizationService,
   ILoggerService,
   ISchemaService,
   IScramblerService,
@@ -27,7 +28,9 @@ export class ServiceConnector extends AbstractConnector implements IServiceConne
     @inject(CoreSymbols.ContextService)
     private readonly _contextService: IContextService,
     @inject(CoreSymbols.SessionService)
-    private readonly _sessionService: ISessionService
+    private readonly _sessionService: ISessionService,
+    @inject(CoreSymbols.LocalizationService)
+    private readonly _localizationService: ILocalizationService
   ) {
     super();
   }
@@ -36,6 +39,7 @@ export class ServiceConnector extends AbstractConnector implements IServiceConne
     await this._discoveryService.start();
     await this._loggerService.start();
     await this._scramblerService.start();
+    await this._localizationService.start();
     await this._schemaService.start();
     await this._contextService.start();
     await this._sessionService.start();
@@ -44,6 +48,7 @@ export class ServiceConnector extends AbstractConnector implements IServiceConne
     await this._sessionService.stop();
     await this._contextService.stop();
     await this._schemaService.stop();
+    await this._localizationService.stop();
     await this._scramblerService.stop();
     await this._loggerService.stop();
     await this._discoveryService.stop();

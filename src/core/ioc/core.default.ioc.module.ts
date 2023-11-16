@@ -17,8 +17,10 @@ import {
 import {
   ContextService,
   DiscoveryService,
+  LocalizationService,
   LoggerService,
   SchemaService,
+  ScramblerService,
   SessionService,
 } from '../services';
 import {
@@ -57,8 +59,8 @@ import {
   IScramblerService,
   ISessionService,
   IAuthBaseOperation,
+  ILocalizationService,
 } from '@Core/Types';
-import { ScramblerService } from '../services/scrambler.service';
 
 export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) => {
   // Initiator
@@ -77,6 +79,9 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<IContextService>(CoreSymbols.ContextService).to(ContextService).inSingletonScope();
   bind<IScramblerService>(CoreSymbols.ScramblerService).to(ScramblerService).inSingletonScope();
   bind<ISessionService>(CoreSymbols.SessionService).to(SessionService).inSingletonScope();
+  bind<ILocalizationService>(CoreSymbols.LocalizationService)
+    .to(LocalizationService)
+    .inSingletonScope();
 
   // Providers
   bind<ISchemaProvider>(CoreSymbols.SchemaProvider).to(SchemaProvider).inTransientScope();

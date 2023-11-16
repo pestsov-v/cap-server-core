@@ -7,13 +7,16 @@ import { CoreSymbols } from '@CoreSymbols';
 
 import {
   IDiscoveryService,
+  IExceptionProvider,
   IFunctionalityAgent,
   IMongodbProvider,
   IScramblerService,
   ISessionService,
+  IValidatorError,
   IValidatorProvider,
   NFunctionalityAgent,
   NScramblerService,
+  NValidatorProvider,
 } from '@Core/Types';
 import { Nullable, UnknownObject } from '@Utility/Types';
 
@@ -343,6 +346,16 @@ export class FunctionalityAgent implements IFunctionalityAgent {
         deleteHttpSession: async (userId: string, sessionId: string): Promise<void> => {
           return this._sessionService.deleteHttpSession(userId, sessionId);
         },
+      },
+    };
+  }
+
+  public get exception(): NFunctionalityAgent.Exception {
+    return {
+      throwValidation: (errors: NValidatorProvider.ErrorResult[]): IValidatorError => {
+        return container
+          .get<IExceptionProvider>(CoreSymbols.ExceptionProvider)
+          .throwValidation(errors);
       },
     };
   }

@@ -29,5 +29,9 @@
     "accessExpiredAt": 10,
     "refreshExpiredAt": 30,
     "defaultAlgorithm": "HS512"
+  },
+  "localization": {
+    "supportedLanguages": ["en"],
+    "defaultLanguages": "en"
   }
 }
