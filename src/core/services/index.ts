@@ -4,3 +4,4 @@ export * from './logger.service';
 export * from './schema.service';
 export * from './context.service';
 export * from './session.service';
+export * from './cache.service';

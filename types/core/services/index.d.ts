@@ -5,3 +5,4 @@ export * from './scrambler.service';
 export * from './context.service';
 export * from './schema.service';
 export * from './session.service';
+export * from './cache.service';

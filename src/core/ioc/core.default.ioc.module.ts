@@ -15,6 +15,7 @@ import {
   TypeormConnector,
 } from '../connectors';
 import {
+  CacheService,
   ContextService,
   DiscoveryService,
   LoggerService,
@@ -56,6 +57,7 @@ import {
   IRedisProvider,
   IScramblerService,
   ISessionService,
+  ICacheService,
 } from '@Core/Types';
 import { ScramblerService } from '../services/scrambler.service';
 
@@ -76,6 +78,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<IContextService>(CoreSymbols.ContextService).to(ContextService).inSingletonScope();
   bind<IScramblerService>(CoreSymbols.ScramblerService).to(ScramblerService).inSingletonScope();
   bind<ISessionService>(CoreSymbols.SessionService).to(SessionService).inSingletonScope();
+  bind<ICacheService>(CoreSymbols.CacheService).to(CacheService).inSingletonScope();
 
   // Providers
   bind<ISchemaProvider>(CoreSymbols.SchemaProvider).to(SchemaProvider).inTransientScope();
