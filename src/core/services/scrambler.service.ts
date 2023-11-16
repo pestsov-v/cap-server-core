@@ -40,7 +40,7 @@ export class ScramblerService extends AbstractService implements IScramblerServi
       refreshExpiredAt: this._discoveryService.getNumber('services:scrambler:refreshExpiredAt', 30),
       defaultAlgorithm: this._discoveryService.getString(
         'services:scrambler:defaultAlgorithm',
-        'sha256'
+        'HS512'
       ),
     };
   }
@@ -67,12 +67,12 @@ export class ScramblerService extends AbstractService implements IScramblerServi
 
   public get accessExpiredAt(): number {
     if (!this._config) throw this._throwConfigError();
-    return this._config.accessExpiredAt * 60 * 1000;
+    return this._config.accessExpiredAt * 60;
   }
 
   public get refreshExpiredAt(): number {
     if (!this._config) throw this._throwConfigError();
-    return this._config.refreshExpiredAt * 60 * 1000;
+    return this._config.refreshExpiredAt * 60 * 60 * 24;
   }
 
   public generateAccessToken<P extends UnknownObject>(

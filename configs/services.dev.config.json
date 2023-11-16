@@ -28,6 +28,6 @@
     "randomBytes": 32,
     "accessExpiredAt": 10,
     "refreshExpiredAt": 30,
-    "defaultAlgorithm": "sha256"
+    "defaultAlgorithm": "HS512"
   }
 }

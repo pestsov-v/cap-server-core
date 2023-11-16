@@ -57,10 +57,9 @@ export const SysUsersTypeormSchema = setTypeormSchema<SchemaModels, NSysUsers.Us
         },
         ACTIVATE_TOKEN: {
           name: 'ACTIVATE_TOKEN',
-          type: 'enum',
-          enum: [BoolYesNo.YES, BoolYesNo.NO],
+          type: 'varchar',
+          length: 320,
           nullable: false,
-          default: BoolYesNo.NO,
         },
         MAX_SESSIONS: {
           type: 'integer',

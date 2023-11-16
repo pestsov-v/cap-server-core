@@ -184,6 +184,8 @@ export class FastifyAdapter
           return res.status(StatusCode.NO_CONTENT).send();
         }
 
+        if (result.headers) res.headers(result.headers);
+
         switch (result.format) {
           case 'json':
             return res.status(result.statusCode || StatusCode.SUCCESS).send({
@@ -200,6 +202,7 @@ export class FastifyAdapter
         }
       });
     } catch (e) {
+      console.log(e);
       if (Guards.isValidationError(e)) {
         const response = container
           .get<IExceptionProvider>(CoreSymbols.ExceptionProvider)

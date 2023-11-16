@@ -2,6 +2,8 @@ import { ControllerHandler } from '@Vendor/Types';
 import { NTypeormProvider } from '@Core/Types';
 import { NSysAuth } from './sys.auth';
 import { BoolYesNo, Char, Nullable, Varchar } from '@Utility/Types';
+import { Handler } from '../../core/providers/typeorm.provider';
+import { Typeorm } from '@Packages/Types';
 
 export namespace NSysUsers {
   export type Paths =
@@ -19,7 +21,7 @@ export namespace NSysUsers {
     EMAIL: Varchar<320>;
     PHONE: Char<13>;
     PASSWORD: Varchar<100>;
-    ACTIVATE_TOKEN: BoolYesNo;
+    ACTIVATE_TOKEN: string;
     MAX_SESSIONS: number;
     IS_BLOCKED: BoolYesNo;
     IS_VERIFIED: BoolYesNo;
@@ -29,8 +31,18 @@ export namespace NSysUsers {
 
   export type UserCreateUP = {};
 
-  export type UserRepository = {
+  export type IRepository = {
     create: NTypeormProvider.DocumentHandler<UserEntitySchema>;
+    findOne: (
+      repository: Typeorm.Repository<UserEntitySchema>,
+      phone?: string,
+      email?: string
+    ) => Promise<Nullable<UserEntitySchema>>;
+  };
+
+  export type SchemaRepository = {
+    create: (user: NSysUsers.UserEntitySchema) => Promise<void>;
+    findOne: (phone?: string, email?: string) => Promise<Nullable<UserEntitySchema>>;
   };
 
   export type UpdateProfileINP = {
