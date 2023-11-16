@@ -1,4 +1,4 @@
-import { IValidatorError } from '@Core/Types';
+import { IValidatorError, NLocalizationService } from '@Core/Types';
 
 export class Guards {
   public static isNotUndefined(x: undefined | any): boolean {

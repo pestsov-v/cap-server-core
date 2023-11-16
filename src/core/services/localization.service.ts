@@ -9,11 +9,13 @@ import {
   ILoggerService,
   NLocalizationService,
 } from '@Core/Types';
+import { Guards } from '@Guards';
 
 @injectable()
 export class LocalizationService extends AbstractService implements ILocalizationService {
   protected readonly _SERVICE_NAME = LocalizationService.name;
   private _config: NLocalizationService.Config | undefined;
+  private _dictionaries: NLocalizationService.Dictionaries | undefined;
 
   constructor(
     @inject(CoreSymbols.DiscoveryService)
@@ -44,8 +46,68 @@ export class LocalizationService extends AbstractService implements ILocalizatio
       throw new Error('Config not set');
     }
 
+    this._dictionaries = new Map<string, NLocalizationService.ServiceDictionaries>();
+
+    if (!this._dictionaries) throw this.getDictionaryError();
+
     return true;
   }
 
-  public async destroy() {}
+  public getResource(
+    service: string,
+    domain: string,
+    language: string,
+    resource: string,
+    substitutions?: Record<string, string>
+  ): string {
+    if (!this._dictionaries) throw this.getDictionaryError();
+
+    const sStorage = this._dictionaries.get(service);
+    if (!sStorage) {
+      throw new Error('Service not found');
+    }
+
+    const dStorage = sStorage.get(domain);
+    if (!dStorage) {
+      throw new Error('Domain not found');
+    }
+
+    const dictionary = dStorage.get(language);
+    if (!dictionary) {
+      throw new Error('Dictionary language not supported');
+    }
+
+    try {
+      const keys = resource.split(':');
+      let record: NLocalizationService.DictionaryRecord = dictionary;
+
+      if (keys.length > 1) {
+        for (const key of keys) {
+          if (!Guards.isString(record)) {
+            record = record[key];
+          } else {
+            if (substitutions) {
+              for (const substitution in substitutions) {
+                record = record.replace('{{' + substitution + '}}', substitutions[substitution]);
+              }
+            } else {
+              return record;
+            }
+          }
+        }
+      }
+      return record;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  public async destroy() {
+    this._config = undefined;
+    this._dictionaries = undefined;
+  }
+
+  private getDictionaryError(): Error {
+    return new Error('Dictionaries not set');
+  }
 }
