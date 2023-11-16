@@ -1,7 +1,11 @@
 import { StringObject, UnknownObject, Voidable } from '@Utility/Types';
 import { NAbstractFrameworkAdapter, NContextService, NMongodbProvider } from '@Core/Types';
 
-export type ControllerHandler = NAbstractFrameworkAdapter.Handler;
+export type ControllerHandler<
+  BODY = UnknownObject,
+  PARAMS extends StringObject = StringObject,
+  HEADERS extends StringObject = StringObject
+> = NAbstractFrameworkAdapter.Handler<BODY, PARAMS, HEADERS>;
 
 export type SchemaRequest<
   BODY = UnknownObject,

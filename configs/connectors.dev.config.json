@@ -20,7 +20,7 @@
       "host": "localhost",
       "port": 5432,
       "database": "root",
-      "schema": "public"
+      "schema": "cargo"
     },
     "auth": {
       "username": "postgres",

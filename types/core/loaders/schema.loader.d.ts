@@ -1,6 +1,6 @@
 import { NAbstractFrameworkAdapter } from '../adapters';
 
-import { AnyFunction, UnknownObject } from '@Utility/Types';
+import { AnyFunction, HttpMethod, UnknownObject } from '@Utility/Types';
 import { NMongodbProvider, NTypeormProvider, NValidatorProvider } from '../providers';
 
 export interface ISchemaLoader {
@@ -42,7 +42,7 @@ export interface ISchemaLoader {
 export namespace NSchemaLoader {
   export type Route<T extends string = string> = {
     path: string;
-    method: string;
+    method: HttpMethod;
     handler: T;
     isPrivateUser?: boolean;
     isPrivateOrganization?: boolean;
