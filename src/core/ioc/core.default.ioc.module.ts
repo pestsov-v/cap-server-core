@@ -6,7 +6,7 @@ import { Initiator } from '../initiator';
 import { FastifyAdapter } from '../adapters';
 import { FrameworkFactory } from '../factories';
 import { SchemaLoader } from '../loaders';
-import { ValidatorBaseOperation } from '../base-operations';
+import { AuthBaseOperation, ValidatorBaseOperation } from '../base-operations';
 import { FunctionalityAgent, SchemaAgent, BaseOperationAgent } from '../agents';
 import {
   MongodbConnector,
@@ -56,6 +56,7 @@ import {
   IRedisProvider,
   IScramblerService,
   ISessionService,
+  IAuthBaseOperation,
 } from '@Core/Types';
 import { ScramblerService } from '../services/scrambler.service';
 
@@ -107,4 +108,5 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<IValidatorBaseOperation>(CoreSymbols.ValidatorBaseOperation)
     .to(ValidatorBaseOperation)
     .inTransientScope();
+  bind<IAuthBaseOperation>(CoreSymbols.AuthBaseOperation).to(AuthBaseOperation).inTransientScope();
 });

@@ -40,4 +40,5 @@ export const CoreSymbols = {
 
   // Base operations
   ValidatorBaseOperation: Symbol('ValidatorBaseOperation'),
+  AuthBaseOperation: Symbol('AuthBaseOperation'),
 } as const;
