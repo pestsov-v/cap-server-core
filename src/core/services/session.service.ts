@@ -67,6 +67,15 @@ export class SessionService extends AbstractService implements ISessionService {
     }
   }
 
+  public async getHttpSessionCount(userId: string): Promise<number> {
+    try {
+      const id = `userId:${userId}:*`;
+      return await container.get<IRedisProvider>(CoreSymbols.RedisProvider).getItemCount(id);
+    } catch (e) {
+      throw e;
+    }
+  }
+
   public async getHttpSessionInfo<T extends UnknownObject>(
     userId: string,
     sessionId: string
@@ -97,7 +106,7 @@ export class SessionService extends AbstractService implements ISessionService {
 
   private _formedSessionId(userId: string, sessionId: string): string {
     if (!this._config) this._throwConfigError();
-    return `userId:${userId}:serverTag:${this._config?.serverTag}:service:${this._contextService.store.service}:sessionId:${sessionId}`;
+    return `userId:${userId}:service:${this._contextService.store.service}:serverTag:${this._config?.serverTag}:sessionId:${sessionId}`;
   }
 
   private _throwConfigError(): Error {

@@ -79,6 +79,7 @@ export namespace NFunctionalityAgent {
   export type HttpSessions = {
     openHttpSession: ISessionService['openHttpSession'];
     getHttpSessionInfo: ISessionService['getHttpSessionInfo'];
+    getHttpSessionCount: ISessionService['getHttpSessionCount'];
     deleteHttpSession: ISessionService['deleteHttpSession'];
   };
 

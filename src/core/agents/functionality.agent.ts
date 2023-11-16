@@ -337,6 +337,9 @@ export class FunctionalityAgent implements IFunctionalityAgent {
         ): Promise<Nullable<T>> => {
           return this._sessionService.getHttpSessionInfo<T>(userId, sessionId);
         },
+        getHttpSessionCount: async (userId): Promise<number> => {
+          return this._sessionService.getHttpSessionCount(userId);
+        },
         deleteHttpSession: async (userId: string, sessionId: string): Promise<void> => {
           return this._sessionService.deleteHttpSession(userId, sessionId);
         },

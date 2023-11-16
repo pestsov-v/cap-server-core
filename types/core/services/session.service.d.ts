@@ -7,6 +7,7 @@ export interface ISessionService extends IAbstractService {
     userId: string,
     sessionId: string
   ): Promise<Nullable<T>>;
+  getHttpSessionCount(userId: string): Promise<number>;
   deleteHttpSession(userId: string, sessionId: string): Promise<void>;
 }
 
