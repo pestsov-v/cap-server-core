@@ -1,5 +1,5 @@
 import { IBaseOperationAgent, IFunctionalityAgent, ISchemaAgent } from '../agents';
-import { NContextService } from '../services';
+import { NContextService, NScramblerService } from '../services';
 
 import { Express, Fastify } from '@Packages/Types';
 import { StringObject, UnknownObject, Voidable } from '@Utility/Types';
@@ -60,9 +60,25 @@ export namespace NAbstractFrameworkAdapter {
     ? Fastify.Instance
     : never;
 
-  export type Context = {
+  export interface BaseSessionInfo {
+    auth: boolean;
+  }
+
+  export interface NonAuthSessionInfo extends BaseSessionInfo {
+    auth: false;
+  }
+
+  export interface AuthSessionInfo<T> extends BaseSessionInfo {
+    auth: true;
+    info: T & NScramblerService.SessionIdentifiers;
+  }
+
+  export type SessionInfo<T = void> = AuthSessionInfo<T> | NonAuthSessionInfo;
+
+  export type Context<T> = {
     storage: storage;
     packages: Packages;
+    sessionInfo: SessionInfo<T>;
   };
 
   export type SchemaRequest<

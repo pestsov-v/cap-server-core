@@ -54,12 +54,12 @@ export class SessionService extends AbstractService implements ISessionService {
     if (!this._config) throw this._throwConfigError();
 
     const sessionId = v4();
-    this._formedSessionId(userId, sessionId);
+    const id = this._formedSessionId(userId, sessionId);
 
     try {
       await container
         .get<IRedisProvider>(CoreSymbols.RedisProvider)
-        .setWithExpire(sessionId, payload, this._scramblerService.accessExpiredAt);
+        .setWithExpire(id, payload, this._scramblerService.accessExpiredAt);
 
       return sessionId;
     } catch (e) {

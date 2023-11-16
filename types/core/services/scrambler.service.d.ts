@@ -7,11 +7,11 @@ export interface IScramblerService extends IAbstractService {
   readonly accessExpiredAt: number;
   readonly refreshExpiredAt: number;
 
-  generateAccessToken<P extends UnknownObject>(
+  generateAccessToken<P extends UnknownObject & NScramblerService.SessionIdentifiers>(
     payload: P,
     algorithm?: Jwt.Algorithm
   ): NScramblerService.ConvertJwtInfo;
-  generateRefreshToken<P extends UnknownObject>(
+  generateRefreshToken<P extends UnknownObject & NScramblerService.SessionIdentifiers>(
     payload: P,
     algorithm?: Jwt.Algorithm
   ): NScramblerService.ConvertJwtInfo;
@@ -43,5 +43,10 @@ export namespace NScramblerService {
     iat: number;
     exp: number;
     payload: T;
+  };
+
+  export type SessionIdentifiers = {
+    userId: string;
+    sessionId: string;
   };
 }

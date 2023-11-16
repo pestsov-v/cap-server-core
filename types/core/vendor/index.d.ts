@@ -13,7 +13,7 @@ export type SchemaRequest<
   HEADERS extends StringObject = StringObject
 > = NAbstractFrameworkAdapter.SchemaRequest<BODY, PARAMS, HEADERS, 'fastify'>;
 export type SchemaResponse = Voidable<NAbstractFrameworkAdapter.SchemaResponse>;
-export type Context = NAbstractFrameworkAdapter.Context;
+export type Context<T = void> = NAbstractFrameworkAdapter.Context<T>;
 export type Agents = NAbstractFrameworkAdapter.Agents;
 export type Store = NContextService.Store;
 export type MongoSchemaDefinition<T = UnknownObject> = NMongodbProvider.Schema<T>;

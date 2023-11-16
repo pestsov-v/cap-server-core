@@ -83,6 +83,10 @@ export class RedisProvider implements IRedisProvider {
   }
 
   public async deleteItem(id: string): Promise<void> {
-    await this._redisConnector.connection.hdel(id);
+    try {
+      await this._redisConnector.connection.del(id);
+    } catch (e) {
+      throw e;
+    }
   }
 }

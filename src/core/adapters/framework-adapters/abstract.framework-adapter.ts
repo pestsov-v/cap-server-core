@@ -9,6 +9,7 @@ import {
   IAbstractFrameworkAdapter,
   NAbstractFrameworkAdapter,
 } from '@Core/Types';
+import { UnknownObject } from '@Utility/Types';
 
 @injectable()
 export abstract class AbstractFrameworkAdapter<K extends NAbstractFrameworkAdapter.FrameworkKind>
@@ -28,7 +29,7 @@ export abstract class AbstractFrameworkAdapter<K extends NAbstractFrameworkAdapt
 
   protected abstract _apiHandler(
     req: NAbstractFrameworkAdapter.Request<K>,
-    context: NAbstractFrameworkAdapter.Context
+    context: NAbstractFrameworkAdapter.Context<UnknownObject>
   ): Promise<NAbstractFrameworkAdapter.Response<K>>;
 
   protected _resolveSchemaHeaders(

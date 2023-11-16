@@ -18,11 +18,16 @@ import {
   ISchemaAgent,
   IBaseOperationAgent,
   IExceptionProvider,
+  IScramblerService,
+  ISessionService,
+  NScramblerService,
 } from '@Core/Types';
 import { ResponseType, StatusCode } from '@common';
 import { Helpers } from '../../utility/helpers';
 import { container } from '../../ioc/core.ioc';
 import { Guards } from '@Guards';
+import { UnknownObject } from '@Utility/Types';
+import { TokenExpiredError } from 'jsonwebtoken';
 
 @injectable()
 export class FastifyAdapter
@@ -40,7 +45,11 @@ export class FastifyAdapter
     @inject(CoreSymbols.LoggerService)
     protected readonly _loggerService: ILoggerService,
     @inject(CoreSymbols.ContextService)
-    protected readonly _contextService: IContextService
+    protected readonly _contextService: IContextService,
+    @inject(CoreSymbols.ScramblerService)
+    private readonly _scramblerService: IScramblerService,
+    @inject(CoreSymbols.SessionService)
+    private readonly _sessionService: ISessionService
   ) {
     super();
   }
@@ -154,14 +163,46 @@ export class FastifyAdapter
     };
 
     try {
-      const context: NAbstractFrameworkAdapter.Context = {
+      const context: NAbstractFrameworkAdapter.Context<UnknownObject> = {
         storage: {
           store: store,
         },
         packages: {},
+        sessionInfo: { auth: false },
       };
 
       await this._contextService.storage.run(store, async () => {
+        if (action.isPrivateUser) {
+          const accessToken = req.headers['x-user-access-token'];
+          if (!accessToken) {
+            return res.status(StatusCode.FORBIDDEN).send({
+              responseType: ResponseType.AUTHENTICATED,
+              data: {
+                message: 'Missed user access token',
+              },
+            });
+          }
+          const jwtPayload = await this._scramblerService.verifyToken<
+            UnknownObject & NScramblerService.SessionIdentifiers
+          >(accessToken);
+
+          const sessionInfo = await this._sessionService.getHttpSessionInfo(
+            jwtPayload.payload.userId,
+            jwtPayload.payload.sessionId
+          );
+
+          if (sessionInfo) {
+            context.sessionInfo = {
+              auth: true,
+              info: {
+                ...sessionInfo,
+                userId: jwtPayload.payload.userId,
+                sessionId: jwtPayload.payload.sessionId,
+              },
+            };
+          }
+        }
+
         const result = await handler(
           {
             method: req.method,
@@ -208,6 +249,13 @@ export class FastifyAdapter
           .get<IExceptionProvider>(CoreSymbols.ExceptionProvider)
           .resolveValidation(e);
         return res.status(response.statusCode).send(response.payload);
+      } else if (e instanceof TokenExpiredError) {
+        res.status(StatusCode.FORBIDDEN).send({
+          responseType: ResponseType.AUTHENTICATED,
+          data: {
+            message: 'Access jwt token expired',
+          },
+        });
       } else {
         return res.status(StatusCode.SERVER_ERROR).send({
           responseType: ResponseType.ERROR,

@@ -4,5 +4,6 @@ export const ResponseType = {
   SUCCESS: 'success',
   ERROR: 'error',
   VALIDATION: 'validation',
+  AUTHENTICATED: 'authenticated',
   FAIL: 'fail',
 } as const;

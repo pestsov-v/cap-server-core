@@ -290,13 +290,13 @@ export class FunctionalityAgent implements IFunctionalityAgent {
     return {
       accessExpiredAt: this._scramblerService.accessExpiredAt,
       refreshExpiredAt: this._scramblerService.refreshExpiredAt,
-      generateAccessToken: <T extends UnknownObject>(
+      generateAccessToken: <T extends UnknownObject & NScramblerService.SessionIdentifiers>(
         payload: T,
         algorithm?: Jwt.Algorithm
       ): NScramblerService.ConvertJwtInfo => {
         return this._scramblerService.generateAccessToken(payload, algorithm);
       },
-      generateRefreshToken: <T extends UnknownObject>(
+      generateRefreshToken: <T extends UnknownObject & NScramblerService.SessionIdentifiers>(
         payload: T,
         algorithm?: Jwt.Algorithm
       ): NScramblerService.ConvertJwtInfo => {
