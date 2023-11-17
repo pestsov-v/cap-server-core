@@ -1,5 +1,4 @@
 export type ServiceNames = {
-  SUSHI_MASTER: 'SushiMaster';
   SYS_ADMIN: 'SysAdmin';
 };
 
