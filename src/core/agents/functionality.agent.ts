@@ -11,10 +11,12 @@ import {
   IFunctionalityAgent,
   ILocalizationService,
   IMongodbProvider,
+  ISchemaExceptionError,
   IScramblerService,
   ISessionService,
   IValidatorError,
   IValidatorProvider,
+  NExceptionProvider,
   NFunctionalityAgent,
   NScramblerService,
   NValidatorProvider,
@@ -359,6 +361,16 @@ export class FunctionalityAgent implements IFunctionalityAgent {
         return container
           .get<IExceptionProvider>(CoreSymbols.ExceptionProvider)
           .throwValidation(errors);
+      },
+      throwException: (
+        msg: string,
+        options?: NExceptionProvider.SchemaExceptionOptions
+      ): ISchemaExceptionError => {
+        const trace = options && options.isNotShowTrace ? '' : new Error().stack || '';
+
+        return container
+          .get<IExceptionProvider>(CoreSymbols.ExceptionProvider)
+          .throwSchemaException(msg, { trace, ...options });
       },
     };
   }

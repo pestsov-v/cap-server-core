@@ -29,6 +29,7 @@ import { container } from '../../ioc/core.ioc';
 import { Guards } from '@Guards';
 import { UnknownObject } from '@Utility/Types';
 import { TokenExpiredError } from 'jsonwebtoken';
+import { he } from 'date-fns/locale';
 
 @injectable()
 export class FastifyAdapter
@@ -187,15 +188,15 @@ export class FastifyAdapter
     };
 
     try {
-      const context: NAbstractFrameworkAdapter.Context<UnknownObject> = {
-        storage: {
-          store: store,
-        },
-        packages: {},
-        sessionInfo: { auth: false },
-      };
-
       await this._contextService.storage.run(store, async () => {
+        const context: NAbstractFrameworkAdapter.Context<UnknownObject> = {
+          storage: {
+            store: store,
+          },
+          packages: {},
+          sessionInfo: { auth: false },
+        };
+
         if (action.isPrivateUser) {
           const accessToken = req.headers['x-user-access-token'];
           if (!accessToken) {
@@ -267,12 +268,32 @@ export class FastifyAdapter
         }
       });
     } catch (e) {
-      console.log(e);
       if (Guards.isValidationError(e)) {
         const response = container
           .get<IExceptionProvider>(CoreSymbols.ExceptionProvider)
           .resolveValidation(e);
         return res.status(response.statusCode).send(response.payload);
+      } else if (Guards.isSchemaExceptionError(e)) {
+        const response = container
+          .get<IExceptionProvider>(CoreSymbols.ExceptionProvider)
+          .resolveSchemaException(e);
+
+        if (response.headers) {
+          if (response.headers.removeHeaders) {
+            for (const header in response.headers.removeHeaders) {
+              res.removeHeader(header, response.headers.removeHeaders[header]);
+            }
+          }
+          if (response.headers.addHeaders) {
+            res.headers(response.headers.addHeaders);
+          }
+        }
+
+        if (response.redirect) {
+          return res.status(response.statusCode).redirect(response.redirect).send(response.payload);
+        } else {
+          return res.status(response.statusCode).send(response.payload);
+        }
       } else if (e instanceof TokenExpiredError) {
         res.status(StatusCode.FORBIDDEN).send({
           responseType: ResponseType.AUTHENTICATED,

@@ -3,13 +3,7 @@ const { injectable } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
 import { container } from '../ioc/core.ioc';
 
-import {
-  IAuthBaseOperation,
-  IBaseOperationAgent,
-  IValidatorBaseOperation,
-  NAuthBaseOperation,
-  NBaseOperationAgent,
-} from '@Core/Types';
+import { IBaseOperationAgent, IValidatorBaseOperation, NBaseOperationAgent } from '@Core/Types';
 
 @injectable()
 export class BaseOperationAgent implements IBaseOperationAgent {
@@ -19,16 +13,6 @@ export class BaseOperationAgent implements IBaseOperationAgent {
     return {
       validateOrThrow: (map, body) => {
         return operations.validateOrThrow(map, body);
-      },
-    };
-  }
-
-  public get auth(): NBaseOperationAgent.Auth {
-    const operations = container.get<IAuthBaseOperation>(CoreSymbols.AuthBaseOperation);
-
-    return {
-      getNonUnauthorized: (status: number, message: string): NAuthBaseOperation.FailResponse => {
-        return operations.getFailResponse(status, message);
       },
     };
   }

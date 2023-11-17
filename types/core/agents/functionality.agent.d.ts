@@ -3,6 +3,7 @@ import {
   IMongodbProvider,
   ITypeormProvider,
   IValidatorProvider,
+  NExceptionProvider,
 } from '../providers';
 import {
   IDiscoveryService,
@@ -13,6 +14,7 @@ import {
 } from '../services';
 import { UnknownObject } from '@Utility/Types';
 import { Jwt } from '@Packages/Types';
+import { ISchemaExceptionError } from '../../../src/core/providers';
 
 export interface IFunctionalityAgent {
   readonly discovery: NFunctionalityAgent.Discovery;
@@ -97,6 +99,7 @@ export namespace NFunctionalityAgent {
 
   export type Exception = {
     throwValidation: IExceptionProvider['throwValidation'];
+    throwException: IExceptionProvider['throwSchemaException'];
   };
 
   export type Localization = {

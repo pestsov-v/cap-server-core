@@ -213,16 +213,18 @@ export class SchemaProvider implements ISchemaProvider {
             throw new Error('Resource not found');
           }
         } else {
-          if (substitutions) {
-            for (const substitution in substitutions) {
-              record = record.replace('{{' + substitution + '}}', substitutions[substitution]);
-            }
-          } else {
-            return record;
-          }
+          return record;
         }
       }
+      if (substitutions) {
+        for (const substitution in substitutions) {
+          record = record.replace('{{' + substitution + '}}', substitutions[substitution]);
+        }
+      }
+    } else {
+      return record;
     }
+
     return record;
   }
 
