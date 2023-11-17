@@ -2,7 +2,6 @@ import { ControllerHandler } from '@Vendor/Types';
 import { NTypeormProvider } from '@Core/Types';
 import { NSysAuth } from './sys.auth';
 import { BoolYesNo, Char, Nullable, Varchar } from '@Utility/Types';
-import { Handler } from '../../core/providers/typeorm.provider';
 import { Typeorm } from '@Packages/Types';
 
 export namespace NSysUsers {
@@ -28,8 +27,6 @@ export namespace NSysUsers {
     CREATED_AT: Date;
     UPDATED_AT: Nullable<Date>;
   };
-
-  export type UserCreateUP = {};
 
   export type IRepository = {
     create: NTypeormProvider.DocumentHandler<UserEntitySchema>;

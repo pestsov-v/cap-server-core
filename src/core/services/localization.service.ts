@@ -3,13 +3,13 @@ import { CoreSymbols } from '@CoreSymbols';
 const { injectable, inject } = Packages.inversify;
 import { AbstractService } from './abstract.service';
 
+import { Guards } from '@Guards';
 import {
   IDiscoveryService,
   ILocalizationService,
   ILoggerService,
   NLocalizationService,
 } from '@Core/Types';
-import { Guards } from '@Guards';
 
 @injectable()
 export class LocalizationService extends AbstractService implements ILocalizationService {
@@ -26,7 +26,7 @@ export class LocalizationService extends AbstractService implements ILocalizatio
     super();
   }
 
-  private _setConfig() {
+  private _setConfig(): void {
     this._config = {
       supportedLanguages: this._discoveryService.getArray<string>(
         'services:localization:supportedLanguages',
@@ -48,9 +48,26 @@ export class LocalizationService extends AbstractService implements ILocalizatio
 
     this._dictionaries = new Map<string, NLocalizationService.ServiceDictionaries>();
 
-    if (!this._dictionaries) throw this.getDictionaryError();
-
     return true;
+  }
+
+  public loadDictionaries(dictionaries: NLocalizationService.Dictionaries): void {
+    this._dictionaries = dictionaries;
+  }
+
+  public get supportedLanguages(): string[] {
+    if (!this._config) {
+      throw new Error('Config not set');
+    }
+    return Array.from(this._config.supportedLanguages);
+  }
+
+  public get defaultLanguages(): string {
+    if (!this._config) {
+      throw new Error('Config not set');
+    }
+
+    return this._config.defaultLanguages;
   }
 
   public getResource(

@@ -18,5 +18,6 @@ export namespace NContextService {
     action: string;
     method: string;
     schema: NSchemaLoader.Services;
+    language: string;
   };
 }

@@ -31,7 +31,7 @@
     "defaultAlgorithm": "HS512"
   },
   "localization": {
-    "supportedLanguages": ["en"],
+    "supportedLanguages": ["en", "ru", "ua"],
     "defaultLanguages": "en"
   }
 }

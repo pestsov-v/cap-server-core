@@ -9,6 +9,7 @@ import {
   IDiscoveryService,
   IExceptionProvider,
   IFunctionalityAgent,
+  ILocalizationService,
   IMongodbProvider,
   IScramblerService,
   ISessionService,
@@ -28,7 +29,9 @@ export class FunctionalityAgent implements IFunctionalityAgent {
     @inject(CoreSymbols.ScramblerService)
     private readonly _scramblerService: IScramblerService,
     @inject(CoreSymbols.SessionService)
-    private readonly _sessionService: ISessionService
+    private readonly _sessionService: ISessionService,
+    @inject(CoreSymbols.LocalizationService)
+    private readonly _localizationService: ILocalizationService
   ) {}
 
   public get discovery(): NFunctionalityAgent.Discovery {
@@ -357,6 +360,13 @@ export class FunctionalityAgent implements IFunctionalityAgent {
           .get<IExceptionProvider>(CoreSymbols.ExceptionProvider)
           .throwValidation(errors);
       },
+    };
+  }
+
+  public get localization(): NFunctionalityAgent.Localization {
+    return {
+      defaultLanguages: this._localizationService.defaultLanguages,
+      supportedLanguages: this._localizationService.supportedLanguages,
     };
   }
 }

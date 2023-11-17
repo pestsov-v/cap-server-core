@@ -21,6 +21,7 @@ import {
   IScramblerService,
   ISessionService,
   NScramblerService,
+  ILocalizationService,
 } from '@Core/Types';
 import { ResponseType, StatusCode } from '@common';
 import { Helpers } from '../../utility/helpers';
@@ -49,7 +50,9 @@ export class FastifyAdapter
     @inject(CoreSymbols.ScramblerService)
     private readonly _scramblerService: IScramblerService,
     @inject(CoreSymbols.SessionService)
-    private readonly _sessionService: ISessionService
+    private readonly _sessionService: ISessionService,
+    @inject(CoreSymbols.LocalizationService)
+    private readonly _localizationService: ILocalizationService
   ) {
     super();
   }
@@ -151,6 +154,26 @@ export class FastifyAdapter
       });
     }
 
+    let contextLanguage: string;
+    const acceptLanguage = req.headers['accept-language'];
+    const supportedLanguages = this._localizationService.supportedLanguages;
+    if (typeof acceptLanguage !== 'undefined') {
+      if (supportedLanguages.includes(acceptLanguage)) {
+        contextLanguage = acceptLanguage;
+      } else {
+        return res.status(StatusCode.BAD_REQUEST).send({
+          responseType: ResponseType.FAIL,
+          data: {
+            message: `Server not supported "${acceptLanguage}". Supported languages: "${supportedLanguages.join(
+              ', '
+            )}"`,
+          },
+        });
+      }
+    } else {
+      contextLanguage = this._localizationService.defaultLanguages;
+    }
+
     const store: NContextService.Store = {
       service: schemaResult.service,
       domain: schemaResult.domain,
@@ -160,6 +183,7 @@ export class FastifyAdapter
       ip: req.ip,
       requestId: v4(),
       schema: this._schemas,
+      language: contextLanguage,
     };
 
     try {

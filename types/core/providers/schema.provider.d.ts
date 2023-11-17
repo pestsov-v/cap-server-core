@@ -8,6 +8,13 @@ export interface ISchemaProvider {
   getAnotherValidator<T>(name: string): T;
   getTypeormRepository<T>(): T;
   getAnotherTypeormRepository<T>(name: string): T;
+  getResource(resource: string, substitutions?: Record<string, string>, language?: string): string;
+  getAnotherResource(
+    name: string,
+    resource: string,
+    substitutions?: Record<string, string>,
+    language?: string
+  ): string;
 }
 
 export namespace NSchemaProvider {

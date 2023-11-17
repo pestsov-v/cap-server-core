@@ -6,6 +6,7 @@ import {
 } from '../providers';
 import {
   IDiscoveryService,
+  ILocalizationService,
   IScramblerService,
   ISessionService,
   NScramblerService,
@@ -21,6 +22,7 @@ export interface IFunctionalityAgent {
   readonly scrambler: NFunctionalityAgent.Scrambler;
   readonly sessions: NFunctionalityAgent.Sessions;
   readonly exception: NFunctionalityAgent.Exception;
+  readonly localization: NFunctionalityAgent.Localization;
 }
 
 export namespace NFunctionalityAgent {
@@ -95,5 +97,10 @@ export namespace NFunctionalityAgent {
 
   export type Exception = {
     throwValidation: IExceptionProvider['throwValidation'];
+  };
+
+  export type Localization = {
+    defaultLanguages: ILocalizationService['defaultLanguages'];
+    supportedLanguages: ILocalizationService['supportedLanguages'];
   };
 }

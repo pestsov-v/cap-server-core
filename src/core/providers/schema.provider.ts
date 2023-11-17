@@ -1,4 +1,5 @@
 import { Packages } from '@Packages';
+
 const { injectable, inject } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
 import { container } from '../ioc/core.ioc';
@@ -6,10 +7,13 @@ import { container } from '../ioc/core.ioc';
 import {
   IContextService,
   IFunctionalityAgent,
+  ILocalizationService,
   ISchemaProvider,
   ITypeormProvider,
+  NLocalizationService,
 } from '@Core/Types';
 import { AnyFunction, FnObject, UnknownObject } from '@Utility/Types';
+import { Guards } from '@Guards';
 
 @injectable()
 export class SchemaProvider implements ISchemaProvider {
@@ -37,6 +41,7 @@ export class SchemaProvider implements ISchemaProvider {
 
     class Repository<T> {
       private readonly _handlers: Map<string, AnyFunction>;
+
       constructor(handlers: Map<string, AnyFunction>) {
         this._handlers = handlers;
 
@@ -85,6 +90,7 @@ export class SchemaProvider implements ISchemaProvider {
 
     class Validator<T> {
       private readonly _handlers: Map<string, AnyFunction>;
+
       constructor(handlers: Map<string, AnyFunction>) {
         this._handlers = handlers;
 
@@ -134,6 +140,7 @@ export class SchemaProvider implements ISchemaProvider {
 
     class Repository<T> {
       private readonly _handlers: Map<string, AnyFunction>;
+
       constructor(handlers: Map<string, AnyFunction>) {
         this._handlers = handlers;
 
@@ -162,5 +169,70 @@ export class SchemaProvider implements ISchemaProvider {
 
   public getTypeormRepository<T>(): T {
     return this.getAnotherTypeormRepository<T>(this._contextService.store.domain);
+  }
+
+  public getAnotherResource(
+    name: string,
+    resource: string,
+    substitutions?: Record<string, string>,
+    language?: string
+  ): string {
+    const store = this._contextService.store;
+
+    const service = store.schema.get(store.service);
+    if (!service) {
+      throw new Error(`Service "${service}" not found`);
+    }
+    const domain = service.get(name);
+    if (!domain) {
+      throw new Error(`Domain "${domain}" not found`);
+    }
+
+    const dictionaries = domain.dictionaries;
+    if (!dictionaries) {
+      throw new Error(`Dictionaries not found`);
+    }
+
+    let dictionary: NLocalizationService.Dictionary;
+    if (language) {
+      dictionary = dictionaries.get(language);
+    } else {
+      dictionary = dictionaries.get(store.language);
+    }
+
+    const resources = resource.split(':');
+    let record: NLocalizationService.DictionaryRecord = dictionary;
+
+    if (resources.length > 1) {
+      for (const key of resources) {
+        if (!Guards.isString(record)) {
+          record = record[key];
+
+          if (typeof record === 'undefined') {
+            // TODO: implement localization error
+            throw new Error('Resource not found');
+          }
+        } else {
+          if (substitutions) {
+            for (const substitution in substitutions) {
+              record = record.replace('{{' + substitution + '}}', substitutions[substitution]);
+            }
+          } else {
+            return record;
+          }
+        }
+      }
+    }
+    return record;
+  }
+
+  public getResource(
+    resource: string,
+    substitutions?: Record<string, string>,
+    language?: string
+  ): string {
+    const store = this._contextService.store;
+
+    return this.getAnotherResource(store.domain, resource, substitutions, language);
   }
 }
