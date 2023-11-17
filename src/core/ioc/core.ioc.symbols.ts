@@ -7,6 +7,7 @@ export const CoreSymbols = {
   MongodbConnector: Symbol('MongodbConnector'),
   TypeormConnector: Symbol('TypeormConnector'),
   RedisConnector: Symbol('RedisConnector'),
+  IntegrationConnector: Symbol('IntegrationConnector'),
 
   // Services
   DiscoveryService: Symbol('DiscoveryService'),
@@ -24,6 +25,9 @@ export const CoreSymbols = {
   ValidatorProvider: Symbol('ValidatorProvider'),
   ExceptionProvider: Symbol('ExceptionProvider'),
   RedisProvider: Symbol('RedisProvider'),
+
+  // Integrations
+  MailIntegration: Symbol('MailIntegration'),
 
   // Loader
   SchemaLoader: Symbol('SchemaLoader'),

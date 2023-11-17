@@ -11,7 +11,8 @@ import mongoose from 'mongoose';
 import joi from 'joi';
 import typeorm from 'typeorm';
 import { Redis, RedisOptions } from 'ioredis';
-import jwt, { Algorithm } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
 
 import { StringObject, UnknownObject } from '@Utility/Types';
 
@@ -294,4 +295,10 @@ export namespace IoRedis {
 
 export namespace Jwt {
   export type Algorithm = jwt.Algorithm;
+}
+
+export namespace Nodemailer {
+  export type SendMailOptions = nodemailer.SendMailOptions;
+  export type Transporter = nodemailer.Transporter<nodemailer.SentMessageInfo>;
+  export type TransportOptions = nodemailer.SentMessageInfo;
 }

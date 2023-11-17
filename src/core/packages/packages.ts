@@ -21,6 +21,7 @@ import joi from 'joi';
 import ioredis from 'ioredis';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import nodemailer from 'nodemailer';
 
 export class Packages {
   public static get inversify() {
@@ -128,5 +129,9 @@ export class Packages {
 
   public static get crypto() {
     return { crypto };
+  }
+
+  public static get nodemailer() {
+    return { nodemailer };
   }
 }

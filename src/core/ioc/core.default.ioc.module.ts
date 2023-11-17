@@ -59,7 +59,11 @@ import {
   IScramblerService,
   ISessionService,
   ILocalizationService,
+  IMailIntegration,
+  IIntegrationConnector,
 } from '@Core/Types';
+import { MailIntegration } from '../integrations';
+import { IntegrationConnector } from '../connectors/integration.connector';
 
 export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) => {
   // Initiator
@@ -70,6 +74,9 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<IMongodbConnector>(CoreSymbols.MongodbConnector).to(MongodbConnector).inSingletonScope();
   bind<ITypeormConnector>(CoreSymbols.TypeormConnector).to(TypeormConnector).inSingletonScope();
   bind<IRedisConnector>(CoreSymbols.RedisConnector).to(RedisConnector).inSingletonScope();
+  bind<IIntegrationConnector>(CoreSymbols.IntegrationConnector)
+    .to(IntegrationConnector)
+    .inSingletonScope();
 
   // Services
   bind<IAbstractService>(CoreSymbols.DiscoveryService).to(DiscoveryService).inSingletonScope();
@@ -89,6 +96,9 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<IValidatorProvider>(CoreSymbols.ValidatorProvider).to(ValidatorProvider).inTransientScope();
   bind<IExceptionProvider>(CoreSymbols.ExceptionProvider).to(ExceptionProvider).inTransientScope();
   bind<IRedisProvider>(CoreSymbols.RedisProvider).to(RedisProvider).inTransientScope();
+
+  // Integrations
+  bind<IMailIntegration>(CoreSymbols.MailIntegration).to(MailIntegration).inSingletonScope();
 
   // Loaders
   bind<ISchemaLoader>(CoreSymbols.SchemaLoader).to(SchemaLoader).inSingletonScope();

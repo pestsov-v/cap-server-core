@@ -4,6 +4,7 @@ const { injectable, inject } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
 import {
   IInitiator,
+  IIntegrationConnector,
   IMongodbConnector,
   IRedisConnector,
   IServiceConnector,
@@ -20,7 +21,9 @@ export class Initiator implements IInitiator {
     @inject(CoreSymbols.TypeormConnector)
     private readonly _typeormConnector: ITypeormConnector,
     @inject(CoreSymbols.RedisConnector)
-    private readonly _redisConnector: IRedisConnector
+    private readonly _redisConnector: IRedisConnector,
+    @inject(CoreSymbols.IntegrationConnector)
+    private readonly _integrationConnector: IIntegrationConnector
   ) {}
 
   public async start(): Promise<void> {
@@ -28,8 +31,10 @@ export class Initiator implements IInitiator {
     await this._mongodbConnector.start();
     await this._typeormConnector.start();
     await this._redisConnector.start();
+    await this._integrationConnector.start();
   }
   public async stop(): Promise<void> {
+    await this._integrationConnector.stop();
     await this._redisConnector.stop();
     await this._typeormConnector.stop();
     await this._mongodbConnector.stop();
