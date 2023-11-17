@@ -7,6 +7,7 @@ import { NSysAuth } from '../../../../../types/schemas/sys-admin/sys.auth';
   auth: {
     USER_NOT_FOUND: 'User not found.',
     IS_BLOCKED: 'Account is blocked. Contact your system administrator for possible blocking.',
+    INCORRECT_PASSWORD: 'Incorrect password.',
     IS_NOT_VERIFIED: 'The account not verified.',
     MORE_MAX_SESSIONS:
       'Too many open sessions. Maximum number of sessions - {{maxSessions}}. Open current sessions - {{currentSessions}}.',

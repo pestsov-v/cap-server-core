@@ -9,6 +9,7 @@ import { NSysAuth } from '../../../../../types/schemas/sys-admin/sys.auth';
     IS_BLOCKED:
       'Акаунт заблокирован. Обратитесь к администратору системы для возможной разблокировки',
     IS_NOT_VERIFIED: 'Аккаунт не верифицирован.',
+    INCORRECT_PASSWORD: 'Неверный пароль',
     MORE_MAX_SESSIONS:
       'Слишком много открытых сессий. Максимальное количество сессий — {{maxSessions}}. Открытые текущие сеансы — {{currentSessions}}.',
   },
