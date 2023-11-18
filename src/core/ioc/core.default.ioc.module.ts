@@ -7,7 +7,7 @@ import { FastifyAdapter } from '../adapters';
 import { FrameworkFactory } from '../factories';
 import { SchemaLoader } from '../loaders';
 import { ValidatorBaseOperation } from '../base-operations';
-import { FunctionalityAgent, SchemaAgent, BaseOperationAgent } from '../agents';
+import { FunctionalityAgent, SchemaAgent, BaseOperationAgent, IntegrationAgent } from '../agents';
 import {
   MongodbConnector,
   RedisConnector,
@@ -61,6 +61,7 @@ import {
   ILocalizationService,
   IMailIntegration,
   IIntegrationConnector,
+  IIntegrationAgent,
 } from '@Core/Types';
 import { MailIntegration } from '../integrations';
 import { IntegrationConnector } from '../connectors/integration.connector';
@@ -105,6 +106,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
 
   // Agents
   bind<ISchemaAgent>(CoreSymbols.SchemaAgent).to(SchemaAgent).inTransientScope();
+  bind<IIntegrationAgent>(CoreSymbols.IntegrationAgent).to(IntegrationAgent).inTransientScope();
   bind<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent)
     .to(FunctionalityAgent)
     .inTransientScope();

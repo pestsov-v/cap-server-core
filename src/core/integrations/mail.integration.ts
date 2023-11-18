@@ -74,17 +74,42 @@ export class MailIntegration extends AbstractIntegration implements IMailIntegra
     this._config = undefined;
   }
 
-  public async sendMailWithDynamicSender(mail: NMailIntegration.DynamicMail): Promise<void> {
+  public async sendMailWithDynamicSender(
+    mail: NMailIntegration.DynamicMail,
+    options?: NMailIntegration.mailOptions
+  ): Promise<void> {
     try {
       await this._sendMail(mail);
+
+      if (options && options.logInfo) {
+        let msg = `successfully sent email from ${mail.to} to ${mail.to}.`;
+        if (options.additionalMsg) {
+          msg += options.additionalMsg;
+        }
+        this._loggerService.info(msg);
+      }
     } catch (e) {
       throw e;
     }
   }
 
-  public async sendMailWithStaticSender(mail: NMailIntegration.StaticMail): Promise<void> {
+  public async sendMailWithStaticSender(
+    mail: NMailIntegration.StaticMail,
+    options?: NMailIntegration.mailOptions
+  ): Promise<void> {
+    if (!this._config) throw this._throwConfigError();
+
     try {
       await this._sendMail(mail);
+
+      if (options && options.logInfo) {
+        let msg = `successfully sent email from ${this._config.from} to ${mail.to}`;
+        if (options.additionalMsg) {
+          msg += options.additionalMsg;
+        }
+
+        this._loggerService.info(msg);
+      }
     } catch (e) {
       throw e;
     }

@@ -1,8 +1,15 @@
 import { IAbstractIntegration } from './abstract.integration';
+import { NLoggerService } from '../services';
 
 export interface IMailIntegration extends IAbstractIntegration {
-  sendMailWithDynamicSender(mail: NMailIntegration.DynamicMail): Promise<void>;
-  sendMailWithStaticSender(mail: NMailIntegration.StaticMail): Promise<void>;
+  sendMailWithDynamicSender(
+    mail: NMailIntegration.DynamicMail,
+    options?: NMailIntegration.mailOptions
+  ): Promise<void>;
+  sendMailWithStaticSender(
+    mail: NMailIntegration.StaticMail,
+    options?: NMailIntegration.mailOptions
+  ): Promise<void>;
 }
 
 export namespace NMailIntegration {
@@ -32,5 +39,10 @@ export namespace NMailIntegration {
     subject: string;
     text?: string;
     html?: string;
+  };
+
+  export type mailOptions = {
+    logInfo: boolean;
+    additionalMsg?: string;
   };
 }
