@@ -29,7 +29,8 @@
     "typeorm": "^0.3.17",
     "typescript": "^5.2.2",
     "uuid": "^9.0.1",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "ws": "^8.14.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -38,6 +39,7 @@
     "@types/nconf": "^0.10.5",
     "@types/nodemailer": "^6.4.14",
     "@types/uuid": "^9.0.7",
+    "@types/ws": "^8.5.9",
     "@typescript-eslint/eslint-plugin": "^5.52.0",
     "@typescript-eslint/parser": "^5.52.0",
     "eslint": "^8.34.0",
