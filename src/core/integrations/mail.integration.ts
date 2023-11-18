@@ -72,6 +72,11 @@ export class MailIntegration extends AbstractIntegration implements IMailIntegra
 
   public async destroy(): Promise<void> {
     this._config = undefined;
+
+    if (!this._transport) return;
+
+    this._transport.close();
+    this._transport = undefined;
   }
 
   public async sendMailWithDynamicSender(

@@ -1,5 +1,4 @@
 import { IAbstractIntegration } from './abstract.integration';
-import { NLoggerService } from '../services';
 
 export interface IMailIntegration extends IAbstractIntegration {
   sendMailWithDynamicSender(

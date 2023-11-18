@@ -13,6 +13,7 @@ import { Helpers } from '../providers/schema.provider';
 
 export interface IAbstractFrameworkAdapter {
   start(schema: NSchemaLoader.Services): Promise<void>;
+  stop(): Promise<void>;
 }
 
 export namespace NAbstractFrameworkAdapter {

@@ -62,9 +62,11 @@ import {
   IMailIntegration,
   IIntegrationConnector,
   IIntegrationAgent,
+  IAbstractWebsocketAdapter,
 } from '@Core/Types';
 import { MailIntegration } from '../integrations';
 import { IntegrationConnector } from '../connectors/integration.connector';
+import { WsAdapter } from '../adapters/websocket-adapters';
 
 export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) => {
   // Initiator
@@ -116,6 +118,8 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
 
   // Adapters
   bind<IAbstractFrameworkAdapter>(CoreSymbols.FastifyAdapter).to(FastifyAdapter).inSingletonScope();
+
+  bind<IAbstractWebsocketAdapter>(CoreSymbols.WsAdapter).to(WsAdapter).inSingletonScope();
 
   // Factories
   bind<IAbstractFactory>(CoreSymbols.FrameworkFactory).to(FrameworkFactory).inSingletonScope();

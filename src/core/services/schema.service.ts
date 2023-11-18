@@ -101,6 +101,8 @@ export class SchemaService extends AbstractService implements ISchemaService {
 
   protected async destroy(): Promise<void> {
     this._config = undefined;
+    await this._frameworkFactory.stand();
+
     this._emitter.removeAllListeners();
   }
 }

@@ -41,6 +41,8 @@ export const CoreSymbols = {
   // Adapters
   FastifyAdapter: Symbol('FastifyAdapter'),
 
+  WsAdapter: Symbol('WsAdapter'),
+
   // Factories
   FrameworkFactory: Symbol('FrameworkFactory'),
 

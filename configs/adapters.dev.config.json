@@ -8,5 +8,11 @@
     "urls": {
       "api": "/v1/call/api/"
     }
+  },
+  "websocket": {
+    "kind": "ws",
+    "protocol": "ws",
+    "host": "localhost",
+    "port": 11043
   }
 }

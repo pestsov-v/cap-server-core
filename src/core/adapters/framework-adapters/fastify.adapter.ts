@@ -30,7 +30,6 @@ import { container } from '../../ioc/core.ioc';
 import { Guards } from '@Guards';
 import { UnknownObject } from '@Utility/Types';
 import { TokenExpiredError } from 'jsonwebtoken';
-import { he } from 'date-fns/locale';
 
 @injectable()
 export class FastifyAdapter
@@ -99,6 +98,22 @@ export class FastifyAdapter
     } catch (e) {
       console.log(e);
     }
+  }
+
+  public async stop(): Promise<void> {
+    this._config = undefined;
+    this._schemas = undefined;
+
+    if (!this._instance) return;
+
+    await this._instance.close();
+    this._instance = undefined;
+
+    this._loggerService.system(`Http server has been stopped.`, {
+      scope: 'Core',
+      namespace: this._ADAPTER_NAME,
+      tag: 'Destroy',
+    });
   }
 
   protected _apiHandler = async (

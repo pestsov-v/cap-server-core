@@ -1,5 +1,7 @@
 import events from 'events';
 import async_hooks from 'async_hooks';
+import http from 'http';
+import https from 'https';
 
 import nconf from 'nconf';
 import winston from 'winston';
@@ -13,8 +15,10 @@ import typeorm from 'typeorm';
 import { Redis, RedisOptions } from 'ioredis';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
+import ws from 'ws';
 
 import { StringObject, UnknownObject } from '@Utility/Types';
+import { ht } from 'date-fns/locale';
 
 export namespace Inversify {
   export namespace interfaces {
@@ -301,4 +305,18 @@ export namespace Nodemailer {
   export type SendMailOptions = nodemailer.SendMailOptions;
   export type Transporter = nodemailer.Transporter<nodemailer.SentMessageInfo>;
   export type TransportOptions = nodemailer.SentMessageInfo;
+}
+
+export namespace Ws {
+  export type WebSocketServer = ws.WebSocketServer;
+  export type WebSocket = ws.WebSocket;
+}
+
+export namespace Http {
+  export type Server = http.Server;
+  export type IncomingMessage = http.IncomingMessage;
+}
+
+export namespace Https {
+  export type Server = https.Server;
 }
