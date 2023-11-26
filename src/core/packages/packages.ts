@@ -4,6 +4,8 @@ import fs from 'fs';
 import path from 'path';
 import async_hooks from 'async_hooks';
 import crypto from 'crypto';
+import http from 'http';
+import https from 'https';
 
 import { injectable, inject, ContainerModule, Container } from 'inversify';
 import { format } from 'date-fns';
@@ -22,6 +24,7 @@ import ioredis from 'ioredis';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import nodemailer from 'nodemailer';
+import ws from 'ws';
 
 export class Packages {
   public static get inversify() {
@@ -133,5 +136,17 @@ export class Packages {
 
   public static get nodemailer() {
     return { nodemailer };
+  }
+
+  public static get http() {
+    return { http };
+  }
+
+  public static get https() {
+    return { https };
+  }
+
+  public static get ws() {
+    return { ws };
   }
 }

@@ -23,7 +23,8 @@
       "@Packages": ["src/core/packages/packages.ts"],
       "@Packages/Types": ["types/core/packages/packages.d.ts"],
       "@Vendor": ["src/core/vendor/index.ts"],
-      "@Vendor/Types": ["types/core/vendor/index.d.ts"],
-    }
+      "@Vendor/Types": ["types/core/vendor/index.d.ts"]
+    },
+    "types": ["types/core/declaration.d.ts"]
   }
 }

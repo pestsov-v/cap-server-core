@@ -14,5 +14,8 @@ export namespace NAbstractWebsocketAdapter {
     protocol: string;
     host: string;
     port: number;
+    connection: {
+      checkInterval: number;
+    };
   };
 }

@@ -120,9 +120,6 @@ export class FastifyAdapter
     req: NAbstractFrameworkAdapter.Request<'fastify'>,
     res: NAbstractFrameworkAdapter.Response<'fastify'>
   ): Promise<void> => {
-    console.log(req.headers);
-    console.log(this._schemas);
-
     if (!this._schemas) {
       throw new Error('Business services schema not initialize');
     }

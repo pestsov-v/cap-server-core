@@ -36,7 +36,6 @@ import { Inversify } from '@Packages/Types';
 import {
   IAbstractFactory,
   IAbstractFrameworkAdapter,
-  IAbstractService,
   IBaseOperationAgent,
   IContextService,
   IExceptionProvider,
@@ -63,6 +62,7 @@ import {
   IIntegrationConnector,
   IIntegrationAgent,
   IAbstractWebsocketAdapter,
+  IDiscoveryService,
 } from '@Core/Types';
 import { MailIntegration } from '../integrations';
 import { IntegrationConnector } from '../connectors/integration.connector';
@@ -82,7 +82,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
     .inSingletonScope();
 
   // Services
-  bind<IAbstractService>(CoreSymbols.DiscoveryService).to(DiscoveryService).inSingletonScope();
+  bind<IDiscoveryService>(CoreSymbols.DiscoveryService).to(DiscoveryService).inSingletonScope();
   bind<ILoggerService>(CoreSymbols.LoggerService).to(LoggerService).inSingletonScope();
   bind<ISchemaService>(CoreSymbols.SchemaService).to(SchemaService).inSingletonScope();
   bind<IContextService>(CoreSymbols.ContextService).to(ContextService).inSingletonScope();

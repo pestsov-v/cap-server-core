@@ -309,7 +309,11 @@ export namespace Nodemailer {
 
 export namespace Ws {
   export type WebSocketServer = ws.WebSocketServer;
-  export type WebSocket = ws.WebSocket;
+  export type WebSocket = ws.WebSocket & {
+    uuid: string;
+    sessionId?: string;
+    userId?: string;
+  };
 }
 
 export namespace Http {
