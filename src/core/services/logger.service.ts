@@ -123,7 +123,21 @@ export class LoggerService extends AbstractService implements ILoggerService {
       });
     }
 
+    if (this._config.loggers.schema) {
+      const schemaTransports: Winston.transport[] = [];
+      if (this._config.transports.console.schema.enable) {
+        schemaTransports.push(this._consoleSchemaTransport);
+      }
+
+      this._container.add(this._LOGGER_TYPES.schema, {
+        levels: this._SCHEMA_LOGGERS,
+        level: this._config.transports.console.schema.level,
+        transports: schemaTransports,
+      });
+    }
+
     this._loggers.core = this._container.get(this._LOGGER_TYPES.core);
+    this._loggers.schema = this._container.get(this._LOGGER_TYPES.schema);
 
     return typeof this._config !== 'undefined';
   }
@@ -177,7 +191,9 @@ export class LoggerService extends AbstractService implements ILoggerService {
   }
 
   public logSchemaError(msg: string, options: NLoggerService.SchemaErrorOptions): void {
-    throw new Error('Method not implemented');
+    if (this._loggers.schema) {
+      this._loggers.schema.log('error', { msg, ...options });
+    }
   }
   public logSchemaException(msg: string, options: NLoggerService.SchemaExceptionOptions): void {
     throw new Error('Method not implemented');
@@ -196,9 +212,8 @@ export class LoggerService extends AbstractService implements ILoggerService {
   }
 
   private get _consoleCoreTransport() {
-    if (!this._config) {
-      throw new Error('Config is not initialize');
-    }
+    if (!this._config) throw this._throwConfigError();
+
     return new transports.Console({
       level: this._config.transports.console.core.level,
       format: format.combine(
@@ -280,5 +295,33 @@ export class LoggerService extends AbstractService implements ILoggerService {
         format.colorize({ all: true })
       ),
     });
+  }
+
+  private get _consoleSchemaTransport() {
+    if (!this._config) throw this._throwConfigError();
+
+    return new transports.Console({
+      level: this._config.transports.console.schema.level,
+      format: format.combine(
+        format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+        format.printf((info) => {
+          const levels = info.level as keyof NLoggerService.SchemaLoggerLevels;
+
+          let msg = '';
+          switch (levels) {
+            case 'error':
+              msg += Helpers.addLevel(info.level, 'black', 'red');
+              break;
+          }
+
+          return msg;
+        }),
+        format.colorize({ all: true })
+      ),
+    });
+  }
+
+  private _throwConfigError() {
+    return new Error('Config is not initialize');
   }
 }

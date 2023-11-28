@@ -1,5 +1,5 @@
 import { ControllerHandler } from '@Vendor/Types';
-import { NTypeormProvider } from '@Core/Types';
+import { NSessionService, NTypeormProvider } from '@Core/Types';
 import { NSysAuth } from './sys.auth';
 import { BoolYesNo, Char, Nullable, Varchar } from '@Utility/Types';
 import { Typeorm } from '@Packages/Types';
@@ -41,6 +41,8 @@ export namespace NSysUsers {
     create: (user: NSysUsers.UserEntitySchema) => Promise<void>;
     findOne: (phone?: string, email?: string) => Promise<Nullable<UserEntitySchema>>;
   };
+
+  export type WsListener = 'loginOrganizationUser';
 
   export type UpdateProfileINP = {
     firstName?: UserEntitySchema['FIRST_NAME'];

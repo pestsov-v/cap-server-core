@@ -70,7 +70,7 @@ export class WsAdapter extends AbstractWebsocketAdapter<'ws'> implements IAbstra
       this._instance = new ws.WebSocketServer({ noServer: true });
 
       this._instance.on('connection', (ws: Ws.WebSocket, request: Http.IncomingMessage) => {
-        this._sessionService.setWebsocketConnection(ws, {
+        this._sessionService.setWsConnection(ws, {
           userAgent: request.headers['user-agent'],
           acceptLanguage: request.headers['accept-language'],
           websocketKey: request.headers['sec-websocket-key'],

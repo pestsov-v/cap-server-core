@@ -1,10 +1,4 @@
-import {
-  ISchemaExceptionError,
-  IValidatorError,
-  NLocalizationService,
-  NSessionService,
-} from '@Core/Types';
-import ClientEvent = NSessionService.ClientEvent;
+import { ISchemaExceptionError, IValidatorError, NSessionService } from '@Core/Types';
 
 export class Guards {
   public static isNotUndefined(x: undefined | any): boolean {
@@ -25,15 +19,11 @@ export class Guards {
     return typeof x === 'string';
   }
 
-  public static isSocketStructure(
-    x: NSessionService.EventStructure<ClientEvent, string, void> | unknown
-  ): x is NSessionService.EventStructure<ClientEvent, string, void> {
+  public static isSocketStructure(x: NSessionService.ClientData): x is NSessionService.ClientData {
     return typeof x === 'object' && x !== null && 'event' in x && 'payload' in x;
   }
 
-  public static isClientHandshake(
-    x: NSessionService.ClientHandshakePayload | unknown
-  ): x is NSessionService.ClientHandshakePayload {
-    return typeof x === 'object' && x !== null && 'userId' in x && 'sessionId' in x;
+  public static isSessionEvent(x: string): x is NSessionService.ClientEvent {
+    return Object.values(NSessionService.ClientEvent).includes(x as NSessionService.ClientEvent);
   }
 }

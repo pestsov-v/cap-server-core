@@ -1,7 +1,7 @@
 import { NValidatorProvider } from './validator.provider';
 import { NLoggerService } from '../services';
 import { ISchemaExceptionError } from '../../../src/core/providers';
-import { UTCDate } from '@Utility/Types';
+import { UnknownObject, UTCDate } from '@Utility/Types';
 
 export interface IExceptionProvider {
   throwValidation(errors: NValidatorProvider.ErrorResult[]): IValidatorError;
@@ -70,6 +70,10 @@ export interface ICoreError {
 }
 
 export namespace NExceptionProvider {
+  export type CoreErrorFormat<T extends UnknownObject = { message: string }> = {
+    code: string;
+    data: T;
+  };
   export type ValidationData = {
     statusCode: number;
     payload: {

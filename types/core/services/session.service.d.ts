@@ -1,4 +1,4 @@
-import { IAbstractService } from '@Core/Types';
+import { IAbstractService, IBaseOperationAgent, IIntegrationAgent } from '@Core/Types';
 import { Nullable, UnknownObject } from '@Utility/Types';
 import { Ws } from '@Packages/Types';
 
@@ -11,65 +11,142 @@ export interface ISessionService extends IAbstractService {
   getHttpSessionCount(userId: string): Promise<number>;
   deleteHttpSession(userId: string, sessionId: string): Promise<void>;
 
-  setWebsocketConnection(ws: Ws.WebSocket, connection: NSessionService.ConnectionDetails): void;
+  setWsConnection(ws: Ws.WebSocket, connection: NSessionService.ConnectionDetails): void;
 }
 
 export namespace NSessionService {
   export type ServerEvent =
     | 'server:handshake'
+    | 'server:handshake:error'
+    | 'server:authenticate'
+    | 'server:authenticate:error'
     | 'server:session:to:session'
     | 'server:broadcast:to:service';
 
-  export type ClientEvent =
-    | 'client:handshake'
-    | 'client:session:to:session'
-    | 'client:broadcast:to:service';
+  export enum ClientEvent {
+    HANDSHAKE = 'client:handshake',
+    UPLOAD_PAGE = 'client:upload:page',
+    AUTHENTICATE = 'client:authenticate',
+    SESSION_TO_SESSION = 'client:session:to:session',
+    BROADCAST_TO_SERVICE = 'client:broadcast:to:service',
+  }
+
+  export type EventHandler<T> = (ws: Ws.WebSocket, payload: T) => Promise<void>;
+
+  export type RedisKeyOptions = {
+    user?: {
+      id: string;
+      count?: boolean;
+    };
+    sessionId?: string;
+  };
 
   export type ServerHandshakePayload = {
+    serverTag: string;
+    service: string;
     connectionId: string;
   };
 
   export type ClientHandshakePayload = {
-    userId: string;
-    sessionId: string;
+    localization?: string;
+    clientTag?: string;
+    applicationName?: string;
+    deviceId?: string;
   };
 
-  export type ClientEventPayload<E extends string, P> = {
-    event: E;
-    payload: P;
+  export type ClientAuthenticatePayload = {
+    accessToken: string;
   };
 
-  export type EventStructure<CE extends ClientEvent, E extends string, P> = {
-    event: CE;
-    payload: CE extends 'client:handshake' ? ClientHandshakePayload : ClientEventPayload<E, P>;
+  export type ClientSessionToSessionPayload<T extends UnknownObject = UnknownObject> = {
+    event: string;
+    token: string;
+    corePayload: {
+      userId: string;
+    };
+    schemaPayload: T;
+  };
+
+  export type ReSendPayload = {
+    type: NSessionService.ServerEvent;
+    eventName: string;
+    payload: UnknownObject;
+  };
+
+  export type Listener = {
+    isPrivateUser: boolean;
+    isPrivateOrganization: boolean;
+    listener: (agent: Agents, context: Context) => Promise<void | ReSendPayload>;
+  };
+
+  export type Agents = {
+    integrationAgent: IIntegrationAgent;
+    baseAgent: IBaseOperationAgent;
+  };
+
+  export type Context = {};
+
+  export type Listeners<K extends string> = {
+    [key in E]: Listener;
+  };
+
+  export type EventPayload<E extends ClientEvent = ClientEvent> = E extends ClientEvent.HANDSHAKE
+    ? ClientHandshakePayload
+    : E extends ClientEvent.AUTHENTICATE
+    ? ClientAuthenticatePayload
+    : E extends ClientEvent.UPLOAD_PAGE
+    ? string
+    : E extends ClientEvent.SESSION_TO_SESSION
+    ? ClientSessionToSessionPayload
+    : E extends ClientEvent.BROADCAST_TO_SERVICE
+    ? string
+    : never;
+
+  export type EventRoutine<E extends ClientEvent = ClientEvent> = EventHandler<EventPayload<E>>;
+
+  export type EventRoutines<K extends ClientEvent = ClientEvent> = {
+    [key in K]: EventRoutine<key>;
+  };
+
+  export type ClientData<E extends ClientEvent = ClientEvent> = {
+    event: string;
+    payload: CE;
   };
 
   export type Config = {
     serverTag: string;
   };
 
-  export type ConnectionDetails = {
+  export interface ConnectionDetails {
     userAgent?: string;
     acceptLanguage?: string;
     websocketKey?: string;
     ip?: string;
-  };
+  }
 
-  export type Connection = ConnectionDetails & {
+  export interface BaseConnection extends ConnectionDetails {
+    auth: boolean;
+    localization?: string;
+    clientTag?: string;
+    applicationName?: string;
+    deviceId?: string;
+    fingerprint?: string;
     socket: Ws.WebSocket;
-  };
-
-  export interface BaseSocketRequest {
-    anonymous: boolean;
+    connectionCount: number;
   }
-  export interface AnonymousSocketRequest extends BaseSocketRequest {
-    anonymous: true;
+  export interface AnonymousConnection extends BaseConnection {
+    auth: false;
   }
-  export interface AuthorizeSocketRequest<T> extends BaseSocketRequest {
-    anonymous: false;
+  export interface AuthConnection<T extends UnknownObject = UnknownObject> extends BaseConnection {
+    auth: true;
+    userId: string;
+    sessionId: string;
     sessionInfo: T;
   }
-  export type SocketRequest<T> = AnonymousSocketRequest | AuthorizeSocketRequest<T>;
+
+  export type Connection<T extends UnknownObject = UnknownObject> =
+    | AnonymousConnection
+    | AuthConnection<T>;
 
   export type ConnectionStorage = Map<string, Connection>;
 }
