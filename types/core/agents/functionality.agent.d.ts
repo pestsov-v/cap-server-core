@@ -93,8 +93,13 @@ export namespace NFunctionalityAgent {
     deleteHttpSession: ISessionService['deleteHttpSession'];
   };
 
+  export type WsSessions = {
+    sendSessionToSession: ISessionService['sendSessionToSession'];
+  };
+
   export type Sessions = {
     http: HttpSessions;
+    ws: WsSessions;
   };
 
   export type Exception = {

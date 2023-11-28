@@ -1,4 +1,5 @@
 import { ISchemaExceptionError, IValidatorError, NSessionService } from '@Core/Types';
+import ClientEvent = NSessionService.ClientEvent;
 
 export class Guards {
   public static isNotUndefined(x: undefined | any): boolean {
@@ -24,6 +25,13 @@ export class Guards {
   }
 
   public static isSessionEvent(x: string): x is NSessionService.ClientEvent {
-    return Object.values(NSessionService.ClientEvent).includes(x as NSessionService.ClientEvent);
+    const events: NSessionService.ClientEvent[] = [
+      ClientEvent.HANDSHAKE,
+      ClientEvent.AUTHENTICATE,
+      ClientEvent.UPLOAD_PAGE,
+      ClientEvent.SESSION_TO_SESSION,
+      ClientEvent.BROADCAST_TO_SERVICE,
+    ];
+    return Object.values(events).includes(x as NSessionService.ClientEvent);
   }
 }

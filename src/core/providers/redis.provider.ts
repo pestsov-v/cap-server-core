@@ -66,7 +66,7 @@ export class RedisProvider implements IRedisProvider {
   }
 
   public async getItemByUserId<T extends UnknownObject = UnknownObject>(id: string): Promise<T> {
-    const ids = await this._redisConnector.connection.keys(`${id}:*`);
+    const ids = await this._redisConnector.connection.keys(id);
     const sessionInfo = await this.getItemInfo<T>(ids[0]);
     if (!sessionInfo) {
       throw new Error('Session info not found');

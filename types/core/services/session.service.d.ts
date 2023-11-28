@@ -1,4 +1,9 @@
-import { IAbstractService, IBaseOperationAgent, IIntegrationAgent } from '@Core/Types';
+import {
+  IAbstractService,
+  IBaseOperationAgent,
+  IIntegrationAgent,
+  NScramblerService,
+} from '@Core/Types';
 import { Nullable, UnknownObject } from '@Utility/Types';
 import { Ws } from '@Packages/Types';
 
@@ -12,6 +17,10 @@ export interface ISessionService extends IAbstractService {
   deleteHttpSession(userId: string, sessionId: string): Promise<void>;
 
   setWsConnection(ws: Ws.WebSocket, connection: NSessionService.ConnectionDetails): void;
+  sendSessionToSession(
+    event: string,
+    payload: NSessionService.SessionToSessionPayload
+  ): Promise<void>;
 }
 
 export namespace NSessionService {
@@ -23,13 +32,17 @@ export namespace NSessionService {
     | 'server:session:to:session'
     | 'server:broadcast:to:service';
 
-  export enum ClientEvent {
+  export const enum ClientEvent {
     HANDSHAKE = 'client:handshake',
     UPLOAD_PAGE = 'client:upload:page',
     AUTHENTICATE = 'client:authenticate',
     SESSION_TO_SESSION = 'client:session:to:session',
     BROADCAST_TO_SERVICE = 'client:broadcast:to:service',
   }
+
+  export type ConnectionId = {
+    connectionId: string;
+  };
 
   export type EventHandler<T> = (ws: Ws.WebSocket, payload: T) => Promise<void>;
 
@@ -123,6 +136,11 @@ export namespace NSessionService {
     websocketKey?: string;
     ip?: string;
   }
+
+  export type SessionToSessionPayload = {
+    recipientId: string;
+    payload?: UnknownObject;
+  };
 
   export interface BaseConnection extends ConnectionDetails {
     auth: boolean;

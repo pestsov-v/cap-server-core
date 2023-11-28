@@ -282,6 +282,7 @@ export class FastifyAdapter
         }
       });
     } catch (e) {
+      console.log(e);
       if (Guards.isValidationError(e)) {
         const response = container
           .get<IExceptionProvider>(CoreSymbols.ExceptionProvider)

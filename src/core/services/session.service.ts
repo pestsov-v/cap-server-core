@@ -165,10 +165,14 @@ export class SessionService extends AbstractService implements ISessionService {
             console.log(e);
           }
         } else {
-          this._sendSessionToSession(ws, CoreErrors.SessionService.INVALID_DATA_STRUCTURE);
+          this._send(
+            ws,
+            'server:handshake:error',
+            CoreErrors.SessionService.INVALID_DATA_STRUCTURE
+          );
         }
       } catch (e) {
-        this._sendSessionToSession(ws, CoreErrors.SessionService.INVALID_DATA_PAYLOAD);
+        this._send(ws, 'server:handshake:error', CoreErrors.SessionService.INVALID_DATA_STRUCTURE);
       }
     });
   }
@@ -206,7 +210,7 @@ export class SessionService extends AbstractService implements ISessionService {
   private async _listenAuthenticate(
     ws: Ws.WebSocket,
     data: NSessionService.ClientAuthenticatePayload
-  ) {
+  ): Promise<void> {
     const redisProvider = container.get<IRedisProvider>(CoreSymbols.RedisProvider);
     try {
       const { payload } =
@@ -253,9 +257,10 @@ export class SessionService extends AbstractService implements ISessionService {
     payload: NSessionService.ClientSessionToSessionPayload<T>
   ): Promise<void> {
     try {
+      const id = this._buildRedisKey({ user: { id: payload.corePayload.userId, count: true } });
       const userInfo = await container
         .get<IRedisProvider>(CoreSymbols.RedisProvider)
-        .getItemByUserId(`service:${this._config?.serverTag}:userId:${payload.corePayload.userId}`);
+        .getItemByUserId(id);
 
       const connection = this._getConnection(socket.uuid);
 
@@ -280,12 +285,32 @@ export class SessionService extends AbstractService implements ISessionService {
     this._send(socket, 'server:handshake', payload);
   }
 
-  private _sendSessionToSession<T>(socket: Ws.WebSocket, payload: T): void {
-    this._send<T>(socket, 'server:session:to:session', payload);
-  }
+  public async sendSessionToSession<T>(
+    event: string,
+    payload: NSessionService.SessionToSessionPayload
+  ): Promise<void> {
+    const id = this._buildRedisKey({ user: { id: payload.recipientId, count: true } });
+    const sessionInfo = await container
+      .get<IRedisProvider>(CoreSymbols.RedisProvider)
+      .getItemByUserId<NSessionService.ConnectionId>(id);
 
-  private _sendBroadcastToSession<T>(socket: Ws.WebSocket, payload: T): void {
-    this._send<T>(socket, 'server:broadcast:to:service', payload);
+    console.log('storage', Array.from(this._storage.keys()));
+    console.log('sessionInfo', sessionInfo);
+    console.log('payload', payload);
+
+    if (sessionInfo) {
+      const connection = this._storage.get(sessionInfo.connectionId);
+      if (!connection) {
+        throw new Error('Connection not found');
+      }
+
+      console.log('2connection', connection);
+
+      this._send(connection.socket, 'server:session:to:session', {
+        event: event,
+        payload: payload.payload,
+      });
+    }
   }
 
   private _send<T>(socket: Ws.WebSocket, event: NSessionService.ServerEvent, payload: T): void {
@@ -296,13 +321,13 @@ export class SessionService extends AbstractService implements ISessionService {
     let id = 'service:' + this._conf.serverTag;
     if (options) {
       if (options.user) {
-        id += ':userId' + options.user.id;
+        id += ':userId:' + options.user.id;
         if (options.user.count) {
           id += ':*';
         }
       }
       if (options.sessionId) {
-        id += ':sessionId' + options.sessionId;
+        id += ':sessionId:' + options.sessionId;
       }
     } else {
       id += ':*';

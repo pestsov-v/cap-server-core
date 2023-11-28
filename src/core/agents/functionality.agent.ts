@@ -352,6 +352,15 @@ export class FunctionalityAgent implements IFunctionalityAgent {
           return this._sessionService.deleteHttpSession(userId, sessionId);
         },
       },
+      ws: {
+        sendSessionToSession: async (event, payload): Promise<void> => {
+          try {
+            return this._sessionService.sendSessionToSession(event, payload);
+          } catch (e) {
+            throw e;
+          }
+        },
+      },
     };
   }
 
