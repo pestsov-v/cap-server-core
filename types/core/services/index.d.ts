@@ -6,3 +6,4 @@ export * from './context.service';
 export * from './schema.service';
 export * from './session.service';
 export * from './localization.service';
+export * from './specification.service';

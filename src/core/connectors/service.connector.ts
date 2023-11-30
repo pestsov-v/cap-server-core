@@ -12,6 +12,7 @@ import {
   IScramblerService,
   IServiceConnector,
   ISessionService,
+  ISpecificationService,
 } from '@Core/Types';
 
 @injectable()
@@ -30,7 +31,9 @@ export class ServiceConnector extends AbstractConnector implements IServiceConne
     @inject(CoreSymbols.SessionService)
     private readonly _sessionService: ISessionService,
     @inject(CoreSymbols.LocalizationService)
-    private readonly _localizationService: ILocalizationService
+    private readonly _localizationService: ILocalizationService,
+    @inject(CoreSymbols.SpecificationService)
+    private readonly _specificationService: ISpecificationService
   ) {
     super();
   }
@@ -43,8 +46,10 @@ export class ServiceConnector extends AbstractConnector implements IServiceConne
     await this._localizationService.start();
     await this._schemaService.start();
     await this._sessionService.start();
+    await this._specificationService.start();
   }
   public async stop(): Promise<void> {
+    await this._specificationService.stop();
     await this._sessionService.stop();
     await this._schemaService.stop();
     await this._localizationService.stop();

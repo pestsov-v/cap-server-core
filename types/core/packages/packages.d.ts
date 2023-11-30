@@ -16,9 +16,20 @@ import { Redis, RedisOptions } from 'ioredis';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import ws from 'ws';
+import {
+  HttpMethods,
+  MediaTypeObject,
+  NonArraySchemaObject,
+  OpenAPI,
+  OpenAPIV3,
+  OperationObject,
+  ResponseObject,
+  SchemaObject,
+  ServerObject,
+} from 'openapi-types';
+import OpenAPISchemaValidator from 'openapi-schema-validator';
 
 import { StringObject, UnknownObject } from '@Utility/Types';
-import { ht } from 'date-fns/locale';
 
 export namespace Inversify {
   export namespace interfaces {
@@ -325,4 +336,16 @@ export namespace Http {
 
 export namespace Https {
   export type Server = https.Server;
+}
+
+export namespace Openapi {
+  export type Path = { [method in HttpMethods]?: OperationObject<T> };
+  export type OperationObject = OpenAPIV3.OperationObject;
+  export type ResponseObject = OpenAPIV3.ResponseObject;
+  export type MediaTypeObject = OpenAPIV3.MediaTypeObject;
+  export type Document = OpenAPIV3.Document;
+  export type Validator = OpenAPISchemaValidator;
+  export type ServerObject = OpenAPISchemaValidator.OpenAPI.ServerObject;
+  export type HttpMethods = OpenAPIV3.HttpMethods;
+  export type NonArraySchemaObject = OpenAPIV3.NonArraySchemaObject;
 }

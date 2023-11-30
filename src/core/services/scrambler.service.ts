@@ -40,7 +40,7 @@ export class ScramblerService extends AbstractService implements IScramblerServi
       refreshExpiredAt: this._discoveryService.getNumber('services:scrambler:refreshExpiredAt', 30),
       defaultAlgorithm: this._discoveryService.getString(
         'services:scrambler:defaultAlgorithm',
-        'HS512'
+        'MD5'
       ),
     };
   }

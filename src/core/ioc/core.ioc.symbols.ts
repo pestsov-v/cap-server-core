@@ -17,6 +17,7 @@ export const CoreSymbols = {
   ScramblerService: Symbol('ScramblerService'),
   SessionService: Symbol('SessionService'),
   LocalizationService: Symbol('LocalizationService'),
+  SpecificationService: Symbol('SpecificationService'),
 
   // Providers
   SchemaProvider: Symbol('SchemaProvider'),
@@ -31,6 +32,7 @@ export const CoreSymbols = {
 
   // Loader
   SchemaLoader: Symbol('SchemaLoader'),
+  SpecificationLoader: Symbol('SpecificationLoader'),
 
   // Agents
   FunctionalityAgent: Symbol('FunctionalityAgent'),
@@ -48,4 +50,5 @@ export const CoreSymbols = {
 
   // Base operations
   ValidatorBaseOperation: Symbol('ValidatorBaseOperation'),
+  SpecificationBaseOperation: Symbol('SpecificationBaseOperation'),
 } as const;

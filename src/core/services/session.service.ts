@@ -3,6 +3,11 @@ const { injectable, inject } = Packages.inversify;
 const { v4 } = Packages.uuid;
 import { CoreSymbols } from '@CoreSymbols';
 import { AbstractService } from './abstract.service';
+import { container } from '../ioc/core.ioc';
+import { Nullable, UnknownObject } from '@Utility/Types';
+import { Ws } from '@Packages/Types';
+import { Guards } from '@Guards';
+import { CoreErrors } from '../common/core-errors';
 
 import {
   IContextService,
@@ -14,11 +19,6 @@ import {
   NScramblerService,
   NSessionService,
 } from '@Core/Types';
-import { container } from '../ioc/core.ioc';
-import { Nullable, UnknownObject } from '@Utility/Types';
-import { Ws } from '@Packages/Types';
-import { Guards } from '@Guards';
-import { CoreErrors } from '../common/core-errors';
 
 @injectable()
 export class SessionService extends AbstractService implements ISessionService {
@@ -294,17 +294,11 @@ export class SessionService extends AbstractService implements ISessionService {
       .get<IRedisProvider>(CoreSymbols.RedisProvider)
       .getItemByUserId<NSessionService.ConnectionId>(id);
 
-    console.log('storage', Array.from(this._storage.keys()));
-    console.log('sessionInfo', sessionInfo);
-    console.log('payload', payload);
-
     if (sessionInfo) {
       const connection = this._storage.get(sessionInfo.connectionId);
       if (!connection) {
         throw new Error('Connection not found');
       }
-
-      console.log('2connection', connection);
 
       this._send(connection.socket, 'server:session:to:session', {
         event: event,

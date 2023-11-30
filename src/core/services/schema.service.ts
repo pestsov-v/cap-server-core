@@ -7,20 +7,37 @@ import { AbstractService } from './abstract.service';
 
 import {
   IAbstractFactory,
+  IBaseOperationAgent,
   IDiscoveryService,
+  IFunctionalityAgent,
+  IIntegrationAgent,
+  ILocalizationService,
   ILoggerService,
   IMongodbConnector,
+  IMongodbProvider,
+  ISchemaAgent,
   ISchemaLoader,
   ISchemaService,
+  ISessionService,
+  ISpecificationLoader,
   ITypeormConnector,
+  ITypeormProvider,
+  NAbstractFrameworkAdapter,
   NAbstractService,
+  NMongodbProvider,
+  NSchemaLoader,
   NSchemaService,
+  NSpecificationLoader,
+  NTypeormConnector,
 } from '@Core/Types';
+import { Typeorm } from '@Packages/Types';
 
 @injectable()
 export class SchemaService extends AbstractService implements ISchemaService {
   protected readonly _SERVICE_NAME: NSchemaService.ServiceName = 'SchemaService';
   private _config: NSchemaService.Config | undefined;
+  private _wsListenersStorage: NSchemaLoader.Services | undefined;
+  private _specifications: NSpecificationLoader.Services | undefined;
 
   constructor(
     @inject(CoreSymbols.DiscoveryService)
@@ -37,6 +54,22 @@ export class SchemaService extends AbstractService implements ISchemaService {
     private readonly _typeormConnector: ITypeormConnector
   ) {
     super();
+  }
+
+  public get specifications(): NSpecificationLoader.Services {
+    if (!this._specifications) {
+      throw new Error('Specification storage is empty');
+    }
+
+    return this._specifications;
+  }
+
+  public get wsListeners(): NSchemaLoader.Services {
+    if (!this._wsListenersStorage) {
+      throw new Error('Ws listeners not set');
+    }
+
+    return this._wsListenersStorage;
   }
 
   protected async init(): Promise<boolean> {
@@ -69,6 +102,10 @@ export class SchemaService extends AbstractService implements ISchemaService {
   private _setConfig(): void {
     this._config = {
       schemaPath: this._discoveryService.getMandatory<string>('services:schema:schema-path'),
+      specificationEnable: this._discoveryService.getBoolean(
+        'services:specification:enable',
+        false
+      ),
     };
   }
 
@@ -80,13 +117,25 @@ export class SchemaService extends AbstractService implements ISchemaService {
     if (!this._config) {
       throw new Error('Config not set');
     }
-    const loader = container.get<ISchemaLoader>(CoreSymbols.SchemaLoader);
+
+    const { specificationEnable } = this._config;
+    const schemaLoader = container.get<ISchemaLoader>(CoreSymbols.SchemaLoader);
+
     try {
-      await loader.init();
-      Reflect.defineMetadata(MetadataKeys.SchemaLoader, loader, Reflect);
+      await schemaLoader.init();
+      if (specificationEnable) {
+        const specLoader = container.get<ISpecificationLoader>(CoreSymbols.SpecificationLoader);
+        await specLoader.init();
+        Reflect.defineMetadata(MetadataKeys.SpecificationLoader, specLoader, Reflect);
+        Reflect.defineMetadata(MetadataKeys.isSpecLoaderEnable, specificationEnable, Reflect);
+        this._specifications = specLoader.services;
+      }
+
+      Reflect.defineMetadata(MetadataKeys.SchemaLoader, schemaLoader, Reflect);
+
       await import(this._config.schemaPath);
 
-      await this._frameworkFactory.run(loader.services);
+      await this._frameworkFactory.run(schemaLoader.services);
 
       this._typeormConnector.on('connector:TypeormConnector:start', () => {
         this._typeormConnector.emit(
@@ -94,6 +143,10 @@ export class SchemaService extends AbstractService implements ISchemaService {
           loader.typeormSchemas
         );
       });
+
+      this._wsListenersStorage = schemaLoader.wsListeners;
+
+      this._localizationService.loadDictionaries(schemaLoader.dictionaries);
     } catch (e) {
       throw e;
     }

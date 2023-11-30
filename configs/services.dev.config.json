@@ -28,10 +28,14 @@
     "randomBytes": 32,
     "accessExpiredAt": 10,
     "refreshExpiredAt": 30,
-    "defaultAlgorithm": "HS512"
+    "defaultAlgorithm": "MD5"
   },
   "localization": {
     "supportedLanguages": ["en", "ru", "ua"],
     "defaultLanguages": "en"
+  },
+  "specification": {
+    "enable": true,
+    "liveReload": true
   }
 }

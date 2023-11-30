@@ -24,12 +24,13 @@ import {
   ILocalizationService,
   IIntegrationAgent,
 } from '@Core/Types';
-import { ResponseType, StatusCode } from '@common';
+import { ResponseType, SchemaHeaders, StatusCode } from '@common';
 import { Helpers } from '../../utility/helpers';
 import { container } from '../../ioc/core.ioc';
 import { Guards } from '@Guards';
-import { UnknownObject } from '@Utility/Types';
+import { HttpMethod, UnknownObject } from '@Utility/Types';
 import { TokenExpiredError } from 'jsonwebtoken';
+import { Fastify } from '@Packages/Types';
 
 @injectable()
 export class FastifyAdapter
@@ -81,6 +82,22 @@ export class FastifyAdapter
     this._instance = fastify({});
     this._instance.all(this._config.urls.api, this._apiHandler);
 
+    this._instance.addHook(
+      'onRequest',
+      (request: Fastify.Request, reply: Fastify.Response, done: () => void): void => {
+        reply.headers(this._corsHeaders());
+
+        console.log(this._corsHeaders());
+
+        if (request.method === 'OPTIONS') {
+          reply.status(200).send();
+          return;
+        }
+
+        done();
+      }
+    );
+
     const { protocol, host, port } = this._config;
 
     try {
@@ -98,6 +115,34 @@ export class FastifyAdapter
     } catch (e) {
       console.log(e);
     }
+  }
+
+  private _corsHeaders() {
+    const httpMethods: HttpMethod[] = [
+      'GET',
+      'POST',
+      'PUT',
+      'PATCH',
+      'DELETE',
+      'HEAD',
+      'OPTIONS',
+      'TRACE',
+    ];
+    const standardHeaders = ['Content-Type', 'Authorization'];
+    const schemaHeaders: (typeof SchemaHeaders)[keyof typeof SchemaHeaders][] = [
+      'x-service-name',
+      'x-service-version',
+      'x-domain-name',
+      'x-action-name',
+      'x-action-version',
+    ];
+    const tokenHeaders = ['x-user-access-token', 'x-user-refresh-token'];
+    return {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': httpMethods.join(', '),
+      'Access-Control-Allow-Headers': standardHeaders.join(', ') + ', ' + schemaHeaders.join(', '),
+      'Access-Control-Expose-Headers': tokenHeaders.join(', '),
+    };
   }
 
   public async stop(): Promise<void> {

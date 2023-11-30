@@ -25,6 +25,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import nodemailer from 'nodemailer';
 import ws from 'ws';
+import openapiValidator from 'openapi-schema-validator';
 
 export class Packages {
   public static get inversify() {
@@ -148,5 +149,9 @@ export class Packages {
 
   public static get ws() {
     return { ws };
+  }
+
+  public static get openapi() {
+    return { Validator: openapiValidator };
   }
 }

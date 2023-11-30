@@ -5,8 +5,8 @@ import { CoreSymbols } from '@CoreSymbols';
 import { Initiator } from '../initiator';
 import { FastifyAdapter } from '../adapters';
 import { FrameworkFactory } from '../factories';
-import { SchemaLoader } from '../loaders';
-import { ValidatorBaseOperation } from '../base-operations';
+import { SchemaLoader, SpecificationLoader } from '../loaders';
+import { SpecificationBaseOperation, ValidatorBaseOperation } from '../base-operations';
 import { FunctionalityAgent, SchemaAgent, BaseOperationAgent, IntegrationAgent } from '../agents';
 import {
   MongodbConnector,
@@ -22,6 +22,7 @@ import {
   SchemaService,
   ScramblerService,
   SessionService,
+  SpecificationService,
 } from '../services';
 import {
   MongodbProvider,
@@ -63,6 +64,9 @@ import {
   IIntegrationAgent,
   IAbstractWebsocketAdapter,
   IDiscoveryService,
+  ISpecificationService,
+  ISpecificationLoader,
+  ISpecificationBaseOperation,
 } from '@Core/Types';
 import { MailIntegration } from '../integrations';
 import { IntegrationConnector } from '../connectors/integration.connector';
@@ -88,6 +92,9 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<IContextService>(CoreSymbols.ContextService).to(ContextService).inSingletonScope();
   bind<IScramblerService>(CoreSymbols.ScramblerService).to(ScramblerService).inSingletonScope();
   bind<ISessionService>(CoreSymbols.SessionService).to(SessionService).inSingletonScope();
+  bind<ISpecificationService>(CoreSymbols.SpecificationService)
+    .to(SpecificationService)
+    .inSingletonScope();
   bind<ILocalizationService>(CoreSymbols.LocalizationService)
     .to(LocalizationService)
     .inSingletonScope();
@@ -105,6 +112,9 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
 
   // Loaders
   bind<ISchemaLoader>(CoreSymbols.SchemaLoader).to(SchemaLoader).inSingletonScope();
+  bind<ISpecificationLoader>(CoreSymbols.SpecificationLoader)
+    .to(SpecificationLoader)
+    .inSingletonScope();
 
   // Agents
   bind<ISchemaAgent>(CoreSymbols.SchemaAgent).to(SchemaAgent).inTransientScope();
@@ -127,5 +137,8 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   // base-operations
   bind<IValidatorBaseOperation>(CoreSymbols.ValidatorBaseOperation)
     .to(ValidatorBaseOperation)
+    .inTransientScope();
+  bind<ISpecificationBaseOperation>(CoreSymbols.SpecificationBaseOperation)
+    .to(SpecificationBaseOperation)
     .inTransientScope();
 });
