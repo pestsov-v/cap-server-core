@@ -1,7 +1,6 @@
 import { OpenApi } from '../../../../core/decorators';
 import { NSysAuth } from '../../../../../types/schemas/sys-admin/sys.auth';
 import { SysAuthSymbols } from './sys.auth.symbols';
-import { Openapi } from '@Packages/Types';
 
 @OpenApi<NSysAuth.Paths>(SysAuthSymbols.SpecOpenapi, {
   signup: (agents) => {
