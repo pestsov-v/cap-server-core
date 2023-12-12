@@ -150,7 +150,6 @@ export class SpecificationService extends AbstractService implements ISpecificat
 
           this._validator = new Validator({ version: '' });
           const errors = this._validator.validate(document);
-          console.log(errors);
           await this._buildOpenApiSpecification(
             'SysAdmin',
             '1.0.2',

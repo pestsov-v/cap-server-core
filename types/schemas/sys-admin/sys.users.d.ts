@@ -12,24 +12,25 @@ export namespace NSysUsers {
     | 'v1/deactivate-profile';
 
   export type UserEntitySchema = {
-    SYS_RG_USER_ID: Char<36>;
-    FIRST_NAME: Varchar<50>;
-    MIDDLE_NAME: Nullable<Varchar<50>>;
-    LAST_NAME: Varchar<50>;
-    LOGIN: Nullable<Varchar<50>>;
-    EMAIL: Varchar<320>;
-    PHONE: Char<13>;
-    PASSWORD: Varchar<100>;
-    ACTIVATE_TOKEN: string;
-    MAX_SESSIONS: number;
-    IS_BLOCKED: BoolYesNo;
-    IS_VERIFIED: BoolYesNo;
-    CREATED_AT: Date;
-    UPDATED_AT: Nullable<Date>;
+    sys_rg_user_id: Char<36>;
+    first_name: Varchar<50>;
+    middle_name: Nullable<Varchar<50>>;
+    last_name: Varchar<50>;
+    login: Nullable<Varchar<50>>;
+    email: Varchar<320>;
+    phone: Char<13>;
+    password: Varchar<100>;
+    activate_token: string;
+    max_sessions: number;
+    is_blocked: BoolYesNo;
+    is_verified: BoolYesNo;
+    created_at: Date;
+    updated_at: Nullable<Date>;
   };
 
   export type IRepository = {
-    create: NTypeormProvider.DocumentHandler<UserEntitySchema>;
+    create: NTypeormProvider.DocumentHandler<UserEntitySchema, NSysUsers.UserEntitySchema>;
+    find: NTypeormProvider.DocumentHandler<UserEntitySchema, void, UserEntitySchema[]>;
     findOne: (
       repository: Typeorm.Repository<UserEntitySchema>,
       phone?: string,
@@ -37,22 +38,30 @@ export namespace NSysUsers {
     ) => Promise<Nullable<UserEntitySchema>>;
   };
 
+  export type OrderBy<T extends string = string> = { column: T; sorted: 'ASC' | 'DESC' };
+
+  export type FindParams = {
+    raws?: number;
+    orderBy?: OrderBy[];
+  };
+
   export type SchemaRepository = {
     create: (user: NSysUsers.UserEntitySchema) => Promise<void>;
+    find: (params?: FindParams) => Promise<NSysUsers.UserEntitySchema[]>;
     findOne: (phone?: string, email?: string) => Promise<Nullable<UserEntitySchema>>;
   };
 
   export type WsListener = 'loginOrganizationUser';
 
   export type UpdateProfileINP = {
-    firstName?: UserEntitySchema['FIRST_NAME'];
-    lastName?: UserEntitySchema['LAST_NAME'];
-    phone?: UserEntitySchema['PHONE'];
-    email?: UserEntitySchema['EMAIL'];
+    firstName?: UserEntitySchema['first_name'];
+    lastName?: UserEntitySchema['last_name'];
+    phone?: UserEntitySchema['phone'];
+    email?: UserEntitySchema['email'];
   };
 
   export type UpdatePasswordINP = {
-    password: UserEntitySchema['PASSWORD'];
+    password: UserEntitySchema['password'];
   };
   export type BannedProfileINP = {
     profileId: string;
@@ -66,6 +75,7 @@ export namespace NSysUsers {
     deactivateProfile: ControllerHandler<void, void, NSysAuth.PrivateUserHeaders>;
     reactivateProfile: ControllerHandler<void, void, NSysAuth.PrivateUserHeaders>;
     banProfile: ControllerHandler<BannedProfileINP, void, NSysAuth.PrivateUserHeaders>;
+    getUsers: ControllerHandler<NSysUsers.UserEntitySchema[], void, NSysAuth.PrivateUserHeaders>;
   };
 
   export type Controller = keyof UserController;

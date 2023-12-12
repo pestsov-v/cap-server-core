@@ -5,4 +5,7 @@ export const ErrorCodes = {
     IS_BLOCKED: '1001.1001.1003',
     IS_NOT_VERIFIED: '1001.1001.1004',
   },
+  SysUser: {
+    USER_LIST_EMPTY: '1001.1002.1001',
+  },
 } as const;

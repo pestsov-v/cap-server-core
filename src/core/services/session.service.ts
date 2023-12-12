@@ -248,7 +248,7 @@ export class SessionService extends AbstractService implements ISessionService {
     }
   }
 
-  private _listenUploadPage(ws: Ws.WebSocket, payload: any) {
+  private _listenUploadPage(_: Ws.WebSocket, payload: any) {
     this._storage.delete(payload.connectionId);
   }
 

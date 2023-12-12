@@ -9,7 +9,7 @@ export type ControllerHandler<
 
 export type SchemaRequest<
   BODY = UnknownObject,
-  PARAMS extends StringObject = StringObject,
+  PARAMS extends StringObject | void = void,
   HEADERS extends StringObject = StringObject
 > = NAbstractFrameworkAdapter.SchemaRequest<BODY, PARAMS, HEADERS, 'fastify'>;
 export type SchemaResponse = Voidable<NAbstractFrameworkAdapter.SchemaResponse>;

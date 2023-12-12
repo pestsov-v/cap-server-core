@@ -82,5 +82,8 @@ import { Openapi } from '@Packages/Types';
   forgotPassword: (agents) => {
     return [];
   },
+  revalidateAccessToken: (agents) => {
+    return [];
+  },
 })
 export class SysAuthSpecOpenapiRu {}

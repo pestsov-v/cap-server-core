@@ -87,8 +87,6 @@ export class FastifyAdapter
       (request: Fastify.Request, reply: Fastify.Response, done: () => void): void => {
         reply.headers(this._corsHeaders());
 
-        console.log(this._corsHeaders());
-
         if (request.method === 'OPTIONS') {
           reply.status(200).send();
           return;
@@ -140,7 +138,12 @@ export class FastifyAdapter
     return {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': httpMethods.join(', '),
-      'Access-Control-Allow-Headers': standardHeaders.join(', ') + ', ' + schemaHeaders.join(', '),
+      'Access-Control-Allow-Headers':
+        standardHeaders.join(', ') +
+        ', ' +
+        schemaHeaders.join(', ') +
+        ', ' +
+        tokenHeaders.join(', '),
       'Access-Control-Expose-Headers': tokenHeaders.join(', '),
     };
   }

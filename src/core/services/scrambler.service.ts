@@ -81,10 +81,8 @@ export class ScramblerService extends AbstractService implements IScramblerServi
   ): NScramblerService.ConvertJwtInfo {
     if (!this._config) throw this._throwConfigError();
 
-    const algorithm = alg ?? (this._config.defaultAlgorithm as Jwt.Algorithm);
-
     try {
-      return this._generateToken(payload, this.accessExpiredAt, algorithm);
+      return this._generateToken(payload, this.accessExpiredAt, alg);
     } catch (e) {
       throw e;
     }
@@ -96,10 +94,8 @@ export class ScramblerService extends AbstractService implements IScramblerServi
   ): NScramblerService.ConvertJwtInfo {
     if (!this._config) throw this._throwConfigError();
 
-    const algorithm = alg ?? (this._config.defaultAlgorithm as Jwt.Algorithm);
-
     try {
-      return this._generateToken(payload, this.refreshExpiredAt, algorithm);
+      return this._generateToken(payload, this.refreshExpiredAt, alg);
     } catch (e) {
       throw e;
     }
@@ -107,7 +103,7 @@ export class ScramblerService extends AbstractService implements IScramblerServi
 
   private _generateToken<T = UnknownObject>(payload: T, expiresIn: number, alg?: Jwt.Algorithm) {
     if (!this._config) throw this._throwConfigError();
-    const algorithm = alg ?? (this._config.defaultAlgorithm as Jwt.Algorithm);
+    const algorithm = alg ?? 'HS256';
 
     const jwtId = v4();
     try {
