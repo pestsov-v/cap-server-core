@@ -13,6 +13,7 @@ export const CoreSymbols = {
   DiscoveryService: Symbol('DiscoveryService'),
   LoggerService: Symbol('LoggerService'),
   SchemaService: Symbol('SchemaService'),
+  GetawayService: Symbol('GetawayService'),
   ContextService: Symbol('ContextService'),
   ScramblerService: Symbol('ScramblerService'),
   SessionService: Symbol('SessionService'),

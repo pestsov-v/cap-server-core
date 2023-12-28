@@ -1,9 +1,9 @@
 import { setTypeormSchema } from '@Vendor';
-import { TypeormSchemaNames } from '../typeorm-schema.names';
 import { NSysUsers } from '../../../../../types/schemas';
 import { BoolYesNo } from '@Utility/Types';
 import { SchemaModels } from '../../../../../types/schemas/schema-names';
 import { EntitySchema } from 'typeorm';
+import { TypeormSchemaNames } from '../../common/typeorm-schema.names';
 
 export const SysUsersTypeormSchema = setTypeormSchema<SchemaModels, NSysUsers.UserEntitySchema>({
   model: 'sys_user',

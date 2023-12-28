@@ -9,6 +9,16 @@ export namespace NSysAuth {
     | 'v1/activate-account'
     | 'v1/logout';
 
+  export type Dictionary = {
+    auth: {
+      IS_BLOCKED: string;
+      IS_NOT_VERIFIED: string;
+      INCORRECT_PASSWORD: string;
+      MORE_MAX_SESSIONS: string;
+      UNAUTHORIZED: string;
+    };
+  };
+
   export type PrivateUserHeaders = { 'x-access-token'?: string };
 
   export type SignupINP = {

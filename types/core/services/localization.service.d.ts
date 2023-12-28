@@ -5,7 +5,6 @@ export interface ILocalizationService extends IAbstractService {
   readonly supportedLanguages: string[];
   readonly defaultLanguages: string;
 
-  loadDictionaries(dictionaries: NLocalizationService.Dictionaries): void;
   getResource(
     service: string,
     domain: string,

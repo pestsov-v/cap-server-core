@@ -8,6 +8,7 @@ import {
   IDiscoveryService,
   ILocalizationService,
   ILoggerService,
+  ISchemaService,
   NLocalizationService,
 } from '@Core/Types';
 
@@ -21,7 +22,9 @@ export class LocalizationService extends AbstractService implements ILocalizatio
     @inject(CoreSymbols.DiscoveryService)
     protected readonly _discoveryService: IDiscoveryService,
     @inject(CoreSymbols.LoggerService)
-    protected readonly _loggerService: ILoggerService
+    protected readonly _loggerService: ILoggerService,
+    @inject(CoreSymbols.SchemaService)
+    private readonly _schemaService: ISchemaService
   ) {
     super();
   }
@@ -46,13 +49,9 @@ export class LocalizationService extends AbstractService implements ILocalizatio
       throw new Error('Config not set');
     }
 
-    this._dictionaries = new Map<string, NLocalizationService.ServiceDictionaries>();
+    // this._dictionaries = this._schemaService.
 
     return true;
-  }
-
-  public loadDictionaries(dictionaries: NLocalizationService.Dictionaries): void {
-    this._dictionaries = dictionaries;
   }
 
   public get supportedLanguages(): string[] {

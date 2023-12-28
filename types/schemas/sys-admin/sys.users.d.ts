@@ -11,6 +11,13 @@ export namespace NSysUsers {
     | 'v1/reactivate-profile'
     | 'v1/deactivate-profile';
 
+  export type Dictionary = {
+    user: {
+      USER_NOT_FOUND: string;
+      USER_LIST_EMPTY: string;
+    };
+  };
+
   export type UserEntitySchema = {
     sys_rg_user_id: Char<36>;
     first_name: Varchar<50>;
@@ -29,13 +36,10 @@ export namespace NSysUsers {
   };
 
   export type IRepository = {
-    create: NTypeormProvider.DocumentHandler<UserEntitySchema, NSysUsers.UserEntitySchema>;
-    find: NTypeormProvider.DocumentHandler<UserEntitySchema, void, UserEntitySchema[]>;
-    findOne: (
-      repository: Typeorm.Repository<UserEntitySchema>,
-      phone?: string,
-      email?: string
-    ) => Promise<Nullable<UserEntitySchema>>;
+    create: (
+      repo: Typeorm.Repository<NSysUsers.UserEntitySchema>,
+      user: NSysUsers.UserEntitySchema
+    ) => Promise<void>;
   };
 
   export type OrderBy<T extends string = string> = { column: T; sorted: 'ASC' | 'DESC' };

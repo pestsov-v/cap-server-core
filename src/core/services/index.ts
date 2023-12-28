@@ -7,3 +7,4 @@ export * from './session.service';
 export * from './scrambler.service';
 export * from './localization.service';
 export * from './specification.service';
+export * from './getaway.service';

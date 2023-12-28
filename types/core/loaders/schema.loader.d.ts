@@ -80,6 +80,7 @@ export namespace NSchemaLoader {
     typeormSchema?: NTypeormProvider.SchemaFn<unknown>;
     typeormRepoHandlers: Map<string, AnyFunction>;
     validators: Map<string, NValidatorProvider.ValidateHandler>;
+    dictionaries: any;
   };
   export type Domains = Map<string, DomainStorage>;
   export type Services = Map<string, Domains>;

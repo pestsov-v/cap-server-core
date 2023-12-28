@@ -1,6 +1,7 @@
 import { IAbstractService, NSchemaLoader, NSpecificationLoader } from '@Core/Types';
 
 export interface ISchemaService extends IAbstractService {
+  readonly schema: NSchemaLoader.Services;
   readonly wsListeners: NSchemaLoader.Services;
   readonly specifications: NSpecificationLoader.Services;
 

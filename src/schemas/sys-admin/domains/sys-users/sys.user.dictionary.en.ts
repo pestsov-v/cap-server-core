@@ -1,12 +1,12 @@
-import { Dictionary } from '../../../../core/decorators';
-import { NSysUsers } from '../../../../../types/schemas';
-import { SysUsersSymbols } from './sys.users.symbols';
-import { SupportedLanguages } from '../../common/supported-languages';
+import { setDictionary } from '@Vendor';
+import { LanguageKind, NSysUsers } from '../../../../../types/schemas';
 
-@Dictionary<NSysUsers.Dictionary>(SysUsersSymbols.DictionaryEn, SupportedLanguages.EN, {
-  user: {
-    USER_NOT_FOUND: 'User not found',
-    USER_LIST_EMPTY: 'User list is empty',
+export const SysUsersDictionaryEN = setDictionary<LanguageKind, NSysUsers.Dictionary>({
+  language: 'en',
+  dictionary: {
+    user: {
+      USER_NOT_FOUND: 'User not found',
+      USER_LIST_EMPTY: 'User list is empty',
+    },
   },
-})
-export class SysUserDictionaryEn {}
+});

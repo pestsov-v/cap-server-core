@@ -10,13 +10,14 @@ import {
   ILoggerService,
   ISchemaService,
   IScramblerService,
-  IServiceConnector,
+  IComputeConnector,
   ISessionService,
   ISpecificationService,
+  IAbstractService,
 } from '@Core/Types';
 
 @injectable()
-export class ServiceConnector extends AbstractConnector implements IServiceConnector {
+export class ComputeConnector extends AbstractConnector implements IComputeConnector {
   constructor(
     @inject(CoreSymbols.DiscoveryService)
     private readonly _discoveryService: IDiscoveryService,
@@ -26,6 +27,8 @@ export class ServiceConnector extends AbstractConnector implements IServiceConne
     private readonly _scramblerService: IScramblerService,
     @inject(CoreSymbols.SchemaService)
     private readonly _schemaService: ISchemaService,
+    @inject(CoreSymbols.GetawayService)
+    private readonly _getawayService: IAbstractService,
     @inject(CoreSymbols.ContextService)
     private readonly _contextService: IContextService,
     @inject(CoreSymbols.SessionService)
@@ -45,12 +48,14 @@ export class ServiceConnector extends AbstractConnector implements IServiceConne
     await this._scramblerService.start();
     await this._localizationService.start();
     await this._schemaService.start();
+    await this._getawayService.start();
     await this._sessionService.start();
     await this._specificationService.start();
   }
   public async stop(): Promise<void> {
     await this._specificationService.stop();
     await this._sessionService.stop();
+    await this._getawayService.stop();
     await this._schemaService.stop();
     await this._localizationService.stop();
     await this._scramblerService.stop();

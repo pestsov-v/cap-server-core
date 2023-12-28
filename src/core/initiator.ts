@@ -7,7 +7,7 @@ import {
   IIntegrationConnector,
   IMongodbConnector,
   IRedisConnector,
-  IServiceConnector,
+  IComputeConnector,
   ITypeormConnector,
 } from '@Core/Types';
 
@@ -15,7 +15,7 @@ import {
 export class Initiator implements IInitiator {
   constructor(
     @inject(CoreSymbols.ServiceConnector)
-    private readonly _serviceConnector: IServiceConnector,
+    private readonly _serviceConnector: IComputeConnector,
     @inject(CoreSymbols.MongodbConnector)
     private readonly _mongodbConnector: IMongodbConnector,
     @inject(CoreSymbols.TypeormConnector)

@@ -11,12 +11,13 @@ import { FunctionalityAgent, SchemaAgent, BaseOperationAgent, IntegrationAgent }
 import {
   MongodbConnector,
   RedisConnector,
-  ServiceConnector,
+  ComputeConnector,
   TypeormConnector,
 } from '../connectors';
 import {
   ContextService,
   DiscoveryService,
+  GetawayService,
   LocalizationService,
   LoggerService,
   SchemaService,
@@ -49,7 +50,7 @@ import {
   ISchemaLoader,
   ISchemaProvider,
   ISchemaService,
-  IServiceConnector,
+  IComputeConnector,
   IValidatorProvider,
   IValidatorBaseOperation,
   ITypeormConnector,
@@ -67,6 +68,7 @@ import {
   ISpecificationService,
   ISpecificationLoader,
   ISpecificationBaseOperation,
+  IAbstractService,
 } from '@Core/Types';
 import { MailIntegration } from '../integrations';
 import { IntegrationConnector } from '../connectors/integration.connector';
@@ -77,7 +79,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<IInitiator>(CoreSymbols.Initiator).to(Initiator).inRequestScope();
 
   // Connectors
-  bind<IServiceConnector>(CoreSymbols.ServiceConnector).to(ServiceConnector).inSingletonScope();
+  bind<IComputeConnector>(CoreSymbols.ServiceConnector).to(ComputeConnector).inSingletonScope();
   bind<IMongodbConnector>(CoreSymbols.MongodbConnector).to(MongodbConnector).inSingletonScope();
   bind<ITypeormConnector>(CoreSymbols.TypeormConnector).to(TypeormConnector).inSingletonScope();
   bind<IRedisConnector>(CoreSymbols.RedisConnector).to(RedisConnector).inSingletonScope();
@@ -92,6 +94,7 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<IContextService>(CoreSymbols.ContextService).to(ContextService).inSingletonScope();
   bind<IScramblerService>(CoreSymbols.ScramblerService).to(ScramblerService).inSingletonScope();
   bind<ISessionService>(CoreSymbols.SessionService).to(SessionService).inSingletonScope();
+  bind<IAbstractService>(CoreSymbols.GetawayService).to(GetawayService).inSingletonScope();
   bind<ISpecificationService>(CoreSymbols.SpecificationService)
     .to(SpecificationService)
     .inSingletonScope();

@@ -5,23 +5,15 @@ import { container } from '../ioc/core.ioc';
 import { MetadataKeys } from '@common';
 import { AbstractService } from './abstract.service';
 
-import { Typeorm } from '@Packages/Types';
 import {
   IAbstractFactory,
-  IBaseOperationAgent,
   IDiscoveryService,
-  IFunctionalityAgent,
-  IIntegrationAgent,
-  ILocalizationService,
   ILoggerService,
   IMongodbConnector,
-  IMongodbProvider,
-  ISchemaAgent,
   ISchemaLoader,
   ISchemaService,
   ISpecificationLoader,
   ITypeormConnector,
-  NAbstractFrameworkAdapter,
   NAbstractService,
   NSchemaLoader,
   NSchemaService,
@@ -34,16 +26,13 @@ export class SchemaService extends AbstractService implements ISchemaService {
   private _config: NSchemaService.Config | undefined;
   private _wsListenersStorage: NSchemaLoader.Services | undefined;
   private _specifications: NSpecificationLoader.Services | undefined;
+  private _schema: NSchemaLoader.Services | undefined;
 
   constructor(
     @inject(CoreSymbols.DiscoveryService)
     protected readonly _discoveryService: IDiscoveryService,
     @inject(CoreSymbols.LoggerService)
     protected readonly _loggerService: ILoggerService,
-    @inject(CoreSymbols.SchemaLoader)
-    protected readonly _schemaLoader: ISchemaLoader,
-    @inject(CoreSymbols.FrameworkFactory)
-    private readonly _frameworkFactory: IAbstractFactory,
     @inject(CoreSymbols.MongodbConnector)
     private readonly _mongodbConnector: IMongodbConnector,
     @inject(CoreSymbols.TypeormConnector)
@@ -66,6 +55,14 @@ export class SchemaService extends AbstractService implements ISchemaService {
     }
 
     return this._wsListenersStorage;
+  }
+
+  public get schema(): NSchemaLoader.Services {
+    if (!this._schema) {
+      throw new Error('Collection schema not initialize or empty.');
+    }
+
+    return this._schema;
   }
 
   protected async init(): Promise<boolean> {
@@ -130,19 +127,14 @@ export class SchemaService extends AbstractService implements ISchemaService {
       Reflect.defineMetadata(MetadataKeys.SchemaLoader, schemaLoader, Reflect);
 
       await import(this._config.schemaPath);
-
-      await this._frameworkFactory.run(schemaLoader.services);
+      this._schema = schemaLoader.services;
 
       this._typeormConnector.on('connector:TypeormConnector:start', () => {
         this._typeormConnector.emit(
           'connector:TypeormConnector:entities:load',
-          loader.typeormSchemas
+          schemaLoader.typeormSchemas
         );
       });
-
-      this._wsListenersStorage = schemaLoader.wsListeners;
-
-      this._localizationService.loadDictionaries(schemaLoader.dictionaries);
     } catch (e) {
       throw e;
     }
@@ -150,7 +142,11 @@ export class SchemaService extends AbstractService implements ISchemaService {
 
   protected async destroy(): Promise<void> {
     this._config = undefined;
-    await this._frameworkFactory.stand();
+    this._specifications = undefined;
+
+    Reflect.deleteMetadata(MetadataKeys.isSpecLoaderEnable, Reflect);
+    Reflect.deleteMetadata(MetadataKeys.SpecificationLoader, Reflect);
+    Reflect.deleteMetadata(MetadataKeys.SchemaLoader, Reflect);
 
     this._emitter.removeAllListeners();
   }

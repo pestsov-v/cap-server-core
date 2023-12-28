@@ -4,13 +4,18 @@ const { AsyncLocalStorage } = Packages.async_hooks;
 import { CoreSymbols } from '@CoreSymbols';
 import { AbstractService } from './abstract.service';
 
-import { AsyncHooks } from '@Packages/Types';
-import { IContextService, IDiscoveryService, ILoggerService, NContextService } from '@Core/Types';
+import type { AsyncHooks } from '@Packages/Types';
+import type {
+  IContextService,
+  IDiscoveryService,
+  ILoggerService,
+  NContextService,
+} from '@Core/Types';
 
 @injectable()
 export class ContextService extends AbstractService implements IContextService {
   protected readonly _SERVICE_NAME = ContextService.name;
-  protected _storage: AsyncHooks.AsyncLocalStorage<NContextService.Store> | undefined;
+  protected _STORAGE: AsyncHooks.AsyncLocalStorage<NContextService.Store> | undefined;
 
   constructor(
     @inject(CoreSymbols.DiscoveryService)
@@ -22,20 +27,20 @@ export class ContextService extends AbstractService implements IContextService {
   }
 
   protected async init(): Promise<boolean> {
-    this._storage = new AsyncLocalStorage<NContextService.Store>();
+    this._STORAGE = new AsyncLocalStorage<NContextService.Store>();
 
     return true;
   }
 
   public get storage(): AsyncHooks.AsyncLocalStorage<NContextService.Store> {
-    if (!this._storage) throw this._throwStorageError();
-    return this._storage;
+    if (!this._STORAGE) {
+      throw new Error('Storage not initialize');
+    }
+    return this._STORAGE;
   }
 
   public get store(): NContextService.Store {
-    if (!this._storage) throw this._throwStorageError();
-
-    const store = this._storage.getStore();
+    const store = this.storage.getStore();
     if (!store) {
       throw new Error('Async local store not found');
     }
@@ -43,20 +48,15 @@ export class ContextService extends AbstractService implements IContextService {
   }
 
   public exit(callback?: () => void): void {
-    if (!this._storage) throw this._throwStorageError();
-    return this._storage.exit(() => {
+    return this.storage.exit(() => {
       if (callback) callback();
     });
   }
 
-  private _throwStorageError() {
-    throw new Error('Storage not initialize');
-  }
-
   protected async destroy(): Promise<void> {
-    if (this._storage) {
-      this._storage.exit(() => {});
-      this._storage = undefined;
+    if (this._STORAGE) {
+      this._STORAGE.exit(() => {});
+      this._STORAGE = undefined;
     }
   }
 }
