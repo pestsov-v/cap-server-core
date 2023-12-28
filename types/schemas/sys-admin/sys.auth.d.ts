@@ -2,6 +2,13 @@ import { ControllerHandler } from '@Vendor/Types';
 import { NSysUsers } from './sys.users';
 
 export namespace NSysAuth {
+  export type Paths =
+    | 'v1/signup'
+    | 'v1/login'
+    | 'v1/forgot-password'
+    | 'v1/activate-account'
+    | 'v1/logout';
+
   export type PrivateUserHeaders = { 'x-access-token'?: string };
 
   export type SignupINP = {
@@ -31,5 +38,5 @@ export namespace NSysAuth {
     activateAccount: ControllerHandler<void, string>;
   };
 
-  export type Paths = keyof IController;
+  export type Controller = keyof IController;
 }

@@ -1,6 +1,9 @@
-import { Apply } from '@Vendor';
+import { setApplication } from '@Vendor';
 import { serviceNames } from '../common/service-names';
-import { SysDomainNames } from './domains/sys-domain.names';
+import { SysUsersCollector } from './domains/sys-users/sys.users.collector';
+import { SysAuthCollector } from './domains/sys-auth/sys.auth.collector';
 
-@Apply(serviceNames.SYS_ADMIN, [SysDomainNames.SYS_USERS])
-export class SushiMasterApplication {}
+export const SysAdminApplication = setApplication(serviceNames.SYS_ADMIN, [
+  SysUsersCollector,
+  SysAuthCollector,
+]);

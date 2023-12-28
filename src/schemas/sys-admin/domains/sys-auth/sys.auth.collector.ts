@@ -1,8 +1,9 @@
-import { Collect } from '@Vendor';
+import { setCollector } from '@Vendor';
 import { SysDomainNames } from '../sys-domain.names';
-import { SysAuthSymbols } from './sys.auth.symbols';
+import { SysAuthController } from './sys.auth.controller';
+import { SysAuthRouter } from './sys.auth.router';
 
-@Collect(SysDomainNames.SYS_AUTH, {
-  controller: SysAuthSymbols.Controller,
-})
-export class SysAuthCollector {}
+export const SysAuthCollector = setCollector(SysDomainNames.SYS_AUTH, {
+  controller: SysAuthController,
+  router: SysAuthRouter,
+});

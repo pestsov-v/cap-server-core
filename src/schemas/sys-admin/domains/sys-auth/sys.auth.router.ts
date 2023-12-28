@@ -1,42 +1,40 @@
-import { Router } from '@Vendor';
-import { SysAuthSymbols } from './sys.auth.symbols';
+import { setRouter } from '@Vendor';
 import { NSysAuth } from '../../../../../types/schemas/sys-admin/sys.auth';
 
-@Router<NSysAuth.Paths>(SysAuthSymbols.Router, [
-  {
-    path: 'v1/signup',
-    method: 'POST',
-    handler: 'signup',
-    isPrivateUser: false,
-    isPrivateOrganization: false,
+export const SysAuthRouter = setRouter<NSysAuth.Paths, NSysAuth.Controller>({
+  'v1/signup': {
+    POST: {
+      handler: 'signup',
+      isPrivateUser: false,
+      isPrivateOrganization: false,
+    },
   },
-  {
-    path: 'v1/login',
-    method: 'GET',
-    handler: 'login',
-    isPrivateUser: false,
-    isPrivateOrganization: false,
+  'v1/login': {
+    POST: {
+      handler: 'login',
+      isPrivateUser: false,
+      isPrivateOrganization: false,
+    },
   },
-  {
-    path: 'v1/forgot-password',
-    method: 'PATCH',
-    handler: 'forgotPassword',
-    isPrivateUser: false,
-    isPrivateOrganization: false,
+  'v1/logout': {
+    GET: {
+      handler: 'logout',
+      isPrivateUser: true,
+      isPrivateOrganization: false,
+    },
   },
-  {
-    path: 'v1/activate-account',
-    method: 'GET',
-    handler: 'activateAccount',
-    isPrivateUser: false,
-    isPrivateOrganization: false,
+  'v1/activate-account': {
+    GET: {
+      handler: 'activateAccount',
+      isPrivateUser: false,
+      isPrivateOrganization: false,
+    },
   },
-  {
-    path: 'v1/logout',
-    handler: 'logout',
-    method: 'GET',
-    isPrivateUser: true,
-    isPrivateOrganization: false,
+  'v1/forgot-password': {
+    PATCH: {
+      handler: 'forgotPassword',
+      isPrivateUser: false,
+      isPrivateOrganization: false,
+    },
   },
-])
-export class SysAuthRouter {}
+});

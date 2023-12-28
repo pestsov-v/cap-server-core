@@ -1,8 +1,12 @@
 import { Packages } from '@Packages';
 const { injectable } = Packages.inversify;
 
-import { AnyFunction, UnknownObject } from '@Utility/Types';
-import {
+import type { AnyFunction, HttpMethod, UnknownObject } from '@Utility/Types';
+import type { ControllerStructure, RouterStructure } from '@Vendor/Types';
+import type {
+  IBaseOperationAgent,
+  IFunctionalityAgent,
+  ISchemaAgent,
   ISchemaLoader,
   NAbstractFrameworkAdapter,
   NMongodbProvider,
@@ -10,72 +14,68 @@ import {
   NTypeormProvider,
   NValidatorProvider,
 } from '@Core/Types';
+import { Typeorm } from '@Packages/Types';
+import { container } from '../ioc/core.ioc';
+import { CoreSymbols } from '@CoreSymbols';
+import e from 'express';
 
 @injectable()
 export class SchemaLoader implements ISchemaLoader {
-  private _services: Map<string, NSchemaLoader.Domains> | undefined;
-  private _domains: NSchemaLoader.Domains | undefined;
+  private _SERVICES: Map<string, NSchemaLoader.Domains> | undefined;
+  private _DOMAINS: NSchemaLoader.Domains | undefined;
 
   public async init(): Promise<void> {
-    this._domains = new Map<string, NSchemaLoader.DomainStorage>();
-    this._services = new Map<string, NSchemaLoader.Domains>();
+    this._DOMAINS = new Map<string, NSchemaLoader.DomainStorage>();
+    this._SERVICES = new Map<string, NSchemaLoader.Domains>();
+  }
+
+  private get _domains(): NSchemaLoader.Domains {
+    if (!this._DOMAINS) {
+      throw new Error('Domains map not initialize');
+    }
+
+    return this._DOMAINS;
   }
 
   public get services(): NSchemaLoader.Services {
-    if (!this._services) throw this.throwDomainsError();
+    if (!this._SERVICES) {
+      throw new Error('Services map not initialize');
+    }
 
-    return this._services;
-  }
-
-  public get mongoSchemas(): NMongodbProvider.SchemaInfo<UnknownObject>[] {
-    if (!this._services) throw this.throwServicesError();
-
-    const schemas: NMongodbProvider.SchemaInfo<UnknownObject>[] = [];
-    this._services.forEach((service) => {
-      service.forEach((domain) => {
-        if (domain.mongoSchema && domain.mongoModel) {
-          schemas.push({ getSchema: domain.mongoSchema, model: domain.mongoModel });
-        }
-      });
-    });
-
-    return schemas;
-  }
-
-  public get typeormSchemas(): NTypeormProvider.SchemaInfo<UnknownObject>[] {
-    if (!this._services) throw this.throwServicesError();
-
-    const schemas: NTypeormProvider.SchemaInfo<UnknownObject>[] = [];
-    this._services.forEach((service) => {
-      service.forEach((domain) => {
-        if (domain.typeormSchema && domain.typeormModel) {
-          schemas.push({ getSchema: domain.typeormSchema, model: domain.typeormModel });
-        }
-      });
-    });
-
-    return schemas;
-  }
-
-  private throwDomainsError() {
-    return new Error('Domains map not initialize');
-  }
-
-  private throwServicesError() {
-    return new Error('Services map not initialize');
+    return this._SERVICES;
   }
 
   public async destroy(): Promise<void> {
-    this._domains = undefined;
-    this._services = undefined;
+    this._DOMAINS = undefined;
+    this._SERVICES = undefined;
+  }
+
+  public get typeormSchemas(): NSchemaLoader.TypeormEntities {
+    const entities: NSchemaLoader.TypeormEntities = new Map<
+      string,
+      Typeorm.EntitySchema<unknown>
+    >();
+    this.services.forEach((domains) => {
+      domains.forEach((storage, domain) => {
+        if (storage.typeormSchema && storage.typeormModel) {
+          const agents: NAbstractFrameworkAdapter.Agents = {
+            functionalityAgent: container.get<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent),
+            schemaAgent: container.get<ISchemaAgent>(CoreSymbols.SchemaAgent),
+            baseAgent: container.get<IBaseOperationAgent>(CoreSymbols.BaseOperationAgent),
+          };
+
+          entities.set(storage.typeormModel, storage.typeormSchema(agents));
+        }
+      });
+    });
+
+    return entities;
   }
 
   public applyDomainToService(service: string, domain: string): void {
-    if (!this._services || !this._domains) throw this.throwDomainsError();
-
-    const sStorage = this._services.get(service);
+    const sStorage = this.services.get(service);
     if (!sStorage) {
-      this._services.set(service, new Map<string, NSchemaLoader.DomainStorage>());
+      this.services.set(service, new Map<string, NSchemaLoader.DomainStorage>());
       this.applyDomainToService(service, domain);
       return;
     }
@@ -88,49 +88,36 @@ export class SchemaLoader implements ISchemaLoader {
     sStorage.set(domain, dStorage);
   }
 
-  public setController<T extends string>(domain: string, details: NSchemaLoader.Controller<T>) {
-    if (!this._domains) throw this.throwDomainsError();
-
+  public setController(domain: string, structure: ControllerStructure<string>): void {
     const storage = this._domains.get(domain);
     if (!storage) {
       this.setDomain(domain);
-      this.setController<T>(domain, details);
+      this.setController(domain, structure);
       return;
     }
-    if (!storage.controllers) {
-      storage.controllers = new Map<string, NAbstractFrameworkAdapter.Handler>();
-    }
 
-    storage.controllers.set(details.name, details.handler);
+    for (const controller in structure) {
+      storage.controllers.set(controller, structure[controller]);
+    }
   }
 
   public setHelper(domain: string, details: NSchemaLoader.Helper): void {
-    if (!this._domains) throw this.throwDomainsError();
-
     const storage = this._domains.get(domain);
     if (!storage) {
       this.setDomain(domain);
       this.setHelper(domain, details);
       return;
     }
-    if (!storage.helpers) {
-      storage.helpers = new Map<string, (...args: any[]) => any>();
-    }
 
     storage.helpers.set(details.name, details.handler);
   }
 
   public setValidator<T>(domain: string, validator: NSchemaLoader.Validator<T>): void {
-    if (!this._domains) throw this.throwDomainsError();
-
     const storage = this._domains.get(domain);
     if (!storage) {
       this.setDomain(domain);
       this.setValidator(domain, validator);
       return;
-    }
-    if (!storage.validators) {
-      storage.validators = new Map<string, (...args: any[]) => any>();
     }
 
     storage.validators.set(validator.name, validator.handler);
@@ -142,8 +129,6 @@ export class SchemaLoader implements ISchemaLoader {
     A extends UnknownObject = UnknownObject,
     R = void
   >(domain: string, model: string, details: NSchemaLoader.MongoRepoHandler<T, H, A, R>) {
-    if (!this._domains) throw this.throwDomainsError();
-
     const storage = this._domains.get(domain);
     if (!storage) {
       this.setDomain(domain);
@@ -157,31 +142,38 @@ export class SchemaLoader implements ISchemaLoader {
     storage.mongoRepoHandlers.set(details.name, details.handler);
   }
 
-  public setRoute<T extends string>(domain: string, details: NSchemaLoader.Route<T>): void {
-    if (!this._domains) throw this.throwDomainsError();
-
+  public setRoute(domain: string, structure: RouterStructure<string, string>): void {
     const storage = this._domains.get(domain);
     if (!storage) {
       this.setDomain(domain);
-      this.setRoute<T>(domain, details);
+      this.setRoute(domain, structure);
       return;
     }
 
-    if (!storage.routes) {
-      storage.routes = new Map<string, NSchemaLoader.Route>();
-    }
-
-    const name = details.path + '{{' + details.method.toUpperCase() + '}}';
-    const route = storage.routes.get(name);
-    if (route) {
-      throw new Error(`Route ${name} already exists`);
-    } else {
-      storage.routes.set(name, details);
+    for (const str in structure) {
+      const routes = structure[str];
+      for (const method in routes) {
+        const description = routes[method as HttpMethod];
+        if (description) {
+          const name = str + '{{' + method.toUpperCase() + '}}';
+          const route = storage.routes.get(name);
+          if (route) {
+            throw new Error('`Route ${name} already exists');
+          } else {
+            storage.routes.set(name, {
+              path: str,
+              method: method as HttpMethod,
+              handler: description.handler,
+              isPrivateUser: description.isPrivateUser,
+              isPrivateOrganization: description.isPrivateOrganization,
+            });
+          }
+        }
+      }
     }
   }
 
   public setMongoSchema<T>(domain: string, details: NMongodbProvider.SchemaInfo<T>): void {
-    if (!this._domains) throw this.throwDomainsError();
     const storage = this._domains.get(domain);
     if (!storage) {
       this.setDomain(domain);
@@ -198,8 +190,6 @@ export class SchemaLoader implements ISchemaLoader {
   }
 
   public setTypeormSchema<T>(domain: string, details: NTypeormProvider.SchemaInfo<T>): void {
-    if (!this._domains) throw this.throwDomainsError();
-
     const storage = this._domains.get(domain);
     if (!storage) {
       this.setDomain(domain);
@@ -223,8 +213,6 @@ export class SchemaLoader implements ISchemaLoader {
       handler: AnyFunction;
     }
   ): void {
-    if (!this._domains) throw this.throwDomainsError();
-
     const storage = this._domains.get(domain);
     if (!storage) {
       this.setDomain(domain);
@@ -239,14 +227,13 @@ export class SchemaLoader implements ISchemaLoader {
   }
 
   public setDomain(domain: string): void {
-    if (!this._domains) throw this.throwDomainsError();
-
     this._domains.set(domain, {
       routes: new Map<string, NSchemaLoader.Route>(),
       controllers: new Map<string, NAbstractFrameworkAdapter.Handler>(),
       helpers: new Map<string, AnyFunction>(),
       mongoRepoHandlers: new Map<string, AnyFunction>(),
       validators: new Map<string, NValidatorProvider.ValidateHandler<UnknownObject>>(),
+      typeormRepoHandlers: new Map<string, AnyFunction>(),
     });
   }
 }

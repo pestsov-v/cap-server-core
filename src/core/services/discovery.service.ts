@@ -9,8 +9,8 @@ import { Helpers } from '../utility/helpers';
 
 import { AbstractService } from './abstract.service';
 
-import { Nconf } from '@Packages/Types';
-import { IDiscoveryService, NAbstractService, NDiscoveryService } from '@Core/Types';
+import type { Nconf } from '@Packages/Types';
+import type { IDiscoveryService, NAbstractService, NDiscoveryService } from '@Core/Types';
 
 @injectable()
 export class DiscoveryService extends AbstractService implements IDiscoveryService {

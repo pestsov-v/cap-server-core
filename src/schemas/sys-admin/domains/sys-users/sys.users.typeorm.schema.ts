@@ -1,14 +1,13 @@
-import { TypeormSchema } from '@Vendor';
-import { SysUsersSymbols } from './sys.users.symbols';
+import { setTypeormSchema } from '@Vendor';
 import { TypeormSchemaNames } from '../typeorm-schema.names';
 import { NSysUsers } from '../../../../../types/schemas';
-import { EntitySchema } from 'typeorm/entity-schema/EntitySchema';
 import { BoolYesNo } from '@Utility/Types';
+import { SchemaModels } from '../../../../../types/schemas/schema-names';
+import { EntitySchema } from 'typeorm';
 
-@TypeormSchema<NSysUsers.UserEntitySchema>(
-  SysUsersSymbols.TypeormSchema,
-  TypeormSchemaNames.SYS_USERS,
-  () => {
+export const SysUsersTypeormSchema = setTypeormSchema<SchemaModels, NSysUsers.UserEntitySchema>({
+  model: 'sys_user',
+  getSchema: (_) => {
     return new EntitySchema<NSysUsers.UserEntitySchema>({
       name: TypeormSchemaNames.SYS_USERS,
       tableName: TypeormSchemaNames.SYS_USERS,
@@ -93,6 +92,5 @@ import { BoolYesNo } from '@Utility/Types';
         },
       },
     });
-  }
-)
-export class SysUsersTypeormSchema {}
+  },
+});

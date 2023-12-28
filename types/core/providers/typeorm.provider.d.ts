@@ -18,8 +18,4 @@ export namespace NTypeormProvider {
     repository: Typeorm.Repository<T>,
     ...args: ARGS
   ) => Promise<R>;
-
-  export type Handlers<T> = {
-    [key in keyof T]: T[key];
-  };
 }

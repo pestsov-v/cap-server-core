@@ -19,7 +19,7 @@
     }
   },
   "schema": {
-    "schema-path": "/home/pescov/Documents/GitHub/cap-server-core/src/schemas/index.ts"
+    "schema-path": "/Users/vladislavpestsov/internal/thunder-server/src/schemas/index.ts"
   },
   "scrambler": {
     "enable": true,

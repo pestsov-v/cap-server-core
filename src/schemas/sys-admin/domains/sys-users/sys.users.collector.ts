@@ -1,10 +1,13 @@
-import { Collect } from '@Vendor';
+import { setCollector } from '@Vendor';
 import { SysDomainNames } from '../sys-domain.names';
-import { SysUsersSymbols } from './sys.users.symbols';
+import { SysUsersRouter } from './sys.users.router';
+import { SysUsersController } from './sys.users.controller';
+import { SysUsersTypeormRepository } from './sys.users.typeorm.repository';
+import { SysUsersTypeormSchema } from './sys.users.typeorm.schema';
 
-@Collect(SysDomainNames.SYS_USERS, {
-  typeormSchema: SysUsersSymbols.TypeormSchema,
-  typeormRepository: SysUsersSymbols.TypeormRepository,
-  controller: SysUsersSymbols.Controller,
-})
-export class SysUsersCollector {}
+export const SysUsersCollector = setCollector(SysDomainNames.SYS_USERS, {
+  router: SysUsersRouter,
+  controller: SysUsersController,
+  typeormRepo: SysUsersTypeormRepository,
+  typeormSchema: SysUsersTypeormSchema,
+});

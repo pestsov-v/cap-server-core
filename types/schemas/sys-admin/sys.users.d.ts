@@ -4,6 +4,12 @@ import { NSysAuth } from './sys.auth';
 import { BoolYesNo, Char, Nullable, Varchar } from '@Utility/Types';
 
 export namespace NSysUsers {
+  export type Paths =
+    | 'v1/profile'
+    | 'v1/password'
+    | 'v1/reactivate-profile'
+    | 'v1/deactivate-profile';
+
   export type UserEntitySchema = {
     SYS_RG_USER_ID: Char<36>;
     FIRST_NAME: Varchar<50>;
@@ -51,5 +57,5 @@ export namespace NSysUsers {
     banProfile: ControllerHandler<BannedProfileINP, void, NSysAuth.PrivateUserHeaders>;
   };
 
-  export type Paths = keyof UserController;
+  export type Controller = keyof UserController;
 }

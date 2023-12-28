@@ -1,4 +1,4 @@
-import { IAbstractService } from '@Core/Types';
+import { IAbstractService, NAbstractFrameworkAdapter } from '@Core/Types';
 import { Nullable, UnknownObject } from '@Utility/Types';
 
 export interface ISessionService extends IAbstractService {
@@ -11,7 +11,16 @@ export interface ISessionService extends IAbstractService {
 }
 
 export namespace NSessionService {
+  export type ServerEventType = 'server:handshake';
+
+  export type ClientEventType = 'client:handshake';
+
   export type Config = {
     serverTag: string;
   };
+
+  export type WsListener = (
+    agents: NAbstractFrameworkAdapter.Agents,
+    context: NAbstractFrameworkAdapter.Context
+  ) => Promise<R | void>;
 }
