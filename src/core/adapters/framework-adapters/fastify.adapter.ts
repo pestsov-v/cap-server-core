@@ -18,11 +18,19 @@ import {
   ISchemaAgent,
   IBaseOperationAgent,
   IExceptionProvider,
+  IScramblerService,
+  ISessionService,
+  NScramblerService,
+  ILocalizationService,
+  IIntegrationAgent,
 } from '@Core/Types';
-import { ResponseType, StatusCode } from '@common';
+import { ResponseType, SchemaHeaders, StatusCode } from '@common';
 import { Helpers } from '../../utility/helpers';
 import { container } from '../../ioc/core.ioc';
 import { Guards } from '@Guards';
+import { HttpMethod, UnknownObject } from '@Utility/Types';
+import { TokenExpiredError } from 'jsonwebtoken';
+import { Fastify } from '@Packages/Types';
 
 @injectable()
 export class FastifyAdapter
@@ -40,7 +48,13 @@ export class FastifyAdapter
     @inject(CoreSymbols.LoggerService)
     protected readonly _loggerService: ILoggerService,
     @inject(CoreSymbols.ContextService)
-    protected readonly _contextService: IContextService
+    protected readonly _contextService: IContextService,
+    @inject(CoreSymbols.ScramblerService)
+    private readonly _scramblerService: IScramblerService,
+    @inject(CoreSymbols.SessionService)
+    private readonly _sessionService: ISessionService,
+    @inject(CoreSymbols.LocalizationService)
+    private readonly _localizationService: ILocalizationService
   ) {
     super();
   }
@@ -68,6 +82,20 @@ export class FastifyAdapter
     this._instance = fastify({});
     this._instance.all(this._config.urls.api, this._apiHandler);
 
+    this._instance.addHook(
+      'onRequest',
+      (request: Fastify.Request, reply: Fastify.Response, done: () => void): void => {
+        reply.headers(this._corsHeaders());
+
+        if (request.method === 'OPTIONS') {
+          reply.status(200).send();
+          return;
+        }
+
+        done();
+      }
+    );
+
     const { protocol, host, port } = this._config;
 
     try {
@@ -87,13 +115,59 @@ export class FastifyAdapter
     }
   }
 
+  private _corsHeaders() {
+    const httpMethods: HttpMethod[] = [
+      'GET',
+      'POST',
+      'PUT',
+      'PATCH',
+      'DELETE',
+      'HEAD',
+      'OPTIONS',
+      'TRACE',
+    ];
+    const standardHeaders = ['Content-Type', 'Authorization'];
+    const schemaHeaders: (typeof SchemaHeaders)[keyof typeof SchemaHeaders][] = [
+      'x-service-name',
+      'x-service-version',
+      'x-domain-name',
+      'x-action-name',
+      'x-action-version',
+    ];
+    const tokenHeaders = ['x-user-access-token', 'x-user-refresh-token'];
+    return {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': httpMethods.join(', '),
+      'Access-Control-Allow-Headers':
+        standardHeaders.join(', ') +
+        ', ' +
+        schemaHeaders.join(', ') +
+        ', ' +
+        tokenHeaders.join(', '),
+      'Access-Control-Expose-Headers': tokenHeaders.join(', '),
+    };
+  }
+
+  public async stop(): Promise<void> {
+    this._config = undefined;
+    this._schemas = undefined;
+
+    if (!this._instance) return;
+
+    await this._instance.close();
+    this._instance = undefined;
+
+    this._loggerService.system(`Http server has been stopped.`, {
+      scope: 'Core',
+      namespace: this._ADAPTER_NAME,
+      tag: 'Destroy',
+    });
+  }
+
   protected _apiHandler = async (
     req: NAbstractFrameworkAdapter.Request<'fastify'>,
     res: NAbstractFrameworkAdapter.Response<'fastify'>
   ): Promise<void> => {
-    console.log(req.headers);
-    console.log(this._schemas);
-
     if (!this._schemas) {
       throw new Error('Business services schema not initialize');
     }
@@ -142,6 +216,26 @@ export class FastifyAdapter
       });
     }
 
+    let contextLanguage: string;
+    const acceptLanguage = req.headers['accept-language'];
+    const supportedLanguages = this._localizationService.supportedLanguages;
+    if (typeof acceptLanguage !== 'undefined') {
+      if (supportedLanguages.includes(acceptLanguage)) {
+        contextLanguage = acceptLanguage;
+      } else {
+        return res.status(StatusCode.BAD_REQUEST).send({
+          responseType: ResponseType.FAIL,
+          data: {
+            message: `Server not supported "${acceptLanguage}". Supported languages: "${supportedLanguages.join(
+              ', '
+            )}"`,
+          },
+        });
+      }
+    } else {
+      contextLanguage = this._localizationService.defaultLanguages;
+    }
+
     const store: NContextService.Store = {
       service: schemaResult.service,
       domain: schemaResult.domain,
@@ -151,17 +245,50 @@ export class FastifyAdapter
       ip: req.ip,
       requestId: v4(),
       schema: this._schemas,
+      language: contextLanguage,
     };
 
     try {
-      const context: NAbstractFrameworkAdapter.Context = {
-        storage: {
-          store: store,
-        },
-        packages: {},
-      };
-
       await this._contextService.storage.run(store, async () => {
+        const context: NAbstractFrameworkAdapter.Context<UnknownObject> = {
+          storage: {
+            store: store,
+          },
+          packages: {},
+          sessionInfo: { auth: false },
+        };
+
+        if (action.isPrivateUser) {
+          const accessToken = req.headers['x-user-access-token'];
+          if (!accessToken) {
+            return res.status(StatusCode.FORBIDDEN).send({
+              responseType: ResponseType.AUTHENTICATED,
+              data: {
+                message: 'Missed user access token',
+              },
+            });
+          }
+          const jwtPayload = await this._scramblerService.verifyToken<
+            UnknownObject & NScramblerService.SessionIdentifiers
+          >(accessToken);
+
+          const sessionInfo = await this._sessionService.getHttpSessionInfo(
+            jwtPayload.payload.userId,
+            jwtPayload.payload.sessionId
+          );
+
+          if (sessionInfo) {
+            context.sessionInfo = {
+              auth: true,
+              info: {
+                ...sessionInfo,
+                userId: jwtPayload.payload.userId,
+                sessionId: jwtPayload.payload.sessionId,
+              },
+            };
+          }
+        }
+
         const result = await handler(
           {
             method: req.method,
@@ -176,6 +303,7 @@ export class FastifyAdapter
             functionalityAgent: container.get<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent),
             schemaAgent: container.get<ISchemaAgent>(CoreSymbols.SchemaAgent),
             baseAgent: container.get<IBaseOperationAgent>(CoreSymbols.BaseOperationAgent),
+            integrationAgent: container.get<IIntegrationAgent>(CoreSymbols.IntegrationAgent),
           },
           context
         );
@@ -183,6 +311,8 @@ export class FastifyAdapter
         if (!result) {
           return res.status(StatusCode.NO_CONTENT).send();
         }
+
+        if (result.headers) res.headers(result.headers);
 
         switch (result.format) {
           case 'json':
@@ -200,11 +330,40 @@ export class FastifyAdapter
         }
       });
     } catch (e) {
+      console.log(e);
       if (Guards.isValidationError(e)) {
         const response = container
           .get<IExceptionProvider>(CoreSymbols.ExceptionProvider)
           .resolveValidation(e);
         return res.status(response.statusCode).send(response.payload);
+      } else if (Guards.isSchemaExceptionError(e)) {
+        const response = container
+          .get<IExceptionProvider>(CoreSymbols.ExceptionProvider)
+          .resolveSchemaException(e);
+
+        if (response.headers) {
+          if (response.headers.removeHeaders) {
+            for (const header in response.headers.removeHeaders) {
+              res.removeHeader(header, response.headers.removeHeaders[header]);
+            }
+          }
+          if (response.headers.addHeaders) {
+            res.headers(response.headers.addHeaders);
+          }
+        }
+
+        if (response.redirect) {
+          return res.status(response.statusCode).redirect(response.redirect).send(response.payload);
+        } else {
+          return res.status(response.statusCode).send(response.payload);
+        }
+      } else if (e instanceof TokenExpiredError) {
+        res.status(StatusCode.FORBIDDEN).send({
+          responseType: ResponseType.AUTHENTICATED,
+          data: {
+            message: 'Access jwt token expired',
+          },
+        });
       } else {
         return res.status(StatusCode.SERVER_ERROR).send({
           responseType: ResponseType.ERROR,

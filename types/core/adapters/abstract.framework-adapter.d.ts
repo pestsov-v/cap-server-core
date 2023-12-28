@@ -1,5 +1,10 @@
-import { IBaseOperationAgent, IFunctionalityAgent, ISchemaAgent } from '../agents';
-import { NContextService } from '../services';
+import {
+  IBaseOperationAgent,
+  IFunctionalityAgent,
+  IIntegrationAgent,
+  ISchemaAgent,
+} from '../agents';
+import { NContextService, NScramblerService } from '../services';
 
 import { Express, Fastify } from '@Packages/Types';
 import { StringObject, UnknownObject, Voidable } from '@Utility/Types';
@@ -8,6 +13,7 @@ import { Helpers } from '../providers/schema.provider';
 
 export interface IAbstractFrameworkAdapter {
   start(schema: NSchemaLoader.Services): Promise<void>;
+  stop(): Promise<void>;
 }
 
 export namespace NAbstractFrameworkAdapter {
@@ -32,6 +38,7 @@ export namespace NAbstractFrameworkAdapter {
     functionalityAgent: IFunctionalityAgent;
     schemaAgent: ISchemaAgent;
     baseAgent: IBaseOperationAgent;
+    integrationAgent: IIntegrationAgent;
   };
   export type storage = {
     store: NContextService.Store;
@@ -60,9 +67,25 @@ export namespace NAbstractFrameworkAdapter {
     ? Fastify.Instance
     : never;
 
-  export type Context = {
+  export interface BaseSessionInfo {
+    auth: boolean;
+  }
+
+  export interface NonAuthSessionInfo extends BaseSessionInfo {
+    auth: false;
+  }
+
+  export interface AuthSessionInfo<T> extends BaseSessionInfo {
+    auth: true;
+    info: T & NScramblerService.SessionIdentifiers;
+  }
+
+  export type SessionInfo<T = void> = AuthSessionInfo<T> | NonAuthSessionInfo;
+
+  export type Context<T> = {
     storage: storage;
     packages: Packages;
+    sessionInfo: SessionInfo<T>;
   };
 
   export type SchemaRequest<
@@ -81,6 +104,7 @@ export namespace NAbstractFrameworkAdapter {
   export interface BaseResponsePayload {
     format: ResponseFormat;
     responseType?: string;
+    headers?: Record<string, string>;
   }
 
   export interface RedirectResponsePayload extends BaseResponsePayload {

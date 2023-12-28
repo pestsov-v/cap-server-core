@@ -14,3 +14,9 @@ export type Char<T extends string> = string;
 export type ExtendedRecordObject = Record<string, ExtendedObject | string>;
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'HEAD' | 'TRACE';
+
+export type UTCDate = {
+  date: string;
+  time: string;
+  utc: string;
+};

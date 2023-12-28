@@ -9,6 +9,7 @@ import {
   IAbstractFrameworkAdapter,
   NAbstractFrameworkAdapter,
 } from '@Core/Types';
+import { UnknownObject } from '@Utility/Types';
 
 @injectable()
 export abstract class AbstractFrameworkAdapter<K extends NAbstractFrameworkAdapter.FrameworkKind>
@@ -17,7 +18,6 @@ export abstract class AbstractFrameworkAdapter<K extends NAbstractFrameworkAdapt
   protected abstract readonly _ADAPTER_NAME: string;
   protected abstract _instance: NAbstractFrameworkAdapter.Instance<K> | undefined;
   protected abstract _config: NAbstractFrameworkAdapter.Config | undefined;
-  protected _kind: K | undefined;
   protected abstract _setConfig(): void;
 
   protected abstract _discoveryService: IDiscoveryService;
@@ -25,10 +25,11 @@ export abstract class AbstractFrameworkAdapter<K extends NAbstractFrameworkAdapt
   protected abstract _contextService: IContextService;
 
   public abstract start(schemas: any): Promise<void>;
+  public abstract stop(): Promise<void>;
 
   protected abstract _apiHandler(
     req: NAbstractFrameworkAdapter.Request<K>,
-    context: NAbstractFrameworkAdapter.Context
+    context: NAbstractFrameworkAdapter.Context<UnknownObject>
   ): Promise<NAbstractFrameworkAdapter.Response<K>>;
 
   protected _resolveSchemaHeaders(

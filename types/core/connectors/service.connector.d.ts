@@ -1,3 +1,3 @@
 import { IAbstractConnector } from '@Core/Types';
 
-export interface IServiceConnector extends IAbstractConnector {}
+export interface IComputeConnector extends IAbstractConnector {}

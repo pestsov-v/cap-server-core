@@ -1,9 +1,9 @@
 import { setTypeormSchema } from '@Vendor';
-import { TypeormSchemaNames } from '../typeorm-schema.names';
 import { NSysUsers } from '../../../../../types/schemas';
 import { BoolYesNo } from '@Utility/Types';
 import { SchemaModels } from '../../../../../types/schemas/schema-names';
 import { EntitySchema } from 'typeorm';
+import { TypeormSchemaNames } from '../../common/typeorm-schema.names';
 
 export const SysUsersTypeormSchema = setTypeormSchema<SchemaModels, NSysUsers.UserEntitySchema>({
   model: 'sys_user',
@@ -12,81 +12,77 @@ export const SysUsersTypeormSchema = setTypeormSchema<SchemaModels, NSysUsers.Us
       name: TypeormSchemaNames.SYS_USERS,
       tableName: TypeormSchemaNames.SYS_USERS,
       columns: {
-        SYS_RG_USER_ID: {
+        sys_rg_user_id: {
           type: 'string',
           primary: true,
           generated: 'uuid',
         },
-        FIRST_NAME: {
+        first_name: {
           type: 'varchar',
           nullable: false,
           length: 50,
         },
-        MIDDLE_NAME: {
+        middle_name: {
           type: 'varchar',
           length: 50,
           nullable: true,
         },
-        LAST_NAME: {
+        last_name: {
           type: 'varchar',
           nullable: false,
           length: 50,
         },
-        LOGIN: {
+        login: {
           type: 'varchar',
           length: 50,
           unique: true,
           nullable: true,
         },
-        EMAIL: {
+        email: {
           type: 'varchar',
           nullable: false,
           length: 320,
           unique: true,
         },
-        PHONE: {
+        phone: {
           type: 'char',
           nullable: false,
           length: 13,
           unique: true,
         },
-        PASSWORD: {
+        password: {
           type: 'varchar',
           nullable: false,
           length: 100,
         },
-        ACTIVATE_TOKEN: {
-          name: 'ACTIVATE_TOKEN',
-          type: 'enum',
-          enum: [BoolYesNo.YES, BoolYesNo.NO],
+        activate_token: {
+          type: 'varchar',
+          length: 320,
           nullable: false,
-          default: BoolYesNo.NO,
         },
-        MAX_SESSIONS: {
+        max_sessions: {
           type: 'integer',
           nullable: false,
           default: 2,
         },
-        IS_BLOCKED: {
-          name: 'IS_BLOCKED',
+        is_blocked: {
           type: 'enum',
           enum: [BoolYesNo.YES, BoolYesNo.NO],
           nullable: false,
           default: BoolYesNo.NO,
         },
-        IS_VERIFIED: {
-          name: 'IS_VERIFIED',
+        is_verified: {
           type: 'enum',
           enum: [BoolYesNo.YES, BoolYesNo.NO],
           nullable: false,
           default: BoolYesNo.NO,
         },
-        CREATED_AT: {
+        created_at: {
           type: 'timestamp',
           nullable: false,
           default: () => 'CURRENT_TIMESTAMP',
         },
-        UPDATED_AT: {
+        updated_at: {
           type: 'timestamp',
           nullable: true,
         },

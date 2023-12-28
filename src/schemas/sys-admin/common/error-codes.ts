@@ -1,0 +1,12 @@
+export const ErrorCodes = {
+  SysAuth: {
+    INCORRECT_PASSWORD: '1001.1001.1002',
+    IS_BLOCKED: '1001.1001.1003',
+    IS_NOT_VERIFIED: '1001.1001.1004',
+    UNAUTHORIZED: '1001.1001.1005',
+  },
+  SysUser: {
+    USER_NOT_FOUND: '1001.1002.1001',
+    USER_LIST_EMPTY: '1001.1002.1002',
+  },
+} as const;

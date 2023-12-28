@@ -1,12 +1,20 @@
-import { IMongodbProvider, ITypeormProvider, IValidatorProvider } from '../providers';
+import {
+  IExceptionProvider,
+  IMongodbProvider,
+  ITypeormProvider,
+  IValidatorProvider,
+  NExceptionProvider,
+} from '../providers';
 import {
   IDiscoveryService,
+  ILocalizationService,
   IScramblerService,
   ISessionService,
   NScramblerService,
 } from '../services';
 import { UnknownObject } from '@Utility/Types';
 import { Jwt } from '@Packages/Types';
+import { ISchemaExceptionError } from '../../../src/core/providers';
 
 export interface IFunctionalityAgent {
   readonly discovery: NFunctionalityAgent.Discovery;
@@ -15,6 +23,8 @@ export interface IFunctionalityAgent {
   readonly validator: NFunctionalityAgent.Validator;
   readonly scrambler: NFunctionalityAgent.Scrambler;
   readonly sessions: NFunctionalityAgent.Sessions;
+  readonly exception: NFunctionalityAgent.Exception;
+  readonly localization: NFunctionalityAgent.Localization;
 }
 
 export namespace NFunctionalityAgent {
@@ -79,10 +89,26 @@ export namespace NFunctionalityAgent {
   export type HttpSessions = {
     openHttpSession: ISessionService['openHttpSession'];
     getHttpSessionInfo: ISessionService['getHttpSessionInfo'];
+    getHttpSessionCount: ISessionService['getHttpSessionCount'];
     deleteHttpSession: ISessionService['deleteHttpSession'];
+  };
+
+  export type WsSessions = {
+    sendSessionToSession: ISessionService['sendSessionToSession'];
   };
 
   export type Sessions = {
     http: HttpSessions;
+    ws: WsSessions;
+  };
+
+  export type Exception = {
+    throwValidation: IExceptionProvider['throwValidation'];
+    throwException: IExceptionProvider['throwSchemaException'];
+  };
+
+  export type Localization = {
+    defaultLanguages: ILocalizationService['defaultLanguages'];
+    supportedLanguages: ILocalizationService['supportedLanguages'];
   };
 }

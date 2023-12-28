@@ -1,5 +1,7 @@
 import events from 'events';
 import async_hooks from 'async_hooks';
+import http from 'http';
+import https from 'https';
 
 import nconf from 'nconf';
 import winston from 'winston';
@@ -11,7 +13,21 @@ import mongoose from 'mongoose';
 import joi from 'joi';
 import typeorm from 'typeorm';
 import { Redis, RedisOptions } from 'ioredis';
-import jwt, { Algorithm } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
+import ws from 'ws';
+import {
+  HttpMethods,
+  MediaTypeObject,
+  NonArraySchemaObject,
+  OpenAPI,
+  OpenAPIV3,
+  OperationObject,
+  ResponseObject,
+  SchemaObject,
+  ServerObject,
+} from 'openapi-types';
+import OpenAPISchemaValidator from 'openapi-schema-validator';
 
 import { StringObject, UnknownObject } from '@Utility/Types';
 
@@ -294,4 +310,42 @@ export namespace IoRedis {
 
 export namespace Jwt {
   export type Algorithm = jwt.Algorithm;
+}
+
+export namespace Nodemailer {
+  export type SendMailOptions = nodemailer.SendMailOptions;
+  export type Transporter = nodemailer.Transporter<nodemailer.SentMessageInfo>;
+  export type TransportOptions = nodemailer.SentMessageInfo;
+}
+
+export namespace Ws {
+  export type WebSocketServer = ws.WebSocketServer;
+  export type WebSocket<T = Record<string, unknown>> = ws.WebSocket & {
+    uuid: string;
+    sessionId?: string;
+    userId?: string;
+    sessionInfo?: T;
+  };
+  export type RawData = ws.RawData;
+}
+
+export namespace Http {
+  export type Server = http.Server;
+  export type IncomingMessage = http.IncomingMessage;
+}
+
+export namespace Https {
+  export type Server = https.Server;
+}
+
+export namespace Openapi {
+  export type Path = { [method in HttpMethods]?: OperationObject<T> };
+  export type OperationObject = OpenAPIV3.OperationObject;
+  export type ResponseObject = OpenAPIV3.ResponseObject;
+  export type MediaTypeObject = OpenAPIV3.MediaTypeObject;
+  export type Document = OpenAPIV3.Document;
+  export type Validator = OpenAPISchemaValidator;
+  export type ServerObject = OpenAPISchemaValidator.OpenAPI.ServerObject;
+  export type HttpMethods = OpenAPIV3.HttpMethods;
+  export type NonArraySchemaObject = OpenAPIV3.NonArraySchemaObject;
 }

@@ -11,6 +11,7 @@ import {
   ICoreError,
   IExceptionProvider,
   IFunctionalityAgent,
+  IIntegrationAgent,
   IMongodbConnector,
   IMongodbProvider,
   ISchemaAgent,
@@ -35,6 +36,7 @@ export class MongodbProvider implements IMongodbProvider {
         functionalityAgent: container.get<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent),
         schemaAgent: container.get<ISchemaAgent>(CoreSymbols.SchemaAgent),
         baseAgent: container.get<IBaseOperationAgent>(CoreSymbols.BaseOperationAgent),
+        integrationAgent: container.get<IIntegrationAgent>(CoreSymbols.IntegrationAgent),
       };
 
       const model = fn.getSchema(agents);

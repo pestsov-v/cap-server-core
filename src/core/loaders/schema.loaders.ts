@@ -6,6 +6,7 @@ import type { ControllerStructure, RouterStructure } from '@Vendor/Types';
 import type {
   IBaseOperationAgent,
   IFunctionalityAgent,
+  IIntegrationAgent,
   ISchemaAgent,
   ISchemaLoader,
   NAbstractFrameworkAdapter,
@@ -62,6 +63,7 @@ export class SchemaLoader implements ISchemaLoader {
             functionalityAgent: container.get<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent),
             schemaAgent: container.get<ISchemaAgent>(CoreSymbols.SchemaAgent),
             baseAgent: container.get<IBaseOperationAgent>(CoreSymbols.BaseOperationAgent),
+            integrationAgent: container.get<IIntegrationAgent>(CoreSymbols.IntegrationAgent),
           };
 
           entities.set(storage.typeormModel, storage.typeormSchema(agents));
@@ -234,6 +236,7 @@ export class SchemaLoader implements ISchemaLoader {
       mongoRepoHandlers: new Map<string, AnyFunction>(),
       validators: new Map<string, NValidatorProvider.ValidateHandler<UnknownObject>>(),
       typeormRepoHandlers: new Map<string, AnyFunction>(),
+      dictionaries: new Map(),
     });
   }
 }

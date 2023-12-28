@@ -4,9 +4,15 @@
     "serverTag": "MASTER_01",
     "protocol": "http",
     "host": "localhost",
-    "port": 11023,
+    "port": 11033,
     "urls": {
       "api": "/v1/call/api/"
     }
+  },
+  "websocket": {
+    "kind": "ws",
+    "protocol": "ws",
+    "host": "localhost",
+    "port": 11043
   }
 }

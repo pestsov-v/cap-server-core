@@ -7,13 +7,19 @@ import { CoreSymbols } from '@CoreSymbols';
 
 import {
   IDiscoveryService,
+  IExceptionProvider,
   IFunctionalityAgent,
+  ILocalizationService,
   IMongodbProvider,
+  ISchemaExceptionError,
   IScramblerService,
   ISessionService,
+  IValidatorError,
   IValidatorProvider,
+  NExceptionProvider,
   NFunctionalityAgent,
   NScramblerService,
+  NValidatorProvider,
 } from '@Core/Types';
 import { Nullable, UnknownObject } from '@Utility/Types';
 
@@ -25,7 +31,9 @@ export class FunctionalityAgent implements IFunctionalityAgent {
     @inject(CoreSymbols.ScramblerService)
     private readonly _scramblerService: IScramblerService,
     @inject(CoreSymbols.SessionService)
-    private readonly _sessionService: ISessionService
+    private readonly _sessionService: ISessionService,
+    @inject(CoreSymbols.LocalizationService)
+    private readonly _localizationService: ILocalizationService
   ) {}
 
   public get discovery(): NFunctionalityAgent.Discovery {
@@ -290,13 +298,13 @@ export class FunctionalityAgent implements IFunctionalityAgent {
     return {
       accessExpiredAt: this._scramblerService.accessExpiredAt,
       refreshExpiredAt: this._scramblerService.refreshExpiredAt,
-      generateAccessToken: <T extends UnknownObject>(
+      generateAccessToken: <T extends UnknownObject & NScramblerService.SessionIdentifiers>(
         payload: T,
         algorithm?: Jwt.Algorithm
       ): NScramblerService.ConvertJwtInfo => {
         return this._scramblerService.generateAccessToken(payload, algorithm);
       },
-      generateRefreshToken: <T extends UnknownObject>(
+      generateRefreshToken: <T extends UnknownObject & NScramblerService.SessionIdentifiers>(
         payload: T,
         algorithm?: Jwt.Algorithm
       ): NScramblerService.ConvertJwtInfo => {
@@ -337,10 +345,49 @@ export class FunctionalityAgent implements IFunctionalityAgent {
         ): Promise<Nullable<T>> => {
           return this._sessionService.getHttpSessionInfo<T>(userId, sessionId);
         },
+        getHttpSessionCount: async (userId): Promise<number> => {
+          return this._sessionService.getHttpSessionCount(userId);
+        },
         deleteHttpSession: async (userId: string, sessionId: string): Promise<void> => {
           return this._sessionService.deleteHttpSession(userId, sessionId);
         },
       },
+      ws: {
+        sendSessionToSession: async (event, payload): Promise<void> => {
+          try {
+            return this._sessionService.sendSessionToSession(event, payload);
+          } catch (e) {
+            throw e;
+          }
+        },
+      },
+    };
+  }
+
+  public get exception(): NFunctionalityAgent.Exception {
+    return {
+      throwValidation: (errors: NValidatorProvider.ErrorResult[]): IValidatorError => {
+        return container
+          .get<IExceptionProvider>(CoreSymbols.ExceptionProvider)
+          .throwValidation(errors);
+      },
+      throwException: (
+        msg: string,
+        options?: NExceptionProvider.SchemaExceptionOptions
+      ): ISchemaExceptionError => {
+        const trace = options && options.isNotShowTrace ? '' : new Error().stack || '';
+
+        return container
+          .get<IExceptionProvider>(CoreSymbols.ExceptionProvider)
+          .throwSchemaException(msg, { trace, ...options });
+      },
+    };
+  }
+
+  public get localization(): NFunctionalityAgent.Localization {
+    return {
+      defaultLanguages: this._localizationService.defaultLanguages,
+      supportedLanguages: this._localizationService.supportedLanguages,
     };
   }
 }

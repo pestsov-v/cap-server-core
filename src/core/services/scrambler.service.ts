@@ -40,7 +40,7 @@ export class ScramblerService extends AbstractService implements IScramblerServi
       refreshExpiredAt: this._discoveryService.getNumber('services:scrambler:refreshExpiredAt', 30),
       defaultAlgorithm: this._discoveryService.getString(
         'services:scrambler:defaultAlgorithm',
-        'sha256'
+        'MD5'
       ),
     };
   }
@@ -67,12 +67,12 @@ export class ScramblerService extends AbstractService implements IScramblerServi
 
   public get accessExpiredAt(): number {
     if (!this._config) throw this._throwConfigError();
-    return this._config.accessExpiredAt * 60 * 1000;
+    return this._config.accessExpiredAt * 60;
   }
 
   public get refreshExpiredAt(): number {
     if (!this._config) throw this._throwConfigError();
-    return this._config.refreshExpiredAt * 60 * 1000;
+    return this._config.refreshExpiredAt * 60 * 60 * 24;
   }
 
   public generateAccessToken<P extends UnknownObject>(
@@ -81,10 +81,8 @@ export class ScramblerService extends AbstractService implements IScramblerServi
   ): NScramblerService.ConvertJwtInfo {
     if (!this._config) throw this._throwConfigError();
 
-    const algorithm = alg ?? (this._config.defaultAlgorithm as Jwt.Algorithm);
-
     try {
-      return this._generateToken(payload, this.accessExpiredAt, algorithm);
+      return this._generateToken(payload, this.accessExpiredAt, alg);
     } catch (e) {
       throw e;
     }
@@ -96,10 +94,8 @@ export class ScramblerService extends AbstractService implements IScramblerServi
   ): NScramblerService.ConvertJwtInfo {
     if (!this._config) throw this._throwConfigError();
 
-    const algorithm = alg ?? (this._config.defaultAlgorithm as Jwt.Algorithm);
-
     try {
-      return this._generateToken(payload, this.refreshExpiredAt, algorithm);
+      return this._generateToken(payload, this.refreshExpiredAt, alg);
     } catch (e) {
       throw e;
     }
@@ -107,7 +103,7 @@ export class ScramblerService extends AbstractService implements IScramblerServi
 
   private _generateToken<T = UnknownObject>(payload: T, expiresIn: number, alg?: Jwt.Algorithm) {
     if (!this._config) throw this._throwConfigError();
-    const algorithm = alg ?? (this._config.defaultAlgorithm as Jwt.Algorithm);
+    const algorithm = alg ?? 'HS256';
 
     const jwtId = v4();
     try {

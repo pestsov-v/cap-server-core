@@ -4,6 +4,7 @@ const { format } = Packages.dateFns;
 
 import { Color } from '@Packages/Types';
 import { NLoggerService } from '@Core/Types';
+import { UTCDate } from '@Utility/Types';
 
 export class Helpers {
   public static addBrackets(str: string): string {
@@ -54,5 +55,30 @@ export class Helpers {
 
     const log = format(new Date(), 'yyyy-MM-dd HH:mm:ss') + ' ' + level + namespace + msg;
     console.log(colors[color](log));
+  }
+
+  public static get UTCDate(): UTCDate {
+    const now = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+      timeZoneName: 'short',
+      timeZone: 'UTC',
+    };
+
+    const formattedDate = now.toLocaleDateString('en-US', options);
+    const [date, time] = formattedDate.split(' ');
+    const [month, day, year] = date.replace(',', '').split('/');
+
+    return {
+      date: day + ':' + month + ':' + year,
+      time: time,
+      utc: '0',
+    };
   }
 }

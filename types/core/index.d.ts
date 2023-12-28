@@ -8,3 +8,4 @@ export * from './agents';
 export * from './factories';
 export * from './providers';
 export * from './base-operations';
+export * from './integrations';

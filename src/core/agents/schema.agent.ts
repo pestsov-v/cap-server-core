@@ -37,4 +37,25 @@ export class SchemaAgent implements ISchemaAgent {
   public getTypeormRepository<T extends FnObject = FnObject>(): T {
     return container.get<ISchemaProvider>(CoreSymbols.SchemaProvider).getTypeormRepository<T>();
   }
+
+  public getAnotherResource(
+    domain: string,
+    resource: string,
+    substitutions?: Record<string, string>,
+    language?: string
+  ): string {
+    return container
+      .get<ISchemaProvider>(CoreSymbols.SchemaProvider)
+      .getAnotherResource(domain, resource, substitutions, language);
+  }
+
+  public getResource(
+    resource: string,
+    substitutions?: Record<string, string>,
+    language?: string
+  ): string {
+    return container
+      .get<ISchemaProvider>(CoreSymbols.SchemaProvider)
+      .getResource(resource, substitutions, language);
+  }
 }
