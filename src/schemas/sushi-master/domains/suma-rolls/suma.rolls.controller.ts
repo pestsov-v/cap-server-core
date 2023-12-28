@@ -1,14 +1,15 @@
 import { Controller } from '@Vendor';
-import { ResponseType, StatusCode } from '@common';
+import { StatusCode } from '@common';
 import { SumaRollsSymbols } from './suma.rolls.symbols';
 
 import { SchemaResponse, SchemaRequest } from '@Vendor/Types';
 import { NSumaRolls } from '../../../../../types/schemas';
+import { NAbstractFrameworkAdapter } from '@Core/Types';
 
 @Controller<NSumaRolls.Controller>(SumaRollsSymbols.Controller, {
   createRoll: async (
     req: SchemaRequest<NSumaRolls.CreateRollParams>,
-    agents
+    agents: NAbstractFrameworkAdapter.Agents
   ): Promise<SchemaResponse> => {
     const mongoRepository =
       agents.schemaAgent.getMongoRepository<NSumaRolls.SchemaMongoRepository>();

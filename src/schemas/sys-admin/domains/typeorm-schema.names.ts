@@ -1,3 +1,3 @@
 export const TypeormSchemaNames = {
-  SYS_USERS: 'SYS_USERS',
+  SYS_USERS: 'sys_users',
 } as const;

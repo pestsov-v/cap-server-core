@@ -1,1 +1,1 @@
-export * from './sys-admin';
+export * from './sys-admin/sys-admin.application';

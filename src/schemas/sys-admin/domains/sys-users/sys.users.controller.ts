@@ -1,6 +1,3 @@
-import { Controller } from '@Vendor';
-import { SysUsersSymbols } from './sys.users.symbols';
-import { NSysUsers } from '../../../../../types/schemas';
+import { setController } from '@Vendor';
 
-@Controller(SysUsersSymbols.Controller, {})
-export class SysUsersController {}
+export const SysUsersController = setController({});

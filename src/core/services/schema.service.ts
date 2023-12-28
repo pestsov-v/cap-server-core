@@ -7,24 +7,15 @@ import { AbstractService } from './abstract.service';
 
 import {
   IAbstractFactory,
-  IBaseOperationAgent,
   IDiscoveryService,
-  IFunctionalityAgent,
   ILoggerService,
   IMongodbConnector,
-  IMongodbProvider,
-  ISchemaAgent,
   ISchemaLoader,
   ISchemaService,
   ITypeormConnector,
-  ITypeormProvider,
-  NAbstractFrameworkAdapter,
   NAbstractService,
-  NMongodbProvider,
   NSchemaService,
-  NTypeormConnector,
 } from '@Core/Types';
-import { Typeorm } from '@Packages/Types';
 
 @injectable()
 export class SchemaService extends AbstractService implements ISchemaService {
@@ -97,25 +88,11 @@ export class SchemaService extends AbstractService implements ISchemaService {
 
       await this._frameworkFactory.run(loader.services);
 
-      this._mongodbConnector.on('connector:MongoDbConnector:init', () => {
-        // TODO: implement separate logic for different services
-
-        container.get<IMongodbProvider>(CoreSymbols.MongodbProvider).setModels(loader.mongoSchemas);
-      });
       this._typeormConnector.on('connector:TypeormConnector:start', () => {
-        const entities = new Map<string, Typeorm.EntitySchema<unknown>>();
-
-        loader.typeormSchemas.forEach((schema) => {
-          const agents: NAbstractFrameworkAdapter.Agents = {
-            functionalityAgent: container.get<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent),
-            schemaAgent: container.get<ISchemaAgent>(CoreSymbols.SchemaAgent),
-            baseAgent: container.get<IBaseOperationAgent>(CoreSymbols.BaseOperationAgent),
-          };
-
-          entities.set(schema.model, schema.getSchema(agents));
-        });
-
-        this._typeormConnector.emit('connector:TypeormConnector:entities:load', entities);
+        this._typeormConnector.emit(
+          'connector:TypeormConnector:entities:load',
+          loader.typeormSchemas
+        );
       });
     } catch (e) {
       throw e;

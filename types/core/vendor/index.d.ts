@@ -17,3 +17,5 @@ export type Context = NAbstractFrameworkAdapter.Context;
 export type Agents = NAbstractFrameworkAdapter.Agents;
 export type Store = NContextService.Store;
 export type MongoSchemaDefinition<T = UnknownObject> = NMongodbProvider.Schema<T>;
+
+export type * from './setters';
