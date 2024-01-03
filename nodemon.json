@@ -2,7 +2,7 @@
   "watch": ["src/"],
   "ext": "ts,js,json,d.ts",
   "ignore": ["node_modules", "coverage", "dist"],
-  "exec": "ts-node -r tsconfig-paths/register --files ./src/core/main.ts",
+  "exec": "ts-node -r tsconfig-paths/register --files ./src/index.ts",
   "restartable": "rs",
   "env": {
     "SERVER_SCHEMA": "cap"

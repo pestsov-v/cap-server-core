@@ -1,9 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES2021",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
     "esModuleInterop": true,
@@ -14,17 +12,20 @@
     "strictNullChecks": true,
     "noImplicitOverride": false,
     "skipLibCheck": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "rootDir": "./src",
     "paths": {
-      "@common": ["src/core/common/index.ts"],
-      "@Guards": ["src/core/utility/guards.ts"],
-      "@Utility/Types": ["types/core/utility/index.d.ts"],
-      "@CoreSymbols": ["src/core/ioc/core.ioc.symbols.ts"],
-      "@Core/Types": ["types/core/index.d.ts"],
-      "@Packages": ["src/core/packages/packages.ts"],
-      "@Packages/Types": ["types/core/packages/packages.d.ts"],
-      "@Vendor": ["src/core/vendor/index.ts"],
-      "@Vendor/Types": ["types/core/vendor/index.d.ts"]
-    },
-    "types": ["types/core/declaration.d.ts"]
-  }
+      "@common": ["src/common/index.ts"],
+      "@Guards": ["src/utility/guards.ts"],
+      "@CoreSymbols": ["src/ioc/core.ioc.symbols.ts"],
+      "@Core/Types": ["types/index.d.ts"],
+      "@Packages": ["src/packages/packages.ts"],
+      "@Vendor": ["src/vendor/index.ts"]
+    }
+  },
+  "include": ["./src/**/*.ts"],
+  "exclude": ["node_modules", "dist"],
 }
