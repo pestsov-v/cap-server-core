@@ -1,13 +1,15 @@
 import { NAbstractFrameworkAdapter } from '../adapters';
 
-import { Typeorm } from '../packages/packages';
+import { EntitySchemaOptions, Typeorm } from '../packages/packages';
 
 export interface ITypeormProvider {
   getRepository<T>(name: string): Typeorm.Repository<T>;
 }
 
 export namespace NTypeormProvider {
-  export type SchemaFn<T> = (agent: NAbstractFrameworkAdapter.Agents) => Typeorm.EntitySchema<T>;
+  export type SchemaFn<T> = (
+    agent: NAbstractFrameworkAdapter.Agents
+  ) => Typeorm.EntitySchemaOptions<T>;
 
   export type SchemaInfo<T> = {
     model: string;

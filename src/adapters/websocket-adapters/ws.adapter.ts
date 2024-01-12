@@ -36,12 +36,12 @@ export class WsAdapter extends AbstractWebsocketAdapter<'ws'> implements IAbstra
 
   private _setConfig(): void {
     this._config = {
-      protocol: this._discoveryService.getString('adapters:websocket:protocol', 'ws'),
-      host: this._discoveryService.getString('adapters:websocket:host', 'localhost'),
-      port: this._discoveryService.getNumber('adapters:websocket:port', 11043),
+      protocol: this._discoveryService.getString('adapters.websocket.protocol', 'ws'),
+      host: this._discoveryService.getString('adapters.websocket.host', 'localhost'),
+      port: this._discoveryService.getNumber('adapters.websocket.port', 11043),
       connection: {
         checkInterval: this._discoveryService.getNumber(
-          'adapters:websocket:connection:checkInterval',
+          'adapters.websocket.connection.checkInterval',
           300
         ),
       },

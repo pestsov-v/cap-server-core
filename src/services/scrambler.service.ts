@@ -32,14 +32,14 @@ export class ScramblerService extends AbstractService implements IScramblerServi
 
   private _setConfig() {
     this._config = {
-      enable: this._discoveryService.getBoolean('services:scrambler:enable', false),
-      salt: this._discoveryService.getNumber('services:scrambler:salt', 5),
-      secret: this._discoveryService.getString('services:scrambler:secret', ''),
-      randomBytes: this._discoveryService.getNumber('services:scrambler:randomBytes', 10),
-      accessExpiredAt: this._discoveryService.getNumber('services:scrambler:accessExpiredAt', 10),
-      refreshExpiredAt: this._discoveryService.getNumber('services:scrambler:refreshExpiredAt', 30),
+      enable: this._discoveryService.getBoolean('services.scrambler.enable', false),
+      salt: this._discoveryService.getNumber('services.scrambler.salt', 5),
+      secret: this._discoveryService.getString('services.scrambler.secret', ''),
+      randomBytes: this._discoveryService.getNumber('services.scrambler.randomBytes', 10),
+      accessExpiredAt: this._discoveryService.getNumber('services.scrambler.accessExpiredAt', 10),
+      refreshExpiredAt: this._discoveryService.getNumber('services.scrambler.refreshExpiredAt', 30),
       defaultAlgorithm: this._discoveryService.getString(
-        'services:scrambler:defaultAlgorithm',
+        'services.scrambler.defaultAlgorithm',
         'MD5'
       ),
     };

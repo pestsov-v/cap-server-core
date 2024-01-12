@@ -8,7 +8,8 @@ import { AbstractFrameworkAdapter } from './abstract.framework-adapter';
 
 import {
   Fastify,
-  HttpMethod, UnknownObject,
+  HttpMethod,
+  UnknownObject,
   IContextService,
   IDiscoveryService,
   ILoggerService,
@@ -61,12 +62,12 @@ export class FastifyAdapter
 
   protected _setConfig(): void {
     this._config = {
-      serverTag: this._discoveryService.getString('adapters:framework:serverTag', 'ANONYMOUS_01'),
-      protocol: this._discoveryService.getString('adapters:framework:protocol', 'http'),
-      host: this._discoveryService.getString('adapters:framework:host', 'localhost'),
-      port: this._discoveryService.getNumber('adapters:framework:port', 11000),
+      serverTag: this._discoveryService.getString('adapters.framework.serverTag', 'ANONYMOUS_01'),
+      protocol: this._discoveryService.getString('adapters.framework.protocol', 'http'),
+      host: this._discoveryService.getString('adapters.framework.host', 'localhost'),
+      port: this._discoveryService.getNumber('adapters.framework.port', 11000),
       urls: {
-        api: this._discoveryService.getString('adapters:framework:urls:api', 'v1/call/api'),
+        api: this._discoveryService.getString('adapters.framework.urls.api', '/v1/call/api'),
       },
     };
   }

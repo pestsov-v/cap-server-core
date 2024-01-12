@@ -9,7 +9,8 @@
     {
       "files": ["**/*"],
       "rules": {
-        "brace-style": "off"
+        "brace-style": "off",
+        "no-use-before-define": "off"
       }
     }
   ],
@@ -44,7 +45,7 @@
         "functions": false,
         "classes": true,
         "variables": true,
-        "typedefs": true
+        "typedefs": false
       }
     ],
     "no-new": "off",

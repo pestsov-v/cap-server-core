@@ -32,15 +32,15 @@ export class MongodbConnector extends AbstractConnector implements IMongodbConne
 
   private _setConfig(): void {
     this._config = {
-      enable: this._discoveryService.getBoolean('connectors:mongodb:enable', false),
-      protocol: this._discoveryService.getString('connectors:mongodb:connect:protocol', 'mongodb'),
-      host: this._discoveryService.getString('connectors:mongodb:connect:host', 'localhost'),
-      port: this._discoveryService.getNumber('connectors:mongodb:connect:port', 27017),
+      enable: this._discoveryService.getBoolean('connectors.mongodb.enable', false),
+      protocol: this._discoveryService.getString('connectors.mongodb.connect.protocol', 'mongodb'),
+      host: this._discoveryService.getString('connectors.mongodb.connect.host', 'localhost'),
+      port: this._discoveryService.getNumber('connectors.mongodb.connect.port', 27017),
       auth: {
-        username: this._discoveryService.getString('connectors:mongodb:auth:username', ''),
-        password: this._discoveryService.getString('connectors:mongodb:auth:password', ''),
+        username: this._discoveryService.getString('connectors.mongodb.auth.username', ''),
+        password: this._discoveryService.getString('connectors.mongodb.auth.password', ''),
       },
-      database: this._discoveryService.getString('connectors:mongodb:database', 'default'),
+      database: this._discoveryService.getString('connectors.mongodb.database', 'default'),
     };
   }
 

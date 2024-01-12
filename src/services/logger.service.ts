@@ -67,28 +67,28 @@ export class LoggerService extends AbstractService implements ILoggerService {
   private _setConfig(): void {
     this._config = {
       loggers: {
-        core: this._discoveryService.getBoolean('services:logger:loggers:core', true),
-        schema: this._discoveryService.getBoolean('services:logger:loggers:schema', true),
+        core: this._discoveryService.getBoolean('services.logger.loggers.core', true),
+        schema: this._discoveryService.getBoolean('services.logger.loggers.schema', true),
       },
       transports: {
         console: {
           core: {
             enable: this._discoveryService.getBoolean(
-              'services:logger:transports:console:core:enable',
+              'services.logger.transports.console.core.enable',
               true
             ),
             level: this._discoveryService.getString(
-              'services:logger:transports:console:core:level',
+              'services.logger.transports.console.core.level',
               'verbose'
             ),
           },
           schema: {
             enable: this._discoveryService.getBoolean(
-              'services:logger:transports:console:schema:enable',
+              'services.logger.transports.console.schema.enable',
               true
             ),
             level: this._discoveryService.getString(
-              'services:logger:transports:console:schema:level',
+              'services.logger.transports.console.schema.level',
               'debug'
             ),
           },

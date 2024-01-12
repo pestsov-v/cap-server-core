@@ -9,8 +9,6 @@ import https from 'https';
 
 import { injectable, inject, ContainerModule, Container } from 'inversify';
 import { format } from 'date-fns';
-import nconf from 'nconf';
-import dotenv from 'dotenv';
 import winston from 'winston';
 import fse from 'fs-extra';
 import colors from 'colors';
@@ -18,7 +16,7 @@ import fastify from 'fastify';
 import express from 'express';
 import { v4 } from 'uuid';
 import mongoose from 'mongoose';
-import { DataSource } from 'typeorm';
+import { DataSource, EntitySchema } from 'typeorm';
 import joi from 'joi';
 import ioredis from 'ioredis';
 import jwt from 'jsonwebtoken';
@@ -26,6 +24,11 @@ import bcrypt from 'bcrypt';
 import nodemailer from 'nodemailer';
 import ws from 'ws';
 import openapiValidator from 'openapi-schema-validator';
+
+export {
+  AbstractDiscoveryService,
+  IAbstractDiscoveryService,
+} from '@chaminjector/seeds-discovery-service';
 
 export class Packages {
   public static get inversify() {
@@ -45,14 +48,6 @@ export class Packages {
     return {
       AsyncLocalStorage: async_hooks.AsyncLocalStorage,
     };
-  }
-
-  public static get nconf() {
-    return { nconf };
-  }
-
-  public static get dotenv() {
-    return { dotenv };
   }
 
   public static get os() {
@@ -112,7 +107,7 @@ export class Packages {
   }
 
   public static get typeorm() {
-    return { DataSource };
+    return { DataSource, EntitySchema };
   }
 
   public static get joi() {

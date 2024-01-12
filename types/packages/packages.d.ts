@@ -16,9 +16,7 @@ import { Redis, RedisOptions } from 'ioredis';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import ws from 'ws';
-import {
-  OpenAPIV3,
-} from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 import OpenAPISchemaValidator from 'openapi-schema-validator';
 
 import { StringObject, UnknownObject } from '../utility';
@@ -286,6 +284,7 @@ export namespace Typeorm {
   export type DataSource = typeorm.DataSource;
   export type DataSourceOptions = typeorm.DataSourceOptions;
   export type EntitySchema<T> = typeorm.EntitySchema<T>;
+  export type EntitySchemaOptions<T> = typeorm.EntitySchemaOptions<T>;
   export type DatabaseType = Exclude<'oracle', typeorm.DatabaseType>;
   export type Repository<T> = typeorm.Repository<T>;
 }

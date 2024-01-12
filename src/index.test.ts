@@ -9,3 +9,5 @@ import { IInitiator } from '@Core/Types';
 
 const serverInitiator = container.get<IInitiator>(CoreSymbols.Initiator);
 export { serverInitiator };
+
+serverInitiator.start();

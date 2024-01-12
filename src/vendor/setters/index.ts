@@ -6,4 +6,4 @@ export * from './setWsListener';
 export * from './setDictionary';
 export * from './setTypeormSchema';
 export * from './setTypeormRepo';
-export * from './setApplication';
+export * from './setService';

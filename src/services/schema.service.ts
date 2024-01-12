@@ -19,6 +19,7 @@ import {
   NSchemaService,
   NSpecificationLoader,
 } from '@Core/Types';
+import * as process from 'process';
 
 @injectable()
 export class SchemaService extends AbstractService implements ISchemaService {
@@ -94,9 +95,12 @@ export class SchemaService extends AbstractService implements ISchemaService {
 
   private _setConfig(): void {
     this._config = {
-      schemaPath: this._discoveryService.getMandatory<string>('services:schema:schema-path'),
+      schemaPath: this._discoveryService.getString(
+        'services.schema.schema-path',
+        process.cwd() + '/src/server.ts'
+      ),
       specificationEnable: this._discoveryService.getBoolean(
-        'services:specification:enable',
+        'services.specification.enable',
         false
       ),
     };

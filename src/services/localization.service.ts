@@ -32,11 +32,11 @@ export class LocalizationService extends AbstractService implements ILocalizatio
   private _setConfig(): void {
     this._config = {
       supportedLanguages: this._discoveryService.getArray<string>(
-        'services:localization:supportedLanguages',
+        'services.localization.supportedLanguages',
         ['en']
       ),
       defaultLanguages: this._discoveryService.getString(
-        'services:localization:defaultLanguages',
+        'services.localization.defaultLanguages',
         'en'
       ),
     };

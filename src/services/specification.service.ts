@@ -38,9 +38,9 @@ export class SpecificationService extends AbstractService implements ISpecificat
 
   private _setConfig() {
     this._CONFIG = {
-      enable: this._discoveryService.getBoolean('services:specification:enable', false),
-      liveReload: this._discoveryService.getBoolean('services:specification:liveReload', false),
-      rootDir: this._discoveryService.getString('services:specification:rootDir', process.cwd()),
+      enable: this._discoveryService.getBoolean('services.specification.enable', false),
+      liveReload: this._discoveryService.getBoolean('services.specification.liveReload', false),
+      rootDir: this._discoveryService.getString('services.specification.rootDir', process.cwd()),
     };
   }
 
@@ -58,6 +58,8 @@ export class SpecificationService extends AbstractService implements ISpecificat
     if (!this._CONFIG) {
       throw new Error('Config nowt set');
     }
+
+    if (!this._config.enable) return false;
 
     for (const [sName, sStorage] of this._schemaService.specifications) {
       if (!sStorage.summary || !sStorage.languages) {

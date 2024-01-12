@@ -25,7 +25,7 @@ export class FrameworkFactory extends AbstractFactory implements IAbstractFactor
   }
 
   public async run<T>(schema: T): Promise<void> {
-    const httpAdapter = this._discoveryService.getString('adapters:framework:kind', 'fastify');
+    const httpAdapter = this._discoveryService.getString('adapters.framework.kind', 'fastify');
     switch (httpAdapter) {
       case 'fastify':
         await this._fastifyAdapter.start(schema as NSchemaLoader.Services);
@@ -36,7 +36,7 @@ export class FrameworkFactory extends AbstractFactory implements IAbstractFactor
         throw new Error(`Http adapter "${httpAdapter}" not found`);
     }
 
-    const wsAdapter = this._discoveryService.getString('adapters:websocket:kind', 'ws');
+    const wsAdapter = this._discoveryService.getString('adapters.websocket.kind', 'ws');
     switch (wsAdapter) {
       case 'ws':
         await this._wsAdapter.start();
@@ -47,7 +47,7 @@ export class FrameworkFactory extends AbstractFactory implements IAbstractFactor
   }
 
   public async stand(): Promise<void> {
-    const adapter = this._discoveryService.getString('adapters:framework:kind', 'fastify');
+    const adapter = this._discoveryService.getString('adapters.framework.kind', 'fastify');
     switch (adapter) {
       case 'fastify':
         await this._fastifyAdapter.stop();

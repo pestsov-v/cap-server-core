@@ -22,30 +22,30 @@ export class RedisConnector extends AbstractConnector implements IRedisConnector
 
   private _setConfig(): void {
     this._config = {
-      enable: this._discoveryService.getBoolean('connectors:redis:enable', false),
-      protocol: this._discoveryService.getString('connectors:redis:connect:protocol', 'redis'),
-      host: this._discoveryService.getString('connectors:redis:connect:host', 'localhost'),
-      port: this._discoveryService.getNumber('connectors:redis:connect:port', 6379),
+      enable: this._discoveryService.getBoolean('connectors.redis.enable', false),
+      protocol: this._discoveryService.getString('connectors.redis.connect.protocol', 'redis'),
+      host: this._discoveryService.getString('connectors.redis.connect.host', 'localhost'),
+      port: this._discoveryService.getNumber('connectors.redis.connect.port', 6379),
       options: {
         retryTimeout: this._discoveryService.getNumber(
-          'connectors:redis:options:retryTimeout',
+          'connectors.redis.options.retryTimeout',
           10000
         ),
-        retryCount: this._discoveryService.getNumber('connectors:redis:options:retryCount', 5),
+        retryCount: this._discoveryService.getNumber('connectors.redis.options.retryCount', 5),
         storageMode: this._discoveryService.getString(
-          'connectors:redis:options:storageMode',
+          'connectors.redis.options.storageMode',
           'standalone'
         ),
         enableAutoPipelining: this._discoveryService.getBoolean(
-          'connectors:redis:options:enableAutoPipelining',
+          'connectors.redis.options.enableAutoPipelining',
           true
         ),
         maxRetriesPerRequest: this._discoveryService.getNumber(
-          'connectors:redis:options:maxRetriesPerRequest',
+          'connectors.redis.options.maxRetriesPerRequest',
           10
         ),
         showFriendlyErrorStack: this._discoveryService.getBoolean(
-          'connectors:redis:options:showFriendlyErrorStack',
+          'connectors.redis.options.showFriendlyErrorStack',
           false
         ),
       },

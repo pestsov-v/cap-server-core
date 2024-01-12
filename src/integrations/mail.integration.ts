@@ -4,7 +4,13 @@ const { injectable, inject } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
 import { AbstractIntegration } from './abstract.integration';
 
-import { Nodemailer, IDiscoveryService, ILoggerService, IMailIntegration, NMailIntegration } from '@Core/Types';
+import {
+  Nodemailer,
+  IDiscoveryService,
+  ILoggerService,
+  IMailIntegration,
+  NMailIntegration,
+} from '@Core/Types';
 
 @injectable()
 export class MailIntegration extends AbstractIntegration implements IMailIntegration {
@@ -23,16 +29,16 @@ export class MailIntegration extends AbstractIntegration implements IMailIntegra
 
   private _setConfig(): void {
     this._config = {
-      enable: this._discoveryService.getBoolean('integrations:mail:enable', false),
-      host: this._discoveryService.getMandatory<string>('integrations:mail:host'),
-      port: this._discoveryService.getNumber('integrations:mail:port', 587),
-      secure: this._discoveryService.getBoolean('integrations:mail:secure', false),
+      enable: this._discoveryService.getBoolean('integrations.mail.enable', false),
+      host: this._discoveryService.getString('integrations.mail.host', ' '),
+      port: this._discoveryService.getNumber('integrations.mail.port', 587),
+      secure: this._discoveryService.getBoolean('integrations.mail.secure', false),
       auth: {
-        user: this._discoveryService.getString('integrations:mail:secure:auth:user', ''),
-        pass: this._discoveryService.getString('integrations:mail:secure:auth:pass', ''),
+        user: this._discoveryService.getString('integrations.mail.secure.auth.user', ' '),
+        pass: this._discoveryService.getString('integrations.mail.secure.auth.pass', ' '),
       },
-      from: this._discoveryService.getString('integrations:mail:contact:from', ''),
-      withMessageId: this._discoveryService.getBoolean('integrations:mail:withMessageId', true),
+      from: this._discoveryService.getString('integrations.mail.contact.from', ' '),
+      withMessageId: this._discoveryService.getBoolean('integrations.mail.withMessageId', true),
     };
   }
 

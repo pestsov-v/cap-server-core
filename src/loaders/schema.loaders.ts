@@ -1,10 +1,14 @@
 import { Packages } from '@Packages';
 const { injectable } = Packages.inversify;
+const { EntitySchema } = Packages.typeorm;
 
 import type {
   Typeorm,
-  AnyFunction, HttpMethod, UnknownObject,
-  ControllerStructure, RouterStructure,
+  AnyFunction,
+  HttpMethod,
+  UnknownObject,
+  ControllerStructure,
+  RouterStructure,
   IBaseOperationAgent,
   IFunctionalityAgent,
   IIntegrationAgent,
@@ -65,7 +69,8 @@ export class SchemaLoader implements ISchemaLoader {
             integrationAgent: container.get<IIntegrationAgent>(CoreSymbols.IntegrationAgent),
           };
 
-          entities.set(storage.typeormModel, storage.typeormSchema(agents));
+          const entity = new EntitySchema<unknown>(storage.typeormSchema(agents));
+          entities.set(storage.typeormModel, entity);
         }
       });
     });
@@ -209,10 +214,7 @@ export class SchemaLoader implements ISchemaLoader {
   public setTypeormRepository<T extends string = string>(
     domain: string,
     model: string,
-    details: {
-      name: string;
-      handler: AnyFunction;
-    }
+    details: Record<string, AnyFunction>
   ): void {
     const storage = this._domains.get(domain);
     if (!storage) {
@@ -224,7 +226,10 @@ export class SchemaLoader implements ISchemaLoader {
       storage.typeormRepoHandlers = new Map<string, AnyFunction>();
     }
 
-    storage.typeormRepoHandlers.set(details.name, details.handler);
+    for (const name in details) {
+      const handler = details[name];
+      storage.typeormRepoHandlers.set(name, handler);
+    }
   }
 
   public setDomain(domain: string): void {

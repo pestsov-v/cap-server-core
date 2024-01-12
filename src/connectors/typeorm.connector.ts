@@ -34,17 +34,18 @@ export class TypeormConnector extends AbstractConnector implements ITypeormConne
 
   private _setConfig(): void {
     this._config = {
-      enable: this._discoveryService.getBoolean('connectors:typeorm:enable', false),
-      type: this._discoveryService.getMandatory<Typeorm.DatabaseType>(
-        'connectors:typeorm:connect:dbType'
-      ),
-      protocol: this._discoveryService.getString('connectors:typeorm:connect:protocol', 'http'),
-      host: this._discoveryService.getString('connectors:typeorm:connect:host', 'localhost'),
-      port: this._discoveryService.getMandatory<number>('connectors:typeorm:connect:port'),
-      username: this._discoveryService.getString('connectors:typeorm:auth:username', ''),
-      password: this._discoveryService.getString('connectors:typeorm:auth:password', ''),
-      database: this._discoveryService.getString('connectors:typeorm:connect:database', ''),
-      schema: this._discoveryService.getString('connectors:typeorm:connect:schema', 'public'),
+      enable: this._discoveryService.getBoolean('connectors.typeorm.enable', false),
+      type: this._discoveryService.getString(
+        'connectors.typeorm.connect.dbType',
+        'postgres'
+      ) as NTypeormConnector.DatabaseType,
+      protocol: this._discoveryService.getString('connectors.typeorm.connect.protocol', 'http'),
+      host: this._discoveryService.getString('connectors.typeorm.connect.host', 'localhost'),
+      port: this._discoveryService.getNumber('connectors.typeorm.connect.port', 5432),
+      username: this._discoveryService.getString('connectors.typeorm.auth.username', 'postgres'),
+      password: this._discoveryService.getString('connectors.typeorm.auth.password', 'postgres'),
+      database: this._discoveryService.getString('connectors.typeorm.connect.database', ''),
+      schema: this._discoveryService.getString('connectors.typeorm.connect.schema', 'public'),
     };
   }
 
