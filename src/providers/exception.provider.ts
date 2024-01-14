@@ -11,7 +11,6 @@ import {
   ISchemaProvider,
   IValidatorError,
   NExceptionProvider,
-  NValidatorProvider,
   SchemaExceptionErrorOptions,
 } from '@Core/Types';
 import { container } from '../ioc/core.ioc';
@@ -19,16 +18,14 @@ import { CoreSymbols } from '@CoreSymbols';
 import { Helpers } from '../utility/helpers';
 
 class ValidatorError extends Error implements IValidatorError {
-  public readonly errors: NValidatorProvider.ErrorResult[];
+  public readonly errors: any[];
 
-  constructor(message: string, errors: NValidatorProvider.ErrorResult[]) {
+  constructor(message: string, errors: any[]) {
     super(message);
 
     this.errors = errors;
   }
 }
-
-export class LocalizationError extends Error {}
 
 class CoreError extends Error implements ICoreError {
   public readonly namespace: string;
@@ -52,8 +49,6 @@ class CoreError extends Error implements ICoreError {
     Error.captureStackTrace(this);
   }
 }
-
-export class SchemaCatchError extends Error {}
 
 export class SchemaExceptionError extends Error implements ISchemaExceptionError {
   public readonly statusCode: number;
@@ -112,7 +107,7 @@ export class ExceptionProvider implements IExceptionProvider {
     private readonly _contextService: IContextService
   ) {}
 
-  public throwValidation(errors: NValidatorProvider.ErrorResult[]): IValidatorError {
+  public throwValidation(errors: any[]): IValidatorError {
     return new ValidatorError('Validation error', errors);
   }
 

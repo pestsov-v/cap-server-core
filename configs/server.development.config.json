@@ -1,0 +1,12 @@
+{
+  "adapters": {
+    "framework": {
+      "port": 12000
+    }
+  },
+  "services": {
+    "schema": {
+      "schema-path": "/Users/vladislavpestsov/internal/thunder-server/src/.test_schema/entry.ts"
+    }
+  }
+}

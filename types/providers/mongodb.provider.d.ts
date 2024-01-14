@@ -1,5 +1,5 @@
 import { Mongoose } from '../packages/packages';
-import { NAbstractFrameworkAdapter } from '../adapters';
+import { NAbstractHttpAdapter } from '../adapters';
 import { Nullable, UnknownObject } from '@Utility/Types';
 import { NFunctionalityAgent } from '../agents';
 
@@ -127,9 +127,7 @@ export namespace NMongodbProvider {
     options?: Mongoose.SchemaOptions;
   };
 
-  export type SchemaFn<T> = (
-    agents: NAbstractFrameworkAdapter.Agents
-  ) => NMongodbProvider.Schema<T>;
+  export type SchemaFn<T> = (agents: NAbstractHttpAdapter.Agents) => NMongodbProvider.Schema<T>;
 
   export type SchemaInfo<T> = {
     model: string;

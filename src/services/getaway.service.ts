@@ -21,7 +21,7 @@ export class GetawayService extends AbstractService {
     protected readonly _loggerService: ILoggerService,
     @inject(CoreSymbols.SchemaService)
     protected readonly _schemaService: ISchemaService,
-    @inject(CoreSymbols.FrameworkFactory)
+    @inject(CoreSymbols.HttpFactory)
     private readonly _frameworkFactory: IAbstractFactory
   ) {
     super();

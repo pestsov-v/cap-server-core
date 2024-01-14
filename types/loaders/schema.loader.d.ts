@@ -1,9 +1,24 @@
-import { NAbstractFrameworkAdapter } from '../adapters';
+import { NAbstractHttpAdapter } from '../adapters';
 
-import { AnyFunction, AnyObject, HttpMethod, UnknownObject } from '../utility';
+import {
+  AnyFunction,
+  AnyObject,
+  ExtendedRecordObject,
+  HttpMethod,
+  UnknownObject,
+} from '../utility';
 import { NMongodbProvider, NTypeormProvider, NValidatorProvider } from '../providers';
-import { ControllerStructure, RouterStructure, TypeormRepoStructure } from '../vendor';
+import {
+  ControllerStructure,
+  DictionaryStructure,
+  EmitterStructure,
+  RouterStructure,
+  TypeormRepoStructure,
+  ValidatorStructure,
+  WsListenerStructure,
+} from '../vendor';
 import { Typeorm } from '../packages/packages';
+import { NLocalizationService } from '../services';
 
 export interface ISchemaLoader {
   readonly services: NSchemaLoader.Services;
@@ -14,8 +29,8 @@ export interface ISchemaLoader {
   readonly setDomain(domain: string): void;
   readonly applyDomainToService(service: string, domain: string): void;
   readonly setRoute(domain: string, route: RouterStructure<string>): void;
-  readonly setController(domain: string, controller: ControllerStructure<string>): void;
-  readonly setValidator<T>(domain, validator: NSchemaLoader.Validator<T>): void;
+  readonly setController(domain: string, controller: ControllerStructure<UnknownObject>): void;
+  readonly setValidator<T>(domain, validator: ValidatorStructure<AnyObject>): void;
   readonly setMongoSchema<T>(domain: string, details: NMongodbProvider.SchemaInfo<T>): void;
   readonly setMongoRepository<
     D extends string = string,
@@ -34,7 +49,15 @@ export interface ISchemaLoader {
     model: string,
     repo: TypeormRepoStructure<AnyObject>
   ): void;
-  // setHelper(domain: string, helper: NSchemaLoader.Helper): void;
+  readonly setDictionaries(
+    domain: string,
+    dictionaries:
+      | DictionaryStructure<string, ExtendedRecordObject>
+      | DictionaryStructure<string, ExtendedRecordObject>[]
+  ): void;
+  readonly setDictionaries(domain: string, validator: ValidatorStructure<AnyObject>): void;
+  readonly setEmitter(domain: string, emitter: EmitterStructure<string>): void;
+  readonly setWsListener(domain: string, emitter: WsListenerStructure<string>): void;
 }
 
 export namespace NSchemaLoader {
@@ -42,6 +65,15 @@ export namespace NSchemaLoader {
     path: string;
     method: HttpMethod;
     handler: T;
+    isPrivateUser?: boolean;
+    isPrivateOrganization?: boolean;
+    params?: string[];
+  };
+
+  export type Emitter<T extends string = string> = {
+    service: string;
+    domain: string;
+    event: string;
     isPrivateUser?: boolean;
     isPrivateOrganization?: boolean;
   };
@@ -71,7 +103,7 @@ export namespace NSchemaLoader {
 
   export type DomainStorage = {
     routes: Map<string, NSchemaLoader.Route>;
-    controllers: Map<string, NAbstractFrameworkAdapter.Handler>;
+    controllers: Map<string, NAbstractHttpAdapter.Handler>;
     helpers: Map<string, HelperHandler>;
     mongoModel?: string;
     mongoSchema?: NMongodbProvider.SchemaFn<unknown>;
@@ -80,7 +112,9 @@ export namespace NSchemaLoader {
     typeormSchema?: NTypeormProvider.SchemaFn<unknown>;
     typeormRepoHandlers: Map<string, AnyFunction>;
     validators: Map<string, NValidatorProvider.ValidateHandler>;
-    dictionaries: any;
+    dictionaries: Map<string, NLocalizationService.Dictionary>;
+    emitter: Map<string, NSchemaLoader.Emitter>;
+    wsListeners: Map<string, AnyFunction>;
   };
   export type Domains = Map<string, DomainStorage>;
   export type Services = Map<string, Domains>;

@@ -1,1 +1,1 @@
-export * from './framework-adapters';
+export * from './http-adapters';

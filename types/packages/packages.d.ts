@@ -10,7 +10,6 @@ import inversify from 'inversify';
 import fastify from 'fastify';
 import express from 'express';
 import mongoose from 'mongoose';
-import joi from 'joi';
 import typeorm from 'typeorm';
 import { Redis, RedisOptions } from 'ioredis';
 import jwt from 'jsonwebtoken';
@@ -18,6 +17,9 @@ import nodemailer from 'nodemailer';
 import ws from 'ws';
 import { OpenAPIV3 } from 'openapi-types';
 import OpenAPISchemaValidator from 'openapi-schema-validator';
+
+import * as yup from 'yup';
+export { yup };
 
 import { StringObject, UnknownObject } from '../utility';
 
@@ -287,11 +289,6 @@ export namespace Typeorm {
   export type EntitySchemaOptions<T> = typeorm.EntitySchemaOptions<T>;
   export type DatabaseType = Exclude<'oracle', typeorm.DatabaseType>;
   export type Repository<T> = typeorm.Repository<T>;
-}
-
-export namespace Joi {
-  export type Root = joi.Root;
-  export type ObjectSchema<T> = joi.ObjectSchema<T>;
 }
 
 export namespace IoRedis {

@@ -6,17 +6,17 @@ import {
 } from '../agents';
 import { NContextService, NScramblerService } from '../services';
 
-import { Express, Fastify } from "../packages/packages";
+import { Express, Fastify } from '../packages/packages';
 import { StringObject, UnknownObject, Voidable } from '../';
 import { NSchemaLoader } from '../loaders';
 import { Helpers } from '../providers/schema.provider';
 
-export interface IAbstractFrameworkAdapter {
+export interface IAbstractHttpAdapter {
   start(schema: NSchemaLoader.Services): Promise<void>;
   stop(): Promise<void>;
 }
 
-export namespace NAbstractFrameworkAdapter {
+export namespace NAbstractHttpAdapter {
   export type FrameworkKind = 'express' | 'fastify';
   export type Config = {
     serverTag: string;
@@ -117,28 +117,30 @@ export namespace NAbstractFrameworkAdapter {
     format: 'status';
     statusCode?: number;
   }
-  export interface JSONResponsePayload extends BaseResponsePayload {
+  export interface JSONResponsePayload<R extends UnknownObject> extends BaseResponsePayload {
     format: 'json';
     type?: 'OK';
     statusCode?: number;
-    data?: UnknownObject;
+    data?: R;
   }
 
-  export type SchemaResponse =
+  export type SchemaResponse<R extends UnknownObject> =
     | RedirectResponsePayload
     | StatusResponsePayload
-    | JSONResponsePayload;
+    | JSONResponsePayload<R>;
 
   export type Handler = <
     BODY = UnknownObject,
     PARAMS extends StringObject = StringObject,
     HEADERS extends StringObject = StringObject,
-    K extends FrameworkKind
+    RESULT extends UnknownObject = UnknownObject,
+    SESSION_INFO extends UnknownObject = void,
+    K extends FrameworkKind = FrameworkKind
   >(
     request: SchemaRequest<BODY, PARAMS, HEADERS, K>,
     agents: Agents,
-    context: Context
-  ) => Promise<Voidable<SchemaResponse>>;
+    context: Context<SESSION_INFO>
+  ) => Promise<Voidable<SchemaResponse<RESULT>>>;
 
   export type FailSchemaParameter = 'service' | 'domain' | 'action';
 

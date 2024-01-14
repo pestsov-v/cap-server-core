@@ -1,9 +1,4 @@
-import {
-  IExceptionProvider,
-  IMongodbProvider,
-  ITypeormProvider,
-  IValidatorProvider,
-} from '../providers';
+import { IExceptionProvider, IMongodbProvider, ITypeormProvider } from '../providers';
 import {
   IDiscoveryService,
   ILocalizationService,
@@ -15,11 +10,11 @@ export interface IFunctionalityAgent {
   readonly discovery: NFunctionalityAgent.Discovery;
   readonly mongoose: NFunctionalityAgent.Mongoose;
   readonly utils: NFunctionalityAgent.Utils;
-  readonly validator: NFunctionalityAgent.Validator;
   readonly scrambler: NFunctionalityAgent.Scrambler;
   readonly sessions: NFunctionalityAgent.Sessions;
   readonly exception: NFunctionalityAgent.Exception;
   readonly localization: NFunctionalityAgent.Localization;
+  readonly validator: NFunctionalityAgent.Validator;
 }
 
 export namespace NFunctionalityAgent {
@@ -58,11 +53,6 @@ export namespace NFunctionalityAgent {
 
   export type Utils = {
     uuid: string;
-  };
-
-  export type Validator = {
-    readonly validator: IValidatorProvider['validator'];
-    validate: IValidatorProvider['validate'];
   };
 
   export type typeorm = {
@@ -106,4 +96,6 @@ export namespace NFunctionalityAgent {
     defaultLanguages: ILocalizationService['defaultLanguages'];
     supportedLanguages: ILocalizationService['supportedLanguages'];
   };
+
+  export type Validator = {};
 }

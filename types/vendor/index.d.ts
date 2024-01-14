@@ -1,22 +1,20 @@
 import { StringObject, UnknownObject, Voidable } from '../utility';
-import {NAbstractFrameworkAdapter} from '../adapters'
-import {NContextService} from '../services'
-import {NMongodbProvider} from '../providers'
-
-export type ControllerHandler<
-  BODY = UnknownObject,
-  PARAMS extends StringObject = StringObject,
-  HEADERS extends StringObject = StringObject
-> = NAbstractFrameworkAdapter.Handler<BODY, PARAMS, HEADERS>;
+import { NAbstractHttpAdapter } from '../adapters';
+import { NContextService } from '../services';
+import { NMongodbProvider } from '../providers';
 
 export type SchemaRequest<
   BODY = UnknownObject,
   PARAMS extends StringObject | void = void,
-  HEADERS extends StringObject = StringObject
-> = NAbstractFrameworkAdapter.SchemaRequest<BODY, PARAMS, HEADERS, 'fastify'>;
-export type SchemaResponse = Voidable<NAbstractFrameworkAdapter.SchemaResponse>;
-export type Context<T = void> = NAbstractFrameworkAdapter.Context<T>;
-export type Agents = NAbstractFrameworkAdapter.Agents;
+  HEADERS extends StringObject = StringObject,
+  RESULT extends UnknownObject = void
+> = NAbstractHttpAdapter.SchemaRequest<BODY, PARAMS, HEADERS, 'fastify'>;
+
+export type SchemaResponse<RESULT extends UnknownObject = void> = Voidable<
+  NAbstractHttpAdapter.SchemaResponse<RESULT>
+>;
+export type Context<T = void> = NAbstractHttpAdapter.Context<T>;
+export type Agents = NAbstractHttpAdapter.Agents;
 export type Store = NContextService.Store;
 export type MongoSchemaDefinition<T = UnknownObject> = NMongodbProvider.Schema<T>;
 

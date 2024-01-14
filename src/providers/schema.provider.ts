@@ -1,16 +1,22 @@
-import { Packages } from '@Packages';
+import { Packages, yup } from '@Packages';
 
 const { injectable, inject } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
 import { container } from '../ioc/core.ioc';
 
 import {
-  AnyFunction, FnObject, UnknownObject,
+  AnyFunction,
+  FnObject,
+  UnknownObject,
   IContextService,
   IFunctionalityAgent,
   ISchemaProvider,
   ITypeormProvider,
   NLocalizationService,
+  KeyStringLiteralBuilder,
+  IBaseOperationAgent,
+  NSchemaProvider,
+  ValidateRoute,
 } from '@Core/Types';
 import { Guards } from '@Guards';
 
@@ -70,7 +76,7 @@ export class SchemaProvider implements ISchemaProvider {
     return this.getAnotherMongoRepository<T>(this._contextService.store.domain);
   }
 
-  public getAnotherValidator<T>(name: string): T {
+  public getAnotherValidator<T>(name: string, cast: NSchemaProvider.Cast): T {
     const store = this._contextService.store;
 
     const service = store.schema.get(store.service);
@@ -88,9 +94,9 @@ export class SchemaProvider implements ISchemaProvider {
     }
 
     class Validator<T> {
-      private readonly _handlers: Map<string, AnyFunction>;
+      private readonly _handlers: Map<string, ValidateRoute>;
 
-      constructor(handlers: Map<string, AnyFunction>) {
+      constructor(handlers: Map<string, ValidateRoute>) {
         this._handlers = handlers;
 
         for (const [name] of this._handlers) {
@@ -103,12 +109,21 @@ export class SchemaProvider implements ISchemaProvider {
       }
 
       private _runMethod(method: string, ...args: any[]): any {
-        const handler = this._handlers.get(method);
-        if (handler) {
-          const validator = container.get<IFunctionalityAgent>(
-            CoreSymbols.FunctionalityAgent
-          ).validator;
-          return handler(validator, ...args);
+        const structure = this._handlers.get(method);
+        if (structure) {
+          const handler = structure[cast];
+          if (handler) {
+            const baseAgent = container.get<IBaseOperationAgent>(
+              CoreSymbols.BaseOperationAgent
+            ).validator;
+            const fnAgent = container.get<IFunctionalityAgent>(
+              CoreSymbols.FunctionalityAgent
+            ).validator;
+
+            const agents = { baseAgent, fnAgent };
+
+            return yup.object().shape(handler(agents));
+          }
         }
       }
     }
@@ -116,8 +131,8 @@ export class SchemaProvider implements ISchemaProvider {
     return new Validator<T>(validators) as T;
   }
 
-  public getValidator<T extends UnknownObject>(): T {
-    return this.getAnotherValidator<T>(this._contextService.store.domain);
+  public getValidator<T extends UnknownObject>(cast: NSchemaProvider.Cast): T {
+    return this.getAnotherValidator<T>(this._contextService.store.domain, cast);
   }
 
   public getAnotherTypeormRepository<T>(name: string): T {
@@ -137,7 +152,7 @@ export class SchemaProvider implements ISchemaProvider {
       throw new Error('Typeorm repository handlers not found');
     }
 
-    class Repository<T> {
+    class Repository {
       private readonly _handlers: Map<string, AnyFunction>;
 
       constructor(handlers: Map<string, AnyFunction>) {
@@ -163,18 +178,22 @@ export class SchemaProvider implements ISchemaProvider {
       }
     }
 
-    return new Repository<T>(handlers) as T;
+    return new Repository(handlers) as T;
   }
 
   public getTypeormRepository<T>(): T {
     return this.getAnotherTypeormRepository<T>(this._contextService.store.domain);
   }
 
-  public getAnotherResource(
-    name: string,
-    resource: string,
+  public getAnotherResource<
+    D extends string,
+    DICT extends Record<string, unknown>,
+    L extends string
+  >(
+    name: D,
+    resource: KeyStringLiteralBuilder<DICT>,
     substitutions?: Record<string, string>,
-    language?: string
+    language?: L
   ): string {
     const store = this._contextService.store;
 
@@ -227,10 +246,10 @@ export class SchemaProvider implements ISchemaProvider {
     return record;
   }
 
-  public getResource(
-    resource: string,
+  public getResource<D extends Record<string, unknown>, L extends string>(
+    resource: KeyStringLiteralBuilder<D>,
     substitutions?: Record<string, string>,
-    language?: string
+    language?: L
   ): string {
     const store = this._contextService.store;
 

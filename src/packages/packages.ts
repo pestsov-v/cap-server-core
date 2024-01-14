@@ -29,6 +29,8 @@ export {
   AbstractDiscoveryService,
   IAbstractDiscoveryService,
 } from '@chaminjector/seeds-discovery-service';
+import * as yup from 'yup';
+export { yup };
 
 export class Packages {
   public static get inversify() {

@@ -5,7 +5,8 @@ import { CoreSymbols } from '@CoreSymbols';
 
 import {
   Mongoose,
-  Nullable, UnknownObject,
+  Nullable,
+  UnknownObject,
   IBaseOperationAgent,
   IContextService,
   ICoreError,
@@ -15,7 +16,7 @@ import {
   IMongodbConnector,
   IMongodbProvider,
   ISchemaAgent,
-  NAbstractFrameworkAdapter,
+  NAbstractHttpAdapter,
   NMongodbProvider,
 } from '@Core/Types';
 
@@ -32,7 +33,7 @@ export class MongodbProvider implements IMongodbProvider {
     const { connection } = this._mongodbConnector;
 
     fnModels.forEach((fn) => {
-      const agents: NAbstractFrameworkAdapter.Agents = {
+      const agents: NAbstractHttpAdapter.Agents = {
         functionalityAgent: container.get<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent),
         schemaAgent: container.get<ISchemaAgent>(CoreSymbols.SchemaAgent),
         baseAgent: container.get<IBaseOperationAgent>(CoreSymbols.BaseOperationAgent),

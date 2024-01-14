@@ -1,4 +1,4 @@
-export interface IAbstractFactory {
-  run<T = unknown>(args: T): Promise<void>;
+export interface IAbstractFactory<T = unknown> {
+  run(args: T): Promise<void>;
   stand(): Promise<void>;
 }

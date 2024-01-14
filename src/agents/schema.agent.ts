@@ -3,7 +3,15 @@ const { injectable } = Packages.inversify;
 import { CoreSymbols } from '@CoreSymbols';
 import { container } from '../ioc/core.ioc';
 
-import { FnObject, UnknownObject, ISchemaAgent, ISchemaProvider } from '@Core/Types';
+import {
+  FnObject,
+  UnknownObject,
+  ISchemaAgent,
+  ISchemaProvider,
+  KeyStringLiteralBuilder,
+  NSchemaProvider,
+} from '@Core/Types';
+import { ca } from 'date-fns/locale';
 
 @injectable()
 export class SchemaAgent implements ISchemaAgent {
@@ -19,12 +27,14 @@ export class SchemaAgent implements ISchemaAgent {
     return container.get<ISchemaProvider>(CoreSymbols.SchemaProvider).getMongoRepository<T>();
   }
 
-  public getAnotherValidator<T>(name: string): T {
-    return container.get<ISchemaProvider>(CoreSymbols.SchemaProvider).getAnotherValidator<T>(name);
+  public getAnotherValidator<T>(name: string, cast: NSchemaProvider.Cast): T {
+    return container
+      .get<ISchemaProvider>(CoreSymbols.SchemaProvider)
+      .getAnotherValidator<T>(name, cast);
   }
 
-  public getValidator<T extends UnknownObject>(): T {
-    return container.get<ISchemaProvider>(CoreSymbols.SchemaProvider).getValidator<T>();
+  public getValidator<T extends UnknownObject>(cast: NSchemaProvider.Cast): T {
+    return container.get<ISchemaProvider>(CoreSymbols.SchemaProvider).getValidator<T>(cast);
   }
 
   public getAnotherTypeormRepository<T extends FnObject = FnObject>(name: string): T {
@@ -37,21 +47,25 @@ export class SchemaAgent implements ISchemaAgent {
     return container.get<ISchemaProvider>(CoreSymbols.SchemaProvider).getTypeormRepository<T>();
   }
 
-  public getAnotherResource(
-    domain: string,
-    resource: string,
+  public getAnotherResource<
+    D extends string,
+    DICT extends Record<string, unknown>,
+    L extends string
+  >(
+    domain: D,
+    resource: KeyStringLiteralBuilder<DICT>,
     substitutions?: Record<string, string>,
-    language?: string
+    language?: L
   ): string {
     return container
       .get<ISchemaProvider>(CoreSymbols.SchemaProvider)
       .getAnotherResource(domain, resource, substitutions, language);
   }
 
-  public getResource(
-    resource: string,
+  public getResource<D extends Record<string, unknown>, L extends string>(
+    resource: KeyStringLiteralBuilder<D>,
     substitutions?: Record<string, string>,
-    language?: string
+    language?: L
   ): string {
     return container
       .get<ISchemaProvider>(CoreSymbols.SchemaProvider)

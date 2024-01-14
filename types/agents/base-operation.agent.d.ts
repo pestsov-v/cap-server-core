@@ -6,15 +6,15 @@ export interface IBaseOperationAgent {
 }
 
 export namespace NBaseOperationAgent {
-  export type Validator = {
-    validateOrThrow: IValidatorBaseOperation['validateOrThrow'];
-  };
-
   export type Specification = {
     openapi: {
       readonly bearerAuth: ISpecificationBaseOperation['bearerAuth'];
       readonly validateResponse: ISpecificationBaseOperation['validateResponse'];
       getJsonObjectContent: ISpecificationBaseOperation['getJsonObjectContent'];
     };
+  };
+
+  export type Validator = {
+    readonly getDefValidateResponse: IValidatorBaseOperation['getDefValidateResponse'];
   };
 }

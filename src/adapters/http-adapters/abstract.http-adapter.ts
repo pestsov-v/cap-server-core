@@ -7,17 +7,17 @@ import {
   IContextService,
   IDiscoveryService,
   ILoggerService,
-  IAbstractFrameworkAdapter,
-  NAbstractFrameworkAdapter,
+  IAbstractHttpAdapter,
+  NAbstractHttpAdapter,
 } from '@Core/Types';
 
 @injectable()
-export abstract class AbstractFrameworkAdapter<K extends NAbstractFrameworkAdapter.FrameworkKind>
-  implements IAbstractFrameworkAdapter
+export abstract class AbstractHttpAdapter<K extends NAbstractHttpAdapter.FrameworkKind>
+  implements IAbstractHttpAdapter
 {
   protected abstract readonly _ADAPTER_NAME: string;
-  protected abstract _instance: NAbstractFrameworkAdapter.Instance<K> | undefined;
-  protected abstract _config: NAbstractFrameworkAdapter.Config | undefined;
+  protected abstract _instance: NAbstractHttpAdapter.Instance<K> | undefined;
+  protected abstract _CONFIG: NAbstractHttpAdapter.Config | undefined;
   protected abstract _setConfig(): void;
 
   protected abstract _discoveryService: IDiscoveryService;
@@ -28,13 +28,13 @@ export abstract class AbstractFrameworkAdapter<K extends NAbstractFrameworkAdapt
   public abstract stop(): Promise<void>;
 
   protected abstract _apiHandler(
-    req: NAbstractFrameworkAdapter.Request<K>,
-    context: NAbstractFrameworkAdapter.Context<UnknownObject>
-  ): Promise<NAbstractFrameworkAdapter.Response<K>>;
+    req: NAbstractHttpAdapter.Request<K>,
+    context: NAbstractHttpAdapter.Context<UnknownObject>
+  ): Promise<NAbstractHttpAdapter.Response<K>>;
 
   protected _resolveSchemaHeaders(
     headers: Record<string, string>
-  ): NAbstractFrameworkAdapter.SchemaPayload {
+  ): NAbstractHttpAdapter.SchemaPayload {
     if (!headers[SchemaHeaders.X_SERVICE_NAME]) {
       return {
         ok: false,

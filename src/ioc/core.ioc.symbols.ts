@@ -24,9 +24,9 @@ export const CoreSymbols = {
   SchemaProvider: Symbol('SchemaProvider'),
   MongodbProvider: Symbol('MongodbProvider'),
   TypeormProvider: Symbol('TypeormProvider'),
-  ValidatorProvider: Symbol('ValidatorProvider'),
   ExceptionProvider: Symbol('ExceptionProvider'),
   RedisProvider: Symbol('RedisProvider'),
+  ValidatorProvider: Symbol('ValidatorProvider'),
 
   // Integrations
   MailIntegration: Symbol('MailIntegration'),
@@ -47,7 +47,7 @@ export const CoreSymbols = {
   WsAdapter: Symbol('WsAdapter'),
 
   // Factories
-  FrameworkFactory: Symbol('FrameworkFactory'),
+  HttpFactory: Symbol('HttpFactory'),
 
   // Base operations
   ValidatorBaseOperation: Symbol('ValidatorBaseOperation'),

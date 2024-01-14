@@ -1,6 +1,6 @@
-export * from './schema.provider';
-export * from './mongodb.provider';
-export * from './validator.provider';
-export * from './exception.provider';
-export * from './typeorm.provider';
-export * from './redis.provider';
+export type * from './schema.provider';
+export type * from './mongodb.provider';
+export type * from './exception.provider';
+export type * from './typeorm.provider';
+export type * from './redis.provider';
+export type * from './validator.provider';

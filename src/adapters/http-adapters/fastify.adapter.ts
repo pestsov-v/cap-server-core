@@ -4,7 +4,7 @@ const { fastify } = Packages.fastify;
 const { v4 } = Packages.uuid;
 
 import { CoreSymbols } from '@CoreSymbols';
-import { AbstractFrameworkAdapter } from './abstract.framework-adapter';
+import { AbstractHttpAdapter } from './abstract.http-adapter';
 
 import {
   Fastify,
@@ -13,8 +13,8 @@ import {
   IContextService,
   IDiscoveryService,
   ILoggerService,
-  IAbstractFrameworkAdapter,
-  NAbstractFrameworkAdapter,
+  IAbstractHttpAdapter,
+  NAbstractHttpAdapter,
   NSchemaLoader,
   IFunctionalityAgent,
   NContextService,
@@ -34,13 +34,10 @@ import { Guards } from '@Guards';
 import { TokenExpiredError } from 'jsonwebtoken';
 
 @injectable()
-export class FastifyAdapter
-  extends AbstractFrameworkAdapter<'fastify'>
-  implements IAbstractFrameworkAdapter
-{
+export class FastifyAdapter extends AbstractHttpAdapter<'fastify'> implements IAbstractHttpAdapter {
   protected readonly _ADAPTER_NAME = FastifyAdapter.name;
-  protected _config: NAbstractFrameworkAdapter.Config | undefined;
-  protected _instance: NAbstractFrameworkAdapter.Instance<'fastify'> | undefined;
+  protected _CONFIG: NAbstractHttpAdapter.Config | undefined;
+  protected _instance: NAbstractHttpAdapter.Instance<'fastify'> | undefined;
   private _schemas: NSchemaLoader.Services | undefined;
 
   constructor(
@@ -61,7 +58,7 @@ export class FastifyAdapter
   }
 
   protected _setConfig(): void {
-    this._config = {
+    this._CONFIG = {
       serverTag: this._discoveryService.getString('adapters.framework.serverTag', 'ANONYMOUS_01'),
       protocol: this._discoveryService.getString('adapters.framework.protocol', 'http'),
       host: this._discoveryService.getString('adapters.framework.host', 'localhost'),
@@ -72,16 +69,20 @@ export class FastifyAdapter
     };
   }
 
+  private get _config() {
+    if (!this._CONFIG) {
+      throw new Error('Configuration not set');
+    }
+
+    return this._CONFIG;
+  }
+
   public async start(schemas: NSchemaLoader.Services): Promise<void> {
     this._schemas = schemas;
     this._setConfig();
 
-    if (!this._config) {
-      throw new Error('Config not initialize');
-    }
-
     this._instance = fastify({});
-    this._instance.all(this._config.urls.api, this._apiHandler);
+    this._instance.all(this._config.urls.api + '*', this._apiHandler);
 
     this._instance.addHook(
       'onRequest',
@@ -101,7 +102,7 @@ export class FastifyAdapter
 
     try {
       await this._instance.listen({ host, port }, () => {
-        if (this._config) {
+        if (this._CONFIG) {
           this._loggerService.system(`Http server listening on ${protocol}://${host}:${port}`, {
             scope: 'Core',
             namespace: this._ADAPTER_NAME,
@@ -150,7 +151,7 @@ export class FastifyAdapter
   }
 
   public async stop(): Promise<void> {
-    this._config = undefined;
+    this._CONFIG = undefined;
     this._schemas = undefined;
 
     if (!this._instance) return;
@@ -166,8 +167,8 @@ export class FastifyAdapter
   }
 
   protected _apiHandler = async (
-    req: NAbstractFrameworkAdapter.Request<'fastify'>,
-    res: NAbstractFrameworkAdapter.Response<'fastify'>
+    req: NAbstractHttpAdapter.Request<'fastify'>,
+    res: NAbstractHttpAdapter.Response<'fastify'>
   ): Promise<void> => {
     if (!this._schemas) {
       throw new Error('Business services schema not initialize');
@@ -251,7 +252,7 @@ export class FastifyAdapter
 
     try {
       await this._contextService.storage.run(store, async () => {
-        const context: NAbstractFrameworkAdapter.Context<UnknownObject> = {
+        const context: NAbstractHttpAdapter.Context<UnknownObject> = {
           storage: {
             store: store,
           },
@@ -290,12 +291,26 @@ export class FastifyAdapter
           }
         }
 
+        const inputParams = req.url
+          .replace(this._config.urls.api, '')
+          .split('/')
+          .filter((p: string) => p.length > 0);
+        action.params;
+
+        let params: Record<string, string> = {};
+        if (action.params && inputParams.length > 0) {
+          params = action.params.reduce((obj: Record<string, string>, k: string, i: number) => {
+            obj[k] = inputParams[i];
+            return obj;
+          }, {});
+        }
+
         const result = await handler(
           {
             method: req.method,
             headers: req.headers,
             body: req.body,
-            params: req.params,
+            params: params,
             path: req.routeOptions.url,
             url: req.url,
             query: req.query,
@@ -378,7 +393,7 @@ export class FastifyAdapter
     }
   };
 
-  private _getNotFoundStructure(param: NAbstractFrameworkAdapter.FailSchemaParameter) {
+  private _getNotFoundStructure(param: NAbstractHttpAdapter.FailSchemaParameter) {
     let message: string;
     switch (param) {
       case 'service':

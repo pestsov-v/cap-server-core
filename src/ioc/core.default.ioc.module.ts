@@ -4,7 +4,7 @@ import { CoreSymbols } from '@CoreSymbols';
 
 import { Initiator } from '../initiator';
 import { FastifyAdapter } from '../adapters';
-import { FrameworkFactory } from '../factories';
+import { HttpFactory } from '../factories';
 import { SchemaLoader, SpecificationLoader } from '../loaders';
 import { SpecificationBaseOperation, ValidatorBaseOperation } from '../base-operations';
 import { FunctionalityAgent, SchemaAgent, BaseOperationAgent, IntegrationAgent } from '../agents';
@@ -29,15 +29,15 @@ import {
   MongodbProvider,
   SchemaProvider,
   ExceptionProvider,
-  ValidatorProvider,
   TypeormProvider,
   RedisProvider,
+  ValidatorProvider,
 } from '../providers';
 
 import {
   Inversify,
   IAbstractFactory,
-  IAbstractFrameworkAdapter,
+  IAbstractHttpAdapter,
   IBaseOperationAgent,
   IContextService,
   IExceptionProvider,
@@ -51,7 +51,6 @@ import {
   ISchemaProvider,
   ISchemaService,
   IComputeConnector,
-  IValidatorProvider,
   IValidatorBaseOperation,
   ITypeormConnector,
   ITypeormProvider,
@@ -69,6 +68,7 @@ import {
   ISpecificationLoader,
   ISpecificationBaseOperation,
   IAbstractService,
+  IValidatorProvider,
 } from '@Core/Types';
 import { MailIntegration } from '../integrations';
 import { IntegrationConnector } from '../connectors/integration.connector';
@@ -106,9 +106,9 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
   bind<ISchemaProvider>(CoreSymbols.SchemaProvider).to(SchemaProvider).inTransientScope();
   bind<IMongodbProvider>(CoreSymbols.MongodbProvider).to(MongodbProvider).inTransientScope();
   bind<ITypeormProvider>(CoreSymbols.TypeormProvider).to(TypeormProvider).inTransientScope();
-  bind<IValidatorProvider>(CoreSymbols.ValidatorProvider).to(ValidatorProvider).inTransientScope();
   bind<IExceptionProvider>(CoreSymbols.ExceptionProvider).to(ExceptionProvider).inTransientScope();
   bind<IRedisProvider>(CoreSymbols.RedisProvider).to(RedisProvider).inTransientScope();
+  bind<IValidatorProvider>(CoreSymbols.ValidatorProvider).to(ValidatorProvider).inTransientScope();
 
   // Integrations
   bind<IMailIntegration>(CoreSymbols.MailIntegration).to(MailIntegration).inSingletonScope();
@@ -130,12 +130,12 @@ export const CoreModule = new ContainerModule((bind: Inversify.interfaces.Bind) 
     .inTransientScope();
 
   // Adapters
-  bind<IAbstractFrameworkAdapter>(CoreSymbols.FastifyAdapter).to(FastifyAdapter).inSingletonScope();
+  bind<IAbstractHttpAdapter>(CoreSymbols.FastifyAdapter).to(FastifyAdapter).inSingletonScope();
 
   bind<IAbstractWebsocketAdapter>(CoreSymbols.WsAdapter).to(WsAdapter).inSingletonScope();
 
   // Factories
-  bind<IAbstractFactory>(CoreSymbols.FrameworkFactory).to(FrameworkFactory).inSingletonScope();
+  bind<IAbstractFactory>(CoreSymbols.HttpFactory).to(HttpFactory).inSingletonScope();
 
   // base-operations
   bind<IValidatorBaseOperation>(CoreSymbols.ValidatorBaseOperation)

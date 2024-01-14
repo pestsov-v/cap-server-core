@@ -11,19 +11,10 @@ import {
   NBaseOperationAgent,
   NSpecificationBaseOperation,
 } from '@Core/Types';
+import yup from 'yup';
 
 @injectable()
 export class BaseOperationAgent implements IBaseOperationAgent {
-  public get validator(): NBaseOperationAgent.Validator {
-    const operations = container.get<IValidatorBaseOperation>(CoreSymbols.ValidatorBaseOperation);
-
-    return {
-      validateOrThrow: (map, body) => {
-        return operations.validateOrThrow(map, body);
-      },
-    };
-  }
-
   public get specification(): NBaseOperationAgent.Specification {
     const operations = container.get<ISpecificationBaseOperation>(
       CoreSymbols.SpecificationBaseOperation
@@ -38,6 +29,16 @@ export class BaseOperationAgent implements IBaseOperationAgent {
         ): NSpecificationBaseOperation.Content => {
           return operations.getJsonObjectContent<T>(schema);
         },
+      },
+    };
+  }
+
+  public get validator(): NBaseOperationAgent.Validator {
+    const operations = container.get<IValidatorBaseOperation>(CoreSymbols.ValidatorBaseOperation);
+
+    return {
+      getDefValidateResponse: (e: yup.ValidationError) => {
+        return operations.getDefValidateResponse(e);
       },
     };
   }

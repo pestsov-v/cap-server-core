@@ -2,7 +2,7 @@ import { Packages } from '@Packages';
 const { injectable } = Packages.inversify;
 const { EntitySchema } = Packages.typeorm;
 
-import type {
+import {
   Typeorm,
   AnyFunction,
   HttpMethod,
@@ -14,11 +14,17 @@ import type {
   IIntegrationAgent,
   ISchemaAgent,
   ISchemaLoader,
-  NAbstractFrameworkAdapter,
+  NAbstractHttpAdapter,
   NMongodbProvider,
   NSchemaLoader,
   NTypeormProvider,
-  NValidatorProvider,
+  DictionaryStructure,
+  ExtendedRecordObject,
+  NLocalizationService,
+  EmitterStructure,
+  WsListenerStructure,
+  ValidateStructure,
+  ValidateRoute,
 } from '@Core/Types';
 import { container } from '../ioc/core.ioc';
 import { CoreSymbols } from '@CoreSymbols';
@@ -60,9 +66,9 @@ export class SchemaLoader implements ISchemaLoader {
       Typeorm.EntitySchema<unknown>
     >();
     this.services.forEach((domains) => {
-      domains.forEach((storage, domain) => {
+      domains.forEach((storage) => {
         if (storage.typeormSchema && storage.typeormModel) {
-          const agents: NAbstractFrameworkAdapter.Agents = {
+          const agents: NAbstractHttpAdapter.Agents = {
             functionalityAgent: container.get<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent),
             schemaAgent: container.get<ISchemaAgent>(CoreSymbols.SchemaAgent),
             baseAgent: container.get<IBaseOperationAgent>(CoreSymbols.BaseOperationAgent),
@@ -94,7 +100,7 @@ export class SchemaLoader implements ISchemaLoader {
     sStorage.set(domain, dStorage);
   }
 
-  public setController(domain: string, structure: ControllerStructure<string>): void {
+  public setController(domain: string, structure: ControllerStructure<any>): void {
     const storage = this._domains.get(domain);
     if (!storage) {
       this.setDomain(domain);
@@ -104,6 +110,39 @@ export class SchemaLoader implements ISchemaLoader {
 
     for (const controller in structure) {
       storage.controllers.set(controller, structure[controller]);
+    }
+  }
+
+  public setEmitter(domain: string, emitter: EmitterStructure<string>): void {
+    const storage = this._domains.get(domain);
+    if (!storage) {
+      this.setDomain(domain);
+      this.setEmitter(domain, emitter);
+      return;
+    }
+
+    for (const event in emitter) {
+      const description = emitter[event];
+      storage.emitter.set(event, {
+        domain: description.domain,
+        event: event,
+        service: description.service,
+        isPrivateUser: description.isPrivateUser,
+        isPrivateOrganization: description.isPrivateOrganization,
+      });
+    }
+  }
+
+  public setWsListener(domain: string, structure: WsListenerStructure<string>): void {
+    const storage = this._domains.get(domain);
+    if (!storage) {
+      this.setDomain(domain);
+      this.setWsListener(domain, structure);
+      return;
+    }
+
+    for (const listener in structure) {
+      storage.wsListeners.set(listener, structure[listener]);
     }
   }
 
@@ -118,15 +157,20 @@ export class SchemaLoader implements ISchemaLoader {
     storage.helpers.set(details.name, details.handler);
   }
 
-  public setValidator<T>(domain: string, validator: NSchemaLoader.Validator<T>): void {
+  public setValidator<T>(
+    domain: string,
+    structure: ValidateStructure<Record<string, ValidateRoute>>
+  ): void {
     const storage = this._domains.get(domain);
     if (!storage) {
       this.setDomain(domain);
-      this.setValidator(domain, validator);
+      this.setValidator(domain, structure);
       return;
     }
 
-    storage.validators.set(validator.name, validator.handler);
+    for (const listener in structure) {
+      storage.validators.set(listener, structure[listener]);
+    }
   }
 
   setMongoRepository<
@@ -142,7 +186,7 @@ export class SchemaLoader implements ISchemaLoader {
       return;
     }
     if (!storage.mongoRepoHandlers) {
-      storage.mongoRepoHandlers = new Map<string, NAbstractFrameworkAdapter.Handler>();
+      storage.mongoRepoHandlers = new Map<string, NAbstractHttpAdapter.Handler>();
     }
 
     storage.mongoRepoHandlers.set(details.name, details.handler);
@@ -169,6 +213,7 @@ export class SchemaLoader implements ISchemaLoader {
             storage.routes.set(name, {
               path: str,
               method: method as HttpMethod,
+              params: description.params,
               handler: description.handler,
               isPrivateUser: description.isPrivateUser,
               isPrivateOrganization: description.isPrivateOrganization,
@@ -222,9 +267,6 @@ export class SchemaLoader implements ISchemaLoader {
       this.setTypeormRepository<T>(domain, model, details);
       return;
     }
-    if (!storage.typeormRepoHandlers) {
-      storage.typeormRepoHandlers = new Map<string, AnyFunction>();
-    }
 
     for (const name in details) {
       const handler = details[name];
@@ -232,15 +274,39 @@ export class SchemaLoader implements ISchemaLoader {
     }
   }
 
+  public setDictionaries(
+    domain: string,
+    dictionaries:
+      | DictionaryStructure<string, ExtendedRecordObject>
+      | DictionaryStructure<string, ExtendedRecordObject>[]
+  ): void {
+    const storage = this._domains.get(domain);
+    if (!storage) {
+      this.setDomain(domain);
+      this.setDictionaries(domain, dictionaries);
+      return;
+    }
+
+    if (Array.isArray(dictionaries)) {
+      dictionaries.forEach((dict) => {
+        storage.dictionaries.set(dict.language, dict.dictionary);
+      });
+    } else {
+      storage.dictionaries.set(dictionaries.language, dictionaries.dictionary);
+    }
+  }
+
   public setDomain(domain: string): void {
     this._domains.set(domain, {
       routes: new Map<string, NSchemaLoader.Route>(),
-      controllers: new Map<string, NAbstractFrameworkAdapter.Handler>(),
+      controllers: new Map<string, NAbstractHttpAdapter.Handler>(),
       helpers: new Map<string, AnyFunction>(),
       mongoRepoHandlers: new Map<string, AnyFunction>(),
-      validators: new Map<string, NValidatorProvider.ValidateHandler<UnknownObject>>(),
+      validators: new Map<string, any>(),
       typeormRepoHandlers: new Map<string, AnyFunction>(),
-      dictionaries: new Map(),
+      dictionaries: new Map<string, NLocalizationService.Dictionary>(),
+      emitter: new Map<string, NSchemaLoader.Emitter>(),
+      wsListeners: new Map<string, AnyFunction>(),
     });
   }
 }

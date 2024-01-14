@@ -5,8 +5,10 @@ import { container } from '../ioc/core.ioc';
 import { CoreSymbols } from '@CoreSymbols';
 
 import {
-  Joi, Jwt, Mongoose,
-  Nullable, UnknownObject,
+  Jwt,
+  Mongoose,
+  Nullable,
+  UnknownObject,
   IDiscoveryService,
   IExceptionProvider,
   IFunctionalityAgent,
@@ -16,11 +18,9 @@ import {
   IScramblerService,
   ISessionService,
   IValidatorError,
-  IValidatorProvider,
   NExceptionProvider,
   NFunctionalityAgent,
   NScramblerService,
-  NValidatorProvider,
 } from '@Core/Types';
 
 @injectable()
@@ -283,17 +283,6 @@ export class FunctionalityAgent implements IFunctionalityAgent {
     };
   }
 
-  public get validator(): NFunctionalityAgent.Validator {
-    return {
-      validator: container.get<IValidatorProvider>(CoreSymbols.ValidatorProvider).validator,
-      validate: <T>(map: Joi.ObjectSchema<T>, body: T) => {
-        return container
-          .get<IValidatorProvider>(CoreSymbols.ValidatorProvider)
-          .validate<T>(map, body);
-      },
-    };
-  }
-
   public get scrambler(): NFunctionalityAgent.Scrambler {
     return {
       accessExpiredAt: this._scramblerService.accessExpiredAt,
@@ -366,7 +355,7 @@ export class FunctionalityAgent implements IFunctionalityAgent {
 
   public get exception(): NFunctionalityAgent.Exception {
     return {
-      throwValidation: (errors: NValidatorProvider.ErrorResult[]): IValidatorError => {
+      throwValidation: (errors: any[]): IValidatorError => {
         return container
           .get<IExceptionProvider>(CoreSymbols.ExceptionProvider)
           .throwValidation(errors);
@@ -389,5 +378,9 @@ export class FunctionalityAgent implements IFunctionalityAgent {
       defaultLanguages: this._localizationService.defaultLanguages,
       supportedLanguages: this._localizationService.supportedLanguages,
     };
+  }
+
+  public validator(): NFunctionalityAgent.Validator {
+    return {};
   }
 }

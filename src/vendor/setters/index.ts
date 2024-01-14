@@ -7,3 +7,4 @@ export * from './setDictionary';
 export * from './setTypeormSchema';
 export * from './setTypeormRepo';
 export * from './setService';
+export * from './setValidator';

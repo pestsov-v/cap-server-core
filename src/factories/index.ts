@@ -1,1 +1,1 @@
-export * from './framework.factory';
+export * from './http.factory';

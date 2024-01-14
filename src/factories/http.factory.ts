@@ -5,26 +5,26 @@ import { AbstractFactory } from './abstract.factory';
 
 import {
   IAbstractFactory,
-  IAbstractFrameworkAdapter,
+  IAbstractHttpAdapter,
   IAbstractWebsocketAdapter,
   IDiscoveryService,
   NSchemaLoader,
 } from '@Core/Types';
 
 @injectable()
-export class FrameworkFactory extends AbstractFactory implements IAbstractFactory {
+export class HttpFactory<T> extends AbstractFactory<T> implements IAbstractFactory<T> {
   constructor(
     @inject(CoreSymbols.DiscoveryService)
     private readonly _discoveryService: IDiscoveryService,
     @inject(CoreSymbols.FastifyAdapter)
-    private readonly _fastifyAdapter: IAbstractFrameworkAdapter,
+    private readonly _fastifyAdapter: IAbstractHttpAdapter,
     @inject(CoreSymbols.WsAdapter)
     private readonly _wsAdapter: IAbstractWebsocketAdapter
   ) {
     super();
   }
 
-  public async run<T>(schema: T): Promise<void> {
+  public async run(schema: T): Promise<void> {
     const httpAdapter = this._discoveryService.getString('adapters.framework.kind', 'fastify');
     switch (httpAdapter) {
       case 'fastify':

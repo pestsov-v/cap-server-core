@@ -1,37 +1,35 @@
-import { Packages } from '@Packages';
+import { Packages, yup } from '@Packages';
 const { injectable, inject } = Packages.inversify;
-import { container } from '../ioc/core.ioc';
-import { CoreSymbols } from '@CoreSymbols';
 
-import {
-  Nullable, UnknownObject,
-  Joi,
-  IContextService,
-  IExceptionProvider,
-  IFunctionalityAgent,
-  IValidatorBaseOperation,
-  IValidatorError,
-} from '@Core/Types';
+import { IValidatorBaseOperation, NValidatorBaseOperation, SchemaResponse } from '@Core/Types';
+import { ResponseType, StatusCode } from '@common';
 
 @injectable()
 export class ValidatorBaseOperation implements IValidatorBaseOperation {
-  constructor(
-    @inject(CoreSymbols.ContextService)
-    private readonly _contextService: IContextService
-  ) {}
+  constructor() {}
 
-  public validateOrThrow<T extends UnknownObject = UnknownObject>(
-    map: Joi.ObjectSchema<T>,
-    body: T
-  ): Nullable<IValidatorError> {
-    const errors = container
-      .get<IFunctionalityAgent>(CoreSymbols.FunctionalityAgent)
-      .validator.validate(map, body);
-
-    if (!errors) return null;
-
-    return errors.length > 0
-      ? container.get<IExceptionProvider>(CoreSymbols.ExceptionProvider).throwValidation(errors)
-      : null;
+  public getDefValidateResponse(e: any): SchemaResponse<NValidatorBaseOperation.ResponseData> {
+    if (e instanceof yup.ValidationError) {
+      return {
+        responseType: ResponseType.VALIDATION,
+        format: 'json',
+        type: 'OK',
+        statusCode: StatusCode.BAD_REQUEST,
+        data: {
+          errors: e.errors,
+          message: e.message,
+        },
+      };
+    } else {
+      return {
+        responseType: ResponseType.ERROR,
+        format: 'json',
+        type: 'OK',
+        statusCode: StatusCode.SERVER_ERROR,
+        data: {
+          message: 'An unknown error occurred during data validation',
+        },
+      };
+    }
   }
 }
