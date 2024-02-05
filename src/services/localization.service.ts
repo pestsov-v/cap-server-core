@@ -22,9 +22,7 @@ export class LocalizationService extends AbstractService implements ILocalizatio
     @inject(CoreSymbols.DiscoveryService)
     protected readonly _discoveryService: IDiscoveryService,
     @inject(CoreSymbols.LoggerService)
-    protected readonly _loggerService: ILoggerService,
-    @inject(CoreSymbols.SchemaService)
-    private readonly _schemaService: ISchemaService
+    protected readonly _loggerService: ILoggerService
   ) {
     super();
   }

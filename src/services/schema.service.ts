@@ -1,12 +1,14 @@
 import { Packages } from '@Packages';
 const { injectable, inject } = Packages.inversify;
+
+import { MetadataKeys as MK, ServerSchemeLoader } from '@chaminjector/typescheme';
+
 import { CoreSymbols } from '@CoreSymbols';
 import { container } from '../ioc/core.ioc';
 import { MetadataKeys } from '@common';
 import { AbstractService } from './abstract.service';
 
 import {
-  IAbstractFactory,
   IDiscoveryService,
   ILoggerService,
   IMongodbConnector,
@@ -19,7 +21,6 @@ import {
   NSchemaService,
   NSpecificationLoader,
 } from '@Core/Types';
-import * as process from 'process';
 
 @injectable()
 export class SchemaService extends AbstractService implements ISchemaService {
@@ -118,8 +119,10 @@ export class SchemaService extends AbstractService implements ISchemaService {
     const { specificationEnable } = this._config;
     const schemaLoader = container.get<ISchemaLoader>(CoreSymbols.SchemaLoader);
 
+    const s3 = new ServerSchemeLoader();
+
     try {
-      await schemaLoader.init();
+      s3.init();
       if (specificationEnable) {
         const specLoader = container.get<ISpecificationLoader>(CoreSymbols.SpecificationLoader);
         await specLoader.init();
@@ -128,16 +131,13 @@ export class SchemaService extends AbstractService implements ISchemaService {
         this._specifications = specLoader.services;
       }
 
-      Reflect.defineMetadata(MetadataKeys.SchemaLoader, schemaLoader, Reflect);
+      Reflect.defineMetadata(MK.SERVER_LOADER, s3, Reflect);
 
       await import(this._config.schemaPath);
-      this._schema = schemaLoader.services;
+      this._schema = s3.services;
 
       this._typeormConnector.on('connector:TypeormConnector:start', () => {
-        this._typeormConnector.emit(
-          'connector:TypeormConnector:entities:load',
-          schemaLoader.typeormSchemas
-        );
+        this._typeormConnector.emit('connector:TypeormConnector:entities:load', s3);
       });
     } catch (e) {
       throw e;

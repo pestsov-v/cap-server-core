@@ -9,7 +9,9 @@ const { v4 } = Packages.uuid;
 import { CoreSymbols } from '@CoreSymbols';
 
 import {
-  Http, Https, Ws,
+  Http,
+  Https,
+  Ws,
   IAbstractWebsocketAdapter,
   IDiscoveryService,
   ILoggerService,
@@ -38,7 +40,7 @@ export class WsAdapter extends AbstractWebsocketAdapter<'ws'> implements IAbstra
     this._config = {
       protocol: this._discoveryService.getString('adapters.websocket.protocol', 'ws'),
       host: this._discoveryService.getString('adapters.websocket.host', 'localhost'),
-      port: this._discoveryService.getNumber('adapters.websocket.port', 11043),
+      port: this._discoveryService.getNumber('adapters.websocket.port', 15055),
       connection: {
         checkInterval: this._discoveryService.getNumber(
           'adapters.websocket.connection.checkInterval',
@@ -67,7 +69,7 @@ export class WsAdapter extends AbstractWebsocketAdapter<'ws'> implements IAbstra
     }
 
     try {
-      this._instance = new ws.WebSocketServer({ noServer: true });
+      this._instance = new ws.WebSocketServer({ server });
 
       this._instance.on('connection', (ws: Ws.WebSocket, request: Http.IncomingMessage) => {
         this._sessionService.setWsConnection(ws, {
@@ -77,14 +79,6 @@ export class WsAdapter extends AbstractWebsocketAdapter<'ws'> implements IAbstra
           ip: request.socket.remoteAddress,
         });
       });
-
-      server.on('upgrade', (request, socket, head) => {
-        this._instance?.handleUpgrade(request, socket, head, (ws) => {
-          this._instance?.emit('connection', ws, request);
-        });
-      });
-
-      server.listen({ host, port });
 
       this._loggerService.system(`Websocket server listening on ${protocol}://${host}:${port}`, {
         scope: 'Core',

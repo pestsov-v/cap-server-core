@@ -3,6 +3,7 @@ import {
   ControllerHandler,
   ExtendedRecordObject,
   HttpMethod,
+  TypeormRepository,
   UnknownObject,
 } from '../utility';
 import { NSessionService } from '../services';
@@ -62,17 +63,4 @@ export type ValidateRoute<IN extends yup.ObjectShape = void, OUT extends yup.Obj
 };
 export type ValidateStructure<T extends Record<string, ValidateRoute>> = {
   [key in keyof T]: T[key];
-};
-
-export type DomainDocuments = {
-  router?: RouterStructure<string>;
-  controller?: ControllerStructure<UnknownObject>;
-  emitter?: EmitterStructure<string>;
-  wsListener?: WsListenerStructure<string>;
-  typeormSchema?: TypeormSchemaStructure<string, unknown>;
-  typeormRepo?: TypeormRepoStructure<Record<string, unknown>>;
-  dictionaries?:
-    | DictionaryStructure<string, ExtendedRecordObject>
-    | DictionaryStructure<string, ExtendedRecordObject>[];
-  validator?: ValidateStructure<unknown>;
 };
